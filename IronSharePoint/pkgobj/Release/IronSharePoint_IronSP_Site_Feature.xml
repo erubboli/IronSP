@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Feature xmlns="http://schemas.microsoft.com/sharepoint/" Title="IronSP Site" Creator="Christian Glessner" Id="a1752f91-1403-40c1-a257-69eddf8976cf" Scope="Site" Version="1.0.0.0">
+  <ElementManifests>
+    <ElementManifest Location="IronApps\Elements.xml" />
+    <ElementManifest Location="IronPart\Elements.xml" />
+    <ElementFile Location="IronPart\IronPart.webpart" />
+  </ElementManifests>
+</Feature>

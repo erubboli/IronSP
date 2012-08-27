@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Solution xmlns="http://schemas.microsoft.com/sharepoint/">
+<Assemblies>
+    <Assembly Location="IronSharePoint.dll" DeploymentTarget="GlobalAssemblyCache">
+      <SafeControls>
+        <SafeControl Assembly="IronSharePoint, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6f476c86fea3892b" Namespace="IronSharePoint" TypeName="*" />
+      </SafeControls>
+    </Assembly>
+  </Assemblies>
+</Solution>

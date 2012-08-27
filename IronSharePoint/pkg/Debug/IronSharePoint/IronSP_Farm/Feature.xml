@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Feature xmlns="http://schemas.microsoft.com/sharepoint/" Title="IronSP Farm" Creator="Christian Glessner" Id="2638d466-a89b-4a4a-ba6e-24aeed2241aa" ReceiverAssembly="IronSharePoint, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6f476c86fea3892b" ReceiverClass="IronSharePoint.Features.IronSP_Farm.IronSP_FarmEventReceiver" Scope="Farm" Version="1.0.0.0"></Feature>

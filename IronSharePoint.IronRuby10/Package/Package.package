@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="e4f2e099-a584-499e-9e92-0fc6199597fc" solutionId="e4f2e099-a584-499e-9e92-0fc6199597fc" resetWebServer="false" name="IronSharePoint.IronRuby10" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <assemblies>
+    <customAssembly location="IronRuby.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="TEMPLATE\Features\IronSP_IronRuby10\bin\IronRuby.dll" />
+    <customAssembly location="IronRuby.Libraries.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="TEMPLATE\Features\IronSP_IronRuby10\bin\IronRuby.Libraries.dll" />
+    <customAssembly location="IronRuby.Libraries.YAML.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="TEMPLATE\Features\IronSP_IronRuby10\bin\IronRuby.Libraries.YAML.dll" />
+    <customAssembly location="Microsoft.Dynamic.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="TEMPLATE\Features\IronSP_IronRuby10\bin\Microsoft.Dynamic.dll" />
+    <customAssembly location="Microsoft.Scripting.Core.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="TEMPLATE\Features\IronSP_IronRuby10\bin\Microsoft.Scripting.Core.dll" />
+    <customAssembly location="Microsoft.Scripting.Debugging.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="TEMPLATE\Features\IronSP_IronRuby10\bin\Microsoft.Scripting.Debugging.dll" />
+    <customAssembly location="Microsoft.Scripting.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="TEMPLATE\Features\IronSP_IronRuby10\bin\Microsoft.Scripting.dll" />
+    <customAssembly location="Microsoft.Scripting.ExtensionAttribute.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="TEMPLATE\Features\IronSP_IronRuby10\bin\Microsoft.Scripting.ExtensionAttribute.dll" />
+  </assemblies>
+  <features>
+    <featureReference itemId="5fac2d7b-107f-4b94-9bca-1de51f09a883" />
+  </features>
+  <projectItems>
+    <projectItemReference itemId="52e12e9e-a6aa-4635-9504-0872fc8f3ebd" />
+  </projectItems>
+</package>

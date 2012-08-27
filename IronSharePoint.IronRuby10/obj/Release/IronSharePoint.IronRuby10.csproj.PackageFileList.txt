@@ -1,0 +1,1 @@
+bin\Release\IronSharePoint.IronRuby10.wsp

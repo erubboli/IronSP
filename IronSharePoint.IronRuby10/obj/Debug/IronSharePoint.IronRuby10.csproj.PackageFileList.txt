@@ -1,0 +1,1 @@
+bin\Debug\IronSharePoint.IronRuby10.wsp
