@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <!-- Parent ContentType: Document (0x0101) -->
+  <ContentType ID="0x0101006a73161e57b24e5aa9e79588188ef6aa"
+               Name="IronScript"
+               Group="IronSP"
+               Description="Dynamic Script File"
+               Inherits="TRUE"
+               Version="0">
+	  <FieldRefs>
+		  <FieldRef ID="{C1183929-9B30-4773-B3B4-F3098079AAA6}" Name="IronOutput" ShowInDisplayForm="TRUE" ShowInEditForm="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" />
+		  <FieldRef ID="{FD08839D-BBEE-41E9-AEE9-DCD4A2E187DA}" Name="IronErrorFlag"  ShowInDisplayForm="TRUE" ShowInEditForm="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" />
+	  </FieldRefs>
+	  <XmlDocuments>
+		  <XmlDocument NamespaceURI="http://schemas.microsoft.com/sharepoint/events">
+			  <Receivers xmlns:spe="http://schemas.microsoft.com/sharepoint/events">
+				  <Receiver>
+					  <Name>IronScriptCompilerReceiver_ItemAdded</Name>
+					  <Type>ItemAdded</Type>
+					  <SequenceNumber>10000</SequenceNumber>
+					  <Assembly>$SharePoint.Project.AssemblyFullName$</Assembly>
+					  <Class>IronSharePoint.EventReceivers.IronScriptCompilerReceiver</Class>
+					  <Data></Data>
+					  <Filter></Filter>
+				  </Receiver>
+				  <Receiver>
+					  <Name>IronScriptCompilerReceiver_ItemUpdated</Name>
+					  <Type>ItemUpdated</Type>
+					  <SequenceNumber>10000</SequenceNumber>
+					  <Assembly>$SharePoint.Project.AssemblyFullName$</Assembly>
+					  <Class>IronSharePoint.EventReceivers.IronScriptCompilerReceiver</Class>
+					  <Data></Data>
+					  <Filter></Filter>
+				  </Receiver>
+			  </Receivers>
+		  </XmlDocument>
+	  </XmlDocuments>
+  </ContentType>
+</Elements>

@@ -98,7 +98,7 @@ namespace IronSharePoint
                         
                         SPSecurity.RunWithElevatedPrivileges(() =>
                         {
-                            var feature = SPContext.Current.Site.Features[new Guid(IronConstants.IronSiteFeatureId)];
+                            var feature = web.Site.Features[new Guid(IronConstants.IronSiteFeatureId)];
 
                             if (feature == null)
                             {
@@ -124,7 +124,7 @@ namespace IronSharePoint
 
                     ironEngine._site = web.Site;
                     ironEngine._web = web;
-                    ironEngine._scriptRootFolder = web.Site.RootWeb.GetFolder(IronConstants.IronScriptsListPath);
+                    ironEngine._scriptRootFolder = web.Site.RootWeb.GetFolder(IronConstants.IronHiveListPath);
 
                     ironEngine._scriptScope = ironEngine.ScriptEngine.CreateScope();
                     ironEngine._scriptScope.SetVariable("iron", ironEngine);
@@ -281,7 +281,7 @@ namespace IronSharePoint
         public string LoadText(string fileName)
         {         
             var file = GetFile(fileName);
-            var str = SPContext.Current.Site.RootWeb.GetFileAsString(file.Url);
+            var str = _web.Site.RootWeb.GetFileAsString(file.Url);
 
             return str;
         }

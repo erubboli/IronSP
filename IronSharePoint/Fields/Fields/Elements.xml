@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+	<Field ID="{C1183929-9B30-4773-B3B4-F3098079AAA6}" Name="IronOutput" StaticName="IronOutput" DisplayName="Output" Type="Note" Group="IronSP" RichText="FALSE" Overwrite="TRUE" ReadOnly="TRUE"></Field>
+	<Field ID="{FD08839D-BBEE-41E9-AEE9-DCD4A2E187DA}" Name="IronErrorFlag" StaticName="IronErrorFlag" DisplayName="Error" Type="Boolean" Group="IronSP" Overwrite="TRUE" ReadOnly="TRUE"></Field>
+</Elements>

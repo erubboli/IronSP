@@ -10,3 +10,9 @@ C:\Sources\IronSharePoint\IronSharePoint\bin\Debug\Microsoft.Sharepoint.Sandbox.
 C:\Sources\IronSharePoint\IronSharePoint\obj\Debug\ResolveAssemblyReference.cache
 C:\Sources\IronSharePoint\IronSharePoint\obj\Debug\IronSharePoint.dll
 C:\Sources\IronSharePoint\IronSharePoint\obj\Debug\IronSharePoint.pdb
+C:\git\IronSP\IronSharePoint\bin\Debug\IronSharePoint.dll
+C:\git\IronSP\IronSharePoint\bin\Debug\IronSharePoint.pdb
+C:\git\IronSP\IronSharePoint\bin\Debug\Microsoft.Sharepoint.Sandbox.dll
+C:\git\IronSP\IronSharePoint\obj\Debug\ResolveAssemblyReference.cache
+C:\git\IronSP\IronSharePoint\obj\Debug\IronSharePoint.dll
+C:\git\IronSP\IronSharePoint\obj\Debug\IronSharePoint.pdb

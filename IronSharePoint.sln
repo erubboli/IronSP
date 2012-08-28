@@ -6,18 +6,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint.IronRuby10", "IronSharePoint.IronRuby10\IronSharePoint.IronRuby10.csproj", "{6E073DFC-A506-44DF-B378-7C539ED71502}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://expertsinside.tfspreview.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = IronSharePoint\\IronSharePoint.csproj
-		SccProjectName1 = IronSharePoint
-		SccLocalPath1 = IronSharePoint
-		SccProjectUniqueName2 = IronSharePoint.IronRuby10\\IronSharePoint.IronRuby10.csproj
-		SccProjectName2 = IronSharePoint.IronRuby10
-		SccLocalPath2 = IronSharePoint.IronRuby10
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

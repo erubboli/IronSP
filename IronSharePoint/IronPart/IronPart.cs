@@ -36,6 +36,8 @@ namespace IronSharePoint.IronPart
                 var ctrlClassName = tmp[0];
                 var scriptName = tmp[1];
 
+                ctrlClassName = "DynamicControls.DynamicControl"; 
+
                 var dynamicControl = engine.ScriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", ctrlClassName.Replace(".", "::"), engine.ScriptScope)) as Control;
 
                 if (dynamicControl == null)

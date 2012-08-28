@@ -4,3 +4,9 @@ C:\Sources\IronSharePoint\IronSharePoint.IronRuby10\obj\Debug\ResolveAssemblyRef
 C:\Sources\IronSharePoint\IronSharePoint.IronRuby10\obj\Debug\IronSharePoint.IronRuby10.dll
 C:\Sources\IronSharePoint\IronSharePoint.IronRuby10\obj\Debug\IronSharePoint.IronRuby10.pdb
 C:\Sources\IronSharePoint\IronSharePoint.IronRuby10\bin\Debug\Microsoft.Sharepoint.Sandbox.dll
+C:\git\IronSP\IronSharePoint.IronRuby10\bin\Debug\IronSharePoint.IronRuby10.dll
+C:\git\IronSP\IronSharePoint.IronRuby10\bin\Debug\IronSharePoint.IronRuby10.pdb
+C:\git\IronSP\IronSharePoint.IronRuby10\bin\Debug\Microsoft.Sharepoint.Sandbox.dll
+C:\git\IronSP\IronSharePoint.IronRuby10\obj\Debug\ResolveAssemblyReference.cache
+C:\git\IronSP\IronSharePoint.IronRuby10\obj\Debug\IronSharePoint.IronRuby10.dll
+C:\git\IronSP\IronSharePoint.IronRuby10\obj\Debug\IronSharePoint.IronRuby10.pdb

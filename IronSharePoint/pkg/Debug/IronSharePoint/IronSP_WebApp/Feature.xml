@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Feature xmlns="http://schemas.microsoft.com/sharepoint/" Title="IronSP WebApp" Description="Registers the IronSP Expression Builder" Id="fee8a6c7-57cc-49d2-9fff-496e09ad1f74" ReceiverAssembly="IronSharePoint, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6f476c86fea3892b" ReceiverClass="IronSharePoint.Features.IronSP_WebApp.IronSP_WebAppEventReceiver" Scope="WebApplication"></Feature>

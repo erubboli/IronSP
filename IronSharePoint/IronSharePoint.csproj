@@ -13,10 +13,15 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BB1F664B-9266-4fd6-B973-E1E44974B511};{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SandboxedSolution>False</SandboxedSolution>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <ActiveDeploymentConfiguration>Default</ActiveDeploymentConfiguration>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -81,19 +86,25 @@
     <Reference Include="Microsoft.SharePoint.Security" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventReceivers\IronScriptCompilerReceiver.cs" />
     <Compile Include="Features\IronSP_Farm\IronSP_Farm.EventReceiver.cs">
       <DependentUpon>IronSP_Farm.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Features\IronSP_Site\IronSP_Site.EventReceiver.cs">
+      <DependentUpon>IronSP_Site.feature</DependentUpon>
     </Compile>
     <Compile Include="Features\IronSP_WebApp\IronSP_WebApp.EventReceiver.cs">
       <DependentUpon>IronSP_WebApp.feature</DependentUpon>
     </Compile>
     <Compile Include="IIronDataStore.cs" />
     <Compile Include="IronConstants.cs" />
+    <Compile Include="IronContentTypeIds.cs" />
     <Compile Include="IronControl.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
     <Compile Include="IronControl2.cs" />
     <Compile Include="IronEngine.cs" />
     <Compile Include="IronExpressionBuilder.cs" />
+    <Compile Include="IronFields.cs" />
     <Compile Include="IronPart\IronPart.cs" />
     <Compile Include="IronScriptCache.cs" />
     <Compile Include="IronUserControl.cs">
@@ -102,6 +113,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.feature">
+      <FeatureId>{cea2b887-e17d-4dbe-a477-4f7c8bdf03be}</FeatureId>
+    </None>
     <None Include="Features\IronSP_WebApp\IronSP_WebApp.feature">
       <FeatureId>{06f5a7bb-0388-41ec-8e0a-3e2ac5197203}</FeatureId>
     </None>
@@ -111,24 +125,36 @@
     <None Include="Features\IronSP_Site\IronSP_Site.feature">
       <FeatureId>{02961df1-c0a7-44bf-8545-5a24466136f9}</FeatureId>
     </None>
-    <None Include="IronScripts\SharePointProjectItem.spdata">
-      <SharePointProjectItemId>{6940d86a-89d1-4df9-a0fe-d3cfa347b76d}</SharePointProjectItemId>
+    <None Include="Fields\Fields\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{9672d965-0cb3-483c-b6ae-af9f5d2a78e9}</SharePointProjectItemId>
     </None>
     <None Include="IronPart\IronPart.webpart" />
     <None Include="IronPart\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{11653a36-52dc-4bbc-bb87-74c031f3a971}</SharePointProjectItemId>
     </None>
+    <None Include="ContentTypes\IronScript\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{5ae035c6-762c-45d6-92cf-ceceb0274afa}</SharePointProjectItemId>
+    </None>
     <None Include="key.snk" />
+    <None Include="Lists\IronHive\ListInstance\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{4688f8d8-e2fd-425f-a606-573e3496c57d}</SharePointProjectItemId>
+    </None>
+    <None Include="Lists\IronHive\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{880960ed-55af-46cc-a291-3bc601bddf46}</SharePointProjectItemId>
+    </None>
     <None Include="Package\Package.package">
       <PackageId>{aacb7026-8941-4faa-b4bb-04562e317e53}</PackageId>
     </None>
     <None Include="Package\Package.Template.xml">
       <DependentUpon>Package.package</DependentUpon>
     </None>
-    <None Include="RubyGemsFix\config_file.rb" />
+    <None Include="_RubyGemsFix\config_file.rb" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.Template.xml">
+      <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
+    </Content>
     <Content Include="Features\IronSP_WebApp\IronSP_WebApp.Template.xml">
       <DependentUpon>IronSP_WebApp.feature</DependentUpon>
     </Content>
@@ -138,10 +164,20 @@
     <Content Include="Features\IronSP_Site\IronSP_Site.Template.xml">
       <DependentUpon>IronSP_Site.feature</DependentUpon>
     </Content>
-    <Content Include="IronScripts\Elements.xml" />
+    <Content Include="Fields\Fields\Elements.xml" />
     <Content Include="IronPart\Elements.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="ContentTypes\IronScript\Elements.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Lists\IronHive\EditDlg.htm" />
+    <Content Include="Lists\IronHive\Elements.xml" />
+    <Content Include="Lists\IronHive\FileDlg.htm" />
+    <Content Include="Lists\IronHive\ListInstance\Elements.xml" />
+    <Content Include="Lists\IronHive\Repair.aspx" />
+    <Content Include="Lists\IronHive\Schema.xml" />
+    <Content Include="Lists\IronHive\Upload.aspx" />
     <Content Include="readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
