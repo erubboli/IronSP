@@ -16,18 +16,16 @@ namespace IronSharePoint.EventReceivers
 
         public override void ItemAdded(SPItemEventProperties properties)
         {
-
             CompileScript(properties);
             
             base.ItemAdded(properties);
         }
 
         private void CompileScript(SPItemEventProperties properties)
-        {
-           
+        {         
             try
             {
-                var engine = IronEngine.GetEngine(Path.GetExtension(properties.ListItem.File.Name), properties.Web);
+                var engine = IronEngine.GetEngineByExtension(properties.Web.Site, Path.GetExtension(properties.ListItem.File.Name));
 
                 EventFiringEnabled = false;
                 properties.ListItem[IronFields.IronOutput] = engine.ExcecuteScriptFile(properties.ListItem.File);

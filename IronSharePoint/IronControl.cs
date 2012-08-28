@@ -12,70 +12,54 @@ using IronSharePoint.Diagnostics;
 using Microsoft.SharePoint.Administration;
 using System.Web.Caching;
 using System.Web;
+using System.ComponentModel;
 
 namespace IronSharePoint
 {
     public class IronControl : CompositeControl
     {
-
         public string ScriptName { get; set; }
 
-        private IronEngine _ironEngine;
+        public string ScriptClass { get; set; }
 
-        public IronEngine IronEngine
-        {
-            get { return _ironEngine; }
-        }
-       
-        protected Exception exception;
-        protected object dynOnInitControlsMethod;
-        protected object dynOnLoadControlsMethod;
-        protected object dynCreateChildControlsMethod;
-        protected object dynOnPreRenderMethod;
-        protected object dynRenderMethod;
-        protected string Config;       
         public IIronDataStore DataStore { get; set; }
 
-        public System.Web.UI.WebControls.WebParts.WebPart WebPart { get; set; }  
+        protected IronEngine engine;
+      
+        protected System.Web.UI.WebControls.WebParts.WebPart webPart { get; set; }
+
+        protected Exception exception;
 
         protected override void OnInit(EventArgs e)
         {
             try
             {
-                if (!String.IsNullOrEmpty(ScriptName))
+                if (String.IsNullOrEmpty(ScriptName))
                 {
-                    _ironEngine = IronEngine.GetEngine(Path.GetExtension(ScriptName), SPContext.Current.Web);
-                               
-                    _ironEngine.ScriptScope.SetVariable("controls", Controls);
-                    _ironEngine.ScriptScope.SetVariable("page", this.Page);
-                    _ironEngine.ScriptScope.SetVariable("parent", this.Parent);
-                    _ironEngine.ScriptScope.SetVariable("httpCtx", HttpContext.Current);
-                    _ironEngine.ScriptScope.SetVariable("request", HttpContext.Current.Request);
-                    _ironEngine.ScriptScope.SetVariable("response", HttpContext.Current.Response);
-                    _ironEngine.ScriptScope.SetVariable("store", DataStore);
-                    _ironEngine.ScriptScope.SetVariable("config", Config);
-                    _ironEngine.ScriptScope.SetVariable("webpart", WebPart);
-
-                    if (Controls.Count > 0)
-                    {
-                        foreach (Control ctrl in Controls)
-                        {
-                            if (ctrl.ID != null)
-                            {
-                                _ironEngine.ScriptScope.SetVariable(ctrl.ID, ctrl);
-                            }
-                        }
-                    }
-
-                    var initialScriptFile = _ironEngine.GetFile(ScriptName);
-
-                    if (initialScriptFile != null && initialScriptFile.Exists)
-                    {
-                        _ironEngine.ExcecuteScriptFile(initialScriptFile);
-
-                        _ironEngine.InvokeDyamicMethodIfExists("on_init", e);
-                    }
+                    exception = new InvalidEnumArgumentException("Property ScripName is empty!");
                 }
+                else if (String.IsNullOrEmpty(ScriptClass))
+                {
+                    exception = new InvalidEnumArgumentException("Property ScripClass is empty!");
+                }
+
+                if (exception != null)
+                    return;
+
+                var engine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, Path.GetExtension(ScriptName));
+
+                var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
+
+                var dynamicControl = ctrl as IDynamicControl;
+                if (dynamicControl != null)
+                {
+                    dynamicControl.Engine = engine;
+                    dynamicControl.WebPart = null;
+                    dynamicControl.Data = null;
+                }
+
+                this.Controls.Add(ctrl);
+   
 
             }
             catch (Exception ex)
@@ -86,76 +70,17 @@ namespace IronSharePoint
 
             base.OnInit(e);
         }
-       
-
-        protected override void OnLoad(EventArgs e)
-        {
-            if (!ShouldRun) return;
-
-            _ironEngine.InvokeDyamicMethodIfExists("on_load", e);
-
-            base.OnLoad(e);
-        }
-
-        protected override void CreateChildControls()
-        {
-            if (!ShouldRun) return;
-
-            _ironEngine.InvokeDyamicMethodIfExists("create_child_controls");
-
-            base.CreateChildControls();
-        }
-
-        protected override void OnPreRender(EventArgs e)
-        {
-            if (!ShouldRun) return;
-
-            _ironEngine.InvokeDyamicMethodIfExists("on_pre_render", e);
-
-            base.OnPreRender(e);
-        }
-
 
         protected override void Render(HtmlTextWriter writer)
         {
             if (exception != null)
             {
                 writer.Write(exception.Message);
-                return;
-            }
-
-            if (!ShouldRun)
-            {
-                if (Controls.Count > 0)
-                {
-                    base.Render(writer);
-                }
-
-                return;
-            }
-
-            object renderMethod = null;
-            if (_ironEngine.ScriptScope.TryGetVariable("render", out renderMethod))
-            {
-                _ironEngine.InvokeDyamicMethodIfExists("render", writer);
-                if (exception != null)
-                {
-                    writer.Write(exception.Message);
-                }
-
             }
             else
             {
                 base.Render(writer);
             }
-
-        }
-   
-
-        public bool ShouldRun
-        {
-            get { return exception == null && !String.IsNullOrEmpty(ScriptName); }
-        }
-
+        }     
     }
 }

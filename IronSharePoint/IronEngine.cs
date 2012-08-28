@@ -15,33 +15,17 @@ using System.Dynamic;
 
 namespace IronSharePoint
 {
+    
     public class IronEngine
     {
-        private static Dictionary<String, ScriptEngine> _scriptEnginesCache = new Dictionary<string, ScriptEngine>();
+        private static Dictionary<Guid, ScriptRuntime> _scripRuntimes = new Dictionary<Guid, ScriptRuntime>();
 
-        private SPFolder _scriptRootFolder;
+        private IronRuntime _runtime;
 
-        public SPFolder ScriptRootFolder
+        public IronRuntime Runtime
         {
-            get { return _scriptRootFolder; }
+            get { return _runtime; }
         }
-
-        private SPFolder _initialScriptFolder;
-
-        public SPFolder InitialScriptFolder
-        {
-            get { return _initialScriptFolder; }
-        }
-
-        private SPListItem _initialScriptListItem;
-
-        public SPListItem InitialScriptListItem
-        {
-            get { return _initialScriptListItem; }
-        }
-
-
-        private List<String> loadedScripts = new List<String>();
 
         public ScriptRuntime ScriptRuntime
         {
@@ -55,193 +39,187 @@ namespace IronSharePoint
             get { return _scriptEngine; }
         }
 
-        private ScriptScope _scriptScope;
-
-        public ScriptScope ScriptScope
-        {
-            get { return _scriptScope; }
-            set { _scriptScope = value; }
+        public string Language 
+        { 
+            get
+            {
+                return _scriptEngine.Setup.DisplayName;
+            }
         }
 
-        private SPWeb _web;
+        public static IronEngine GetEngineByExtension(SPSite hiveSite, string extension)
+        {     
 
-        public SPWeb Web
-        {
-            get { return _web; }
-        }
-
-        private SPSite _site;
-
-        public SPSite Site
-        {
-            get { return _site; }
-        }
-
-
-        internal static IronEngine GetEngine(string extension, SPWeb web)
-        {
-            IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Core], TraceSeverity.Verbose, String.Format("Engine for extension {0} requested.", extension));
-            var ironEngine = new IronEngine();
+            var engine = new IronEngine();
 
             try
             {
-                if (extension.ToLower() == ".rb".ToLower())
+                engine._runtime = IronRuntime.GetRuntime(hiveSite);
+
+                engine._scriptEngine = engine._runtime.ScriptRuntime.GetEngineByFileExtension(extension);
+
+                // if ruby
+                if (engine._scriptEngine.Setup.DisplayName == IronConstants.IronRubyLanguageName)
                 {
-                    if (_scriptEnginesCache.ContainsKey(extension))
+                    var ironRubyRootFolder = Path.Combine(engine._runtime.Host.FeatureFolderPath, "IronSP_IronRuby10\\");
+
+                    SPSecurity.RunWithElevatedPrivileges(() =>
                     {
-                        ironEngine._scriptEngine = _scriptEnginesCache[extension];
-                    }
-                    else
-                    {
-                        var scriptRuntime = Ruby.CreateRuntime();
-                        ironEngine._scriptEngine = scriptRuntime.GetEngineByFileExtension(extension);
-                        
-                        SPSecurity.RunWithElevatedPrivileges(() =>
-                        {
-                            var feature = web.Site.Features[new Guid(IronConstants.IronSiteFeatureId)];
+                        System.Environment.SetEnvironmentVariable("IRONRUBY_10_20", ironRubyRootFolder);
 
-                            if (feature == null)
-                            {
-                                throw new InvalidOperationException("The IronSP Feature is not activated on the current Site Collection!");
-                            }
-
-                            var featureRootFolder = new DirectoryInfo(feature.Definition.RootDirectory).Parent;
-                            var ironRubyRootFolder = Path.Combine(featureRootFolder.FullName, "IronSP_IronRuby10\\");
-
-                            Environment.SetEnvironmentVariable("IRONRUBY_10_20", ironRubyRootFolder);
-
-                            ironEngine._scriptEngine.SetSearchPaths(new List<String>() {
+                        engine._scriptEngine.SetSearchPaths(new List<String>() {
                                 Path.Combine(ironRubyRootFolder, @"Lib\IronRuby"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby\1.8"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby"),
-                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\1.8")
-                            });
-
+                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\1.8"),
+                                "@IronHive"
                         });
-      
-                        _scriptEnginesCache.Add(extension, ironEngine._scriptEngine);
-                    }              
-
-                    ironEngine._site = web.Site;
-                    ironEngine._web = web;
-                    ironEngine._scriptRootFolder = web.Site.RootWeb.GetFolder(IronConstants.IronHiveListPath);
-
-                    ironEngine._scriptScope = ironEngine.ScriptEngine.CreateScope();
-                    ironEngine._scriptScope.SetVariable("iron", ironEngine);
-                    ironEngine._scriptScope.SetVariable("site", ironEngine._site);
-                    ironEngine._scriptScope.SetVariable("web", ironEngine._web);
-                    ironEngine._scriptScope.SetVariable("scriptRootFolder", ironEngine._scriptRootFolder);
-                    ironEngine._scriptScope.SetVariable("ctx", SPContext.Current);
-
-                }
-                else
-                {
-                    Exception ex = new NotSupportedException(String.Format("Language for extenstion {0} is not supported.", extension));;
-                    LogError(String.Format("Engine for extenstion {0} is not supported.", extension), ex);
-                    throw ex;
+                    });
                 }
             }
             catch (Exception ex)
-            {
-                IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Core], TraceSeverity.Unexpected, String.Format("Error while loading engine for {0}. Error:{1}; Stack:{2}", extension, ex.Message, ex.StackTrace));
-                throw;
+            { 
+                LogError(String.Format("Error occured while getting engine for extension {0}", extension) , ex);
+                throw ex;
             }
-    
-            return ironEngine;
+
+            return engine;         
         }
 
-        public object InvokeDyamicMethodIfExists(string methodName, params object[] args)
+        public object CreateDynamicInstance(string className, string scriptName)
         {
-            try
+            object obj = null;
+
+            if (Language == IronConstants.IronRubyLanguageName)
             {
-                object dynMethod = null;
-                if (ScriptScope.TryGetVariable(methodName, out dynMethod))
+                var rubyClassName = className.Replace(".", "::").Trim();
+
+                obj = _scriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", rubyClassName));
+
+                // load script
+                if (obj == null)
                 {
-                    if (args.Length == 0)
+                    var scriptFile = GetFile(scriptName);
+                    ExcecuteScriptFile(scriptFile);
+                    obj = _scriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", rubyClassName));
+                }
+            }
+
+            return obj;
+        }
+
+        public object InvokeDynamicFunction(string functionName, string scriptName, params object[] args)
+        {
+            object obj = null;
+
+            string ns = null;
+            if (functionName.Contains("."))
+            {
+                ns = functionName;
+                var split = functionName.Split('.');
+                functionName = split.Last();
+                ns = ns.Replace("." + functionName, String.Empty);
+            }
+
+            if (Language == IronConstants.IronRubyLanguageName)
+            {
+                if (ns == null)
+                {
+                
+                    object rubyFunc = null;
+                    if (!_runtime.ScriptRuntime.Globals.TryGetVariable(functionName, out rubyFunc))
                     {
-                        return _scriptEngine.Operations.Invoke(dynMethod);
+                        var file = GetFile(scriptName);
+                        ExcecuteScriptFile(file);
+
+                        rubyFunc = _runtime.ScriptRuntime.Globals.GetVariable(functionName);
+                    }
+                    
+                    if (args != null && args.Length > 0)
+                    {
+                        obj = _runtime.ScriptRuntime.Operations.Invoke(rubyFunc, args);
                     }
                     else
                     {
-                        return _scriptEngine.Operations.Invoke(dynMethod, args);
+                        obj = _runtime.ScriptRuntime.Operations.Invoke(rubyFunc);
                     }
                 }
-
+                else
+                {
+                    var rubyModule = _scriptEngine.Execute(String.Format("defined?({0})?({0}):nil", ns.Replace(".", "::").Trim()));
+                    if (rubyModule == null)
+                    {
+                        var file = GetFile(scriptName);
+                        ExcecuteScriptFile(file);
+                        rubyModule = _scriptEngine.Execute(ns.Replace(".", "::"));
+                    }
+                    if (args != null && args.Length > 0)
+                    {
+                        obj = _runtime.ScriptRuntime.Operations.InvokeMember(rubyModule, functionName, args);
+                    }
+                    else
+                    {
+                        obj = _runtime.ScriptRuntime.Operations.InvokeMember(rubyModule, functionName);
+                    }
+                }
+              
             }
-            catch (Exception ex)
-            {
-                LogError(String.Format("Error invoking method {0}", methodName), ex);
-                throw;
-            }
 
-            return null;
+            return obj;
         }
+
+
+        //public object InvokeDyamicMethodIfExists(string methodName, params object[] args)
+        //{
+        //    try
+        //    {
+        //        object dynMethod = null;
+        //        if (ScriptScope.TryGetVariable(methodName, out dynMethod))
+        //        {
+        //            if (args.Length == 0)
+        //            {
+        //                return _scriptEngine.Operations.Invoke(dynMethod);
+        //            }
+        //            else
+        //            {
+        //                return _scriptEngine.Operations.Invoke(dynMethod, args);
+        //            }
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogError(String.Format("Error invoking method {0}", methodName), ex);
+        //        throw;
+        //    }
+
+        //    return null;
+        //}
 
         public object ExcecuteScriptFile(SPFile scriptFile)
         {
             object output = null;
-
-            if (_initialScriptListItem == null)
-            {
-                _initialScriptListItem = scriptFile.Item;
-                _initialScriptFolder = scriptFile.ParentFolder;
-                
-                _scriptScope.SetVariable("scriptFolder", _initialScriptFolder);
-                _scriptScope.SetVariable("scriptItem", _initialScriptListItem);
-            }
-
-            if (!loadedScripts.Contains(scriptFile.ServerRelativeUrl))
-            {
-                string script = String.Empty;
-                loadedScripts.Add(scriptFile.ServerRelativeUrl);
-
-                var httpCtx = HttpContext.Current;
-                IronScriptCache scriptCache = null;
-
-                if (httpCtx != null)
-                {
-                    scriptCache = httpCtx.Cache[scriptFile.UniqueId.ToString()] as IronScriptCache;
-                }
-
-                if (scriptCache != null && scriptCache.Timestamp == scriptFile.TimeLastModified)
-                {
-                    output = scriptCache.CompiledCode.Execute(_scriptScope);
-                    script = scriptCache.Script;
-                    return output;
-                }
-              
-                //var options = new IronRuby.Compiler.RubyCompilerOptions();
-                // options.GetType().InvokeMember("FactoryKind", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty, null, options, new object[]{4});
-
-                //var compiledCode = _scriptEngine.CreateScriptSourceFromString(script, Microsoft.Scripting.SourceCodeKind.File).Compile();
-
-                script = scriptFile.Web.GetFileAsString(scriptFile.Url);
-
-                if (httpCtx != null)
-                {
-                    var compiled = _scriptEngine.CreateScriptSourceFromString(script).Compile();
-                    //httpCtx.Cache[scriptFile.UniqueId.ToString()] = new IronScriptCache() { Id = scriptFile.UniqueId, Script = script, Timestamp = scriptFile.TimeLastModified, CompiledCode = compiled };
-                }
+          
+            string script = String.Empty;
 
 
-                output = _scriptEngine.CreateScriptSourceFromString(script, SourceCodeKind.File).Execute(_scriptEngine.Runtime.Globals);
-            }
+            script = scriptFile.Web.GetFileAsString(scriptFile.Url);
+
+         
+            output = _scriptEngine.CreateScriptSourceFromString(script, SourceCodeKind.File).Execute(_scriptEngine.Runtime.Globals);
+            
 
             return output;
         }
 
         public SPFile GetFile(string fileName)
         {
-            var ctx = HttpContext.Current;
-
-            var cache = ctx.Cache[fileName];
-
-            if (cache != null)
-                return ctx.Cache[fileName] as SPFile;
+           
 
             SPFile file = null;
-            var rootWeb = _site.RootWeb;
+            var hiveWeb = _runtime.Host.HiveWeb;
 
+            /*
             if (_initialScriptFolder != null)
             {
                 file = rootWeb.GetFile(String.Format("{0}/{1}", _initialScriptFolder.ServerRelativeUrl, fileName));
@@ -251,8 +229,9 @@ namespace IronSharePoint
                     return file;
                 }
             }
+             * */
 
-            file = rootWeb.GetFile(String.Format("{0}/{1}", _scriptRootFolder.ServerRelativeUrl, fileName));
+            file = hiveWeb.GetFile(String.Format("{0}/{1}", _runtime.Host.HiveFolder.ServerRelativeUrl, fileName));
             if (!file.Exists)
             {
                 throw new FileNotFoundException();
@@ -261,36 +240,15 @@ namespace IronSharePoint
             return file;
         }
 
-        public SPFile get_file(string fileName)
-        {
-            return GetFile(fileName);
-        }
-
-        public object LoadScript(string scriptName)
-        {     
-            var scriptFile = GetFile(scriptName);
-
-            return ExcecuteScriptFile(scriptFile);
-        }
-
-        public object load_script(string scriptName)
-        {
-            return LoadScript(scriptName);
-        }
-
+    
         public string LoadText(string fileName)
         {         
             var file = GetFile(fileName);
-            var str = _web.Site.RootWeb.GetFileAsString(file.Url);
+            var str = _runtime.Host.HiveWeb.GetFileAsString(file.Url);
 
             return str;
         }
         
-        public string load_text(string fileName)
-        {
-            return LoadText(fileName);
-        }
-
 
         public static void LogError(string msg, Exception ex)
         {
@@ -304,8 +262,5 @@ namespace IronSharePoint
         
     }
 
-    public class IronScope : DynamicObject
-    {
-
-    }
+    
 }

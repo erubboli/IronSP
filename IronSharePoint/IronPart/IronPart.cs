@@ -20,67 +20,81 @@ namespace IronSharePoint.IronPart
         [Personalizable(PersonalizationScope.Shared)]
         public string ScriptName { get; set; }
 
+        [WebBrowsable(true)]
+        [Category("IronPart")]
+        [Personalizable(PersonalizationScope.Shared)]
+        public string ScriptClass { get; set; }
+
         [Personalizable(PersonalizationScope.Shared)]
         public string Data { get; set; }
 
-        protected IronControl ironControl; 
+        private Exception exception;
+
+        private IDynamicControl dynamicControl;
 
         protected override void OnInit(EventArgs e)
         {
-            if (!String.IsNullOrEmpty(ScriptName) && ScriptName.Contains("@"))
+
+            if (String.IsNullOrEmpty(ScriptName))
             {
-                var engine = IronEngine.GetEngine(".rb", SPContext.Current.Web);
-       
+                exception = new InvalidEnumArgumentException("Property ScripName is empty!");
+            }
+            else if (String.IsNullOrEmpty(ScriptClass))
+            {
+                exception = new InvalidEnumArgumentException("Property ScripClass is empty!");
+            }
 
-                var tmp = ScriptName.Split('@');
-                var ctrlClassName = tmp[0];
-                var scriptName = tmp[1];
+            if (exception != null)
+                return;
 
-                ctrlClassName = "DynamicControls.DynamicControl"; 
+            try
+            {
+                var engine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, ScriptName);
 
-                var dynamicControl = engine.ScriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", ctrlClassName.Replace(".", "::"), engine.ScriptScope)) as Control;
+                var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
-                if (dynamicControl == null)
+                dynamicControl = ctrl as IDynamicControl;
+                if (dynamicControl != null)
                 {
-                    var file = engine.GetFile(scriptName);
-                    engine.ExcecuteScriptFile(file);
-                    dynamicControl = engine.ScriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", ctrlClassName.Replace(".", "::")), engine.ScriptScope) as Control;
+                    dynamicControl.Engine = engine;
+                    dynamicControl.WebPart = this;
+                    dynamicControl.Data = this;
                 }
-               
 
-                //ctrl.Engine = engine;
-                this.Controls.Add(dynamicControl);
+                this.Controls.Add(ctrl);
 
+                base.OnInit(e);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                IronEngine.LogError("IronWebPart Error", exception);
+            }
+        }
+
+        protected override void Render(HtmlTextWriter writer)
+        {
+            if (exception != null)
+            {
+                writer.Write(exception.Message);
             }
             else
             {
-
-                ironControl = new IronControl();
-                ironControl.ScriptName = ScriptName;
-                ironControl.DataStore = this;
-                this.Controls.Add(ironControl);
+                base.Render(writer);
             }
-
-            base.OnInit(e);
         }
 
-
+        
         public override EditorPartCollection CreateEditorParts()
         {
-
-            if (!ironControl.ShouldRun) return base.CreateEditorParts();
-
-            var editor = ironControl.IronEngine.InvokeDyamicMethodIfExists("create_editor_part") as EditorPart;
-
-            if (editor == null)
+            if (dynamicControl != null)
             {
-                return base.CreateEditorParts();
+                 return new EditorPartCollection(base.CreateEditorParts(),dynamicControl.CreateEditorParts());
             }
 
-    
-            return new EditorPartCollection(base.CreateEditorParts(), new List<EditorPart>() { editor  });
+            return base.CreateEditorParts();
         }
-
+       
 
 
         public void SaveData(string data)

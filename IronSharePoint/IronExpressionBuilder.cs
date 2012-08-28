@@ -40,27 +40,18 @@ namespace IronSharePoint
         {
             string scriptName = entry.Expression;
             string functionName = null;
+
             if (scriptName.Contains("@"))
             {
                 var tmp = scriptName.Split('@');
                 functionName = tmp[0];
-                scriptName = tmp[1];   
+                scriptName = tmp[1];  
             }
 
-            var ironEngine = IronEngine.GetEngine(Path.GetExtension(scriptName), SPContext.Current.Web);
-            ironEngine.ScriptScope.SetVariable("target", target);
-            ironEngine.ScriptScope.SetVariable("entry", entry);
-
-            ironEngine.ScriptScope.SetVariable("TEST", (target as System.Web.UI.WebControls.Label).ID);
-
-            object value = ironEngine.LoadScript(scriptName);
-
-            if (!String.IsNullOrEmpty(functionName))
-            {
-                value = ironEngine.InvokeDyamicMethodIfExists(functionName);
-            }
-
-            return value;
+            var ironEngine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, Path.GetExtension(scriptName));
+            var value = ironEngine.InvokeDynamicFunction(functionName, scriptName, target, entry);
+           
+            return value.ToString();
         }
 
         //public static object GetValue(string key, Type targetType, string propertyName)

@@ -86,6 +86,7 @@
     <Reference Include="Microsoft.SharePoint.Security" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DynamicCompositeControl.cs" />
     <Compile Include="EventReceivers\IronScriptCompilerReceiver.cs" />
     <Compile Include="Features\IronSP_Farm\IronSP_Farm.EventReceiver.cs">
       <DependentUpon>IronSP_Farm.feature</DependentUpon>
@@ -96,17 +97,20 @@
     <Compile Include="Features\IronSP_WebApp\IronSP_WebApp.EventReceiver.cs">
       <DependentUpon>IronSP_WebApp.feature</DependentUpon>
     </Compile>
+    <Compile Include="IDynamicControl.cs" />
     <Compile Include="IIronDataStore.cs" />
     <Compile Include="IronConstants.cs" />
     <Compile Include="IronContentTypeIds.cs" />
     <Compile Include="IronControl.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
-    <Compile Include="IronControl2.cs" />
+    <Compile Include="DynamicControl.cs" />
     <Compile Include="IronEngine.cs" />
     <Compile Include="IronExpressionBuilder.cs" />
     <Compile Include="IronFields.cs" />
+    <Compile Include="IronHost.cs" />
     <Compile Include="IronPart\IronPart.cs" />
-    <Compile Include="IronScriptCache.cs" />
+    <Compile Include="IronPlatformAdaptationLayer.cs" />
+    <Compile Include="IronRuntime.cs" />
     <Compile Include="IronUserControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
