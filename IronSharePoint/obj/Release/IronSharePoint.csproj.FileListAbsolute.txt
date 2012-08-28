@@ -1,6 +1,0 @@
-C:\Sources\IronSharePoint\IronSharePoint\bin\Release\IronSharePoint.dll
-C:\Sources\IronSharePoint\IronSharePoint\bin\Release\IronSharePoint.pdb
-C:\Sources\IronSharePoint\IronSharePoint\bin\Release\Microsoft.Sharepoint.Sandbox.dll
-C:\Sources\IronSharePoint\IronSharePoint\obj\Release\ResolveAssemblyReference.cache
-C:\Sources\IronSharePoint\IronSharePoint\obj\Release\IronSharePoint.dll
-C:\Sources\IronSharePoint\IronSharePoint\obj\Release\IronSharePoint.pdb
