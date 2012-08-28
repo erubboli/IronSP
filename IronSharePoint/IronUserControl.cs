@@ -96,8 +96,15 @@ namespace IronSharePoint
                 writer.Write(exception.Message);
                 return;
             }
-
-            base.Render(writer);
+            try
+            {
+                base.Render(writer);
+            }
+            catch (Exception ex)
+            {
+                IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Controls], TraceSeverity.Unexpected, String.Format("Error: {0}; Stack: {1}", ex.Message, ex.StackTrace));
+                writer.Write(ex.Message);
+            }
         }
     }
 }

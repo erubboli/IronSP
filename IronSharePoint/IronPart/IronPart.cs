@@ -9,6 +9,7 @@ using Microsoft.SharePoint.WebControls;
 using System.Collections.Generic;
 using IronRuby;
 using Microsoft.Scripting.Hosting;
+using System.IO;
 
 namespace IronSharePoint.IronPart
 {
@@ -49,7 +50,7 @@ namespace IronSharePoint.IronPart
 
             try
             {
-                var engine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, ScriptName);
+                var engine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
@@ -107,5 +108,7 @@ namespace IronSharePoint.IronPart
         {
             return Data;
         }
+
+        public string PathScriptName { get; set; }
     }
 }
