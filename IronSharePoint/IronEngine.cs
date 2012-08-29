@@ -49,14 +49,37 @@ namespace IronSharePoint
             }
         }
 
-        public static IronEngine GetEngineByExtension(SPSite hiveSite, string extension)
-        {     
+        private IronPlatformAdaptationLayer _platformAdaptationLayer;
 
-            var engine = new IronEngine();
+        public IronPlatformAdaptationLayer PlatformAdaptationLayer
+        {
+            get 
+            {
+                if (_platformAdaptationLayer == null)
+                {
+                    _platformAdaptationLayer = _runtime.Host.PlatformAdaptationLayer as IronPlatformAdaptationLayer;
+                }
+
+                return _platformAdaptationLayer; 
+            }
+        }
+
+        public static IronEngine GetEngineByExtension(SPSite hiveSite, string extension)
+        {
+
+            IronEngine engine = null;
 
             try
             {
-                engine._runtime = IronRuntime.GetRuntime(hiveSite);
+                var runtime = IronRuntime.GetRuntime(hiveSite);
+
+                if (runtime.RunningEngines.ContainsKey(extension))
+                {
+                    return runtime.RunningEngines[extension];
+                }
+
+                engine = new IronEngine();
+                engine._runtime = runtime;
                 engine._scriptRuntime = engine._runtime.ScriptRuntime;
 
                 engine._scriptEngine = engine._runtime.ScriptRuntime.GetEngineByFileExtension(extension);
@@ -79,6 +102,9 @@ namespace IronSharePoint
                         });
                     });
                 }
+
+                runtime.RunningEngines.Add(extension, engine);
+
             }
             catch (Exception ex)
             { 
@@ -102,7 +128,7 @@ namespace IronSharePoint
                 // load script
                 if (obj == null)
                 {
-                    var scriptFile = GetFile(scriptName);
+                    var scriptFile = GetHiveFile(scriptName);
                     ExcecuteScriptFile(scriptFile);
                     obj = _scriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", rubyClassName));
                 }
@@ -132,7 +158,7 @@ namespace IronSharePoint
                     object rubyFunc = null;
                     if (!_runtime.ScriptRuntime.Globals.TryGetVariable(functionName, out rubyFunc))
                     {
-                        var file = GetFile(scriptName);
+                        var file = GetHiveFile(scriptName);
                         ExcecuteScriptFile(file);
 
                         rubyFunc = _runtime.ScriptRuntime.Globals.GetVariable(functionName);
@@ -152,7 +178,7 @@ namespace IronSharePoint
                     var rubyModule = _scriptEngine.Execute(String.Format("defined?({0})?({0}):nil", ns.Replace(".", "::").Trim()));
                     if (rubyModule == null)
                     {
-                        var file = GetFile(scriptName);
+                        var file = GetHiveFile(scriptName);
                         ExcecuteScriptFile(file);
                         rubyModule = _scriptEngine.Execute(ns.Replace(".", "::"));
                     }
@@ -205,7 +231,7 @@ namespace IronSharePoint
           
             string script = String.Empty;
 
-            _runtime.Host.PlatformAdaptationLayer.CurrentDirectory = scriptFile.ParentFolder.ServerRelativeUrl;
+           // _runtime.Host.PlatformAdaptationLayer.CurrentDirectory = scriptFile.ParentFolder.ServerRelativeUrl;
             
             script = scriptFile.Web.GetFileAsString(scriptFile.Url);
 
@@ -216,38 +242,25 @@ namespace IronSharePoint
             return output;
         }
 
-        public SPFile GetFile(string fileName)
+        public SPFile GetHiveFile(string fileName)
         {
-           
-
-            SPFile file = null;
-            var hiveWeb = _runtime.Host.HiveWeb;
-
-            /*
-            if (_initialScriptFolder != null)
+            if (!fileName.Contains(IronConstants.IronHiveRootSymbol))
             {
-                file = rootWeb.GetFile(String.Format("{0}/{1}", _initialScriptFolder.ServerRelativeUrl, fileName));
-                if (file.Exists)
-                {
-                    ctx.Cache[fileName] = file;
-                    return file;
-                }
+                fileName = (IronConstants.IronHiveRootSymbol + "/" + fileName).Replace("//","/");  
             }
-             * */
 
-            file = hiveWeb.GetFile(String.Format("{0}/{1}", _runtime.Host.HiveFolder.ServerRelativeUrl, fileName));
-            if (!file.Exists)
+            if (!PlatformAdaptationLayer.FileExists(fileName))
             {
                 throw new FileNotFoundException();
             }
-            //ctx.Cache[fileName] = file;
-            return file;
+
+            return PlatformAdaptationLayer.GetIronHiveFile(fileName);
         }
 
     
         public string LoadText(string fileName)
         {         
-            var file = GetFile(fileName);
+            var file = GetHiveFile(fileName);
             var str = _runtime.Host.HiveWeb.GetFileAsString(file.Url);
 
             return str;
@@ -262,6 +275,11 @@ namespace IronSharePoint
         public static void LogVerbose(string msg)
         {
             IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Controls], TraceSeverity.Verbose, String.Format("{0}.", msg));
+        }
+
+        private IronEngine()
+        {
+
         }
         
     }

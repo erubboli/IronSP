@@ -58,8 +58,7 @@ namespace IronSharePoint
                     dynamicControl.Data = null;
                 }
 
-                this.Controls.Add(ctrl);
-   
+                this.Controls.Add(ctrl); 
 
             }
             catch (Exception ex)

@@ -81,7 +81,15 @@ namespace IronSharePoint.IronPart
             }
             else
             {
-                base.Render(writer);
+                try
+                {
+                    base.Render(writer);
+                }
+                catch (Exception ex)
+                {
+                    writer.Write(ex.Message);
+                    IronEngine.LogError("Error", ex);
+                }
             }
         }
 
