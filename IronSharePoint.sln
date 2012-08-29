@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint", "IronSharePoint\IronSharePoint.csproj", "{391AC6CE-418C-460C-A629-BBC74252EFA9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint", "src\IronSharePoint\IronSharePoint.csproj", "{391AC6CE-418C-460C-A629-BBC74252EFA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint.IronRuby10", "IronSharePoint.IronRuby10\IronSharePoint.IronRuby10.csproj", "{6E073DFC-A506-44DF-B378-7C539ED71502}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint.IronRuby10", "src\IronSharePoint.IronRuby10\IronSharePoint.IronRuby10.csproj", "{6E073DFC-A506-44DF-B378-7C539ED71502}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
