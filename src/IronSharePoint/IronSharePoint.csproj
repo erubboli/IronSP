@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{391AC6CE-418C-460C-A629-BBC74252EFA9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IronSharePoint</RootNamespace>
+    <AssemblyName>IronSharePoint</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{BB1F664B-9266-4fd6-B973-E1E44974B511};{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SandboxedSolution>False</SandboxedSolution>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <ActiveDeploymentConfiguration>Default</ActiveDeploymentConfiguration>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="IronRuby, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\IronRuby.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\IronRuby.Libraries.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries.YAML, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\IronRuby.Libraries.YAML.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\Microsoft.Scripting.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Debugging, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\Microsoft.Scripting.Debugging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.ExtensionAttribute, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\Microsoft.Scripting.ExtensionAttribute.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Publishing, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.SharePoint" />
+    <Reference Include="Microsoft.SharePoint.Security" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DynamicCompositeControl.cs" />
+    <Compile Include="EventReceivers\IronScriptCompilerReceiver.cs" />
+    <Compile Include="Features\IronSP_Farm\IronSP_Farm.EventReceiver.cs">
+      <DependentUpon>IronSP_Farm.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Features\IronSP_Site\IronSP_Site.EventReceiver.cs">
+      <DependentUpon>IronSP_Site.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Features\IronSP_WebApp\IronSP_WebApp.EventReceiver.cs">
+      <DependentUpon>IronSP_WebApp.feature</DependentUpon>
+    </Compile>
+    <Compile Include="IDynamicControl.cs" />
+    <Compile Include="IIronDataStore.cs" />
+    <Compile Include="IronConstants.cs" />
+    <Compile Include="IronContentTypeIds.cs" />
+    <Compile Include="IronControl.cs" />
+    <Compile Include="Diagnostics\IronDiagnosticService.cs" />
+    <Compile Include="DynamicControl.cs" />
+    <Compile Include="IronEngine.cs" />
+    <Compile Include="IronExpressionBuilder.cs" />
+    <Compile Include="IronFields.cs" />
+    <Compile Include="IronHost.cs" />
+    <Compile Include="IronPart\IronPart.cs" />
+    <Compile Include="IronPlatformAdaptationLayer.cs" />
+    <Compile Include="IronRuntime.cs" />
+    <Compile Include="IronUserControl.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.feature">
+      <FeatureId>{cea2b887-e17d-4dbe-a477-4f7c8bdf03be}</FeatureId>
+    </None>
+    <None Include="Features\IronSP_WebApp\IronSP_WebApp.feature">
+      <FeatureId>{06f5a7bb-0388-41ec-8e0a-3e2ac5197203}</FeatureId>
+    </None>
+    <None Include="Features\IronSP_Farm\IronSP_Farm.feature">
+      <FeatureId>{a9463ca0-2955-4d20-b524-7ddb88c9cb23}</FeatureId>
+    </None>
+    <None Include="Features\IronSP_Site\IronSP_Site.feature">
+      <FeatureId>{02961df1-c0a7-44bf-8545-5a24466136f9}</FeatureId>
+    </None>
+    <None Include="Fields\Fields\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{9672d965-0cb3-483c-b6ae-af9f5d2a78e9}</SharePointProjectItemId>
+    </None>
+    <None Include="IronPart\IronPart.webpart" />
+    <None Include="IronPart\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{11653a36-52dc-4bbc-bb87-74c031f3a971}</SharePointProjectItemId>
+    </None>
+    <None Include="ContentTypes\IronScript\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{5ae035c6-762c-45d6-92cf-ceceb0274afa}</SharePointProjectItemId>
+    </None>
+    <None Include="key.snk" />
+    <None Include="Lists\IronHive\ListInstance\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{4688f8d8-e2fd-425f-a606-573e3496c57d}</SharePointProjectItemId>
+    </None>
+    <None Include="Lists\IronHive\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{880960ed-55af-46cc-a291-3bc601bddf46}</SharePointProjectItemId>
+    </None>
+    <None Include="Package\Package.package">
+      <PackageId>{aacb7026-8941-4faa-b4bb-04562e317e53}</PackageId>
+    </None>
+    <None Include="Package\Package.Template.xml">
+      <DependentUpon>Package.package</DependentUpon>
+    </None>
+    <None Include="_RubyGemsFix\config_file.rb" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.Template.xml">
+      <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
+    </Content>
+    <Content Include="Features\IronSP_WebApp\IronSP_WebApp.Template.xml">
+      <DependentUpon>IronSP_WebApp.feature</DependentUpon>
+    </Content>
+    <Content Include="Features\IronSP_Farm\IronSP_Farm.Template.xml">
+      <DependentUpon>IronSP_Farm.feature</DependentUpon>
+    </Content>
+    <Content Include="Features\IronSP_Site\IronSP_Site.Template.xml">
+      <DependentUpon>IronSP_Site.feature</DependentUpon>
+    </Content>
+    <Content Include="Fields\Fields\Elements.xml" />
+    <Content Include="IronPart\Elements.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ContentTypes\IronScript\Elements.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Lists\IronHive\EditDlg.htm" />
+    <Content Include="Lists\IronHive\Elements.xml" />
+    <Content Include="Lists\IronHive\FileDlg.htm" />
+    <Content Include="Lists\IronHive\ListInstance\Elements.xml" />
+    <Content Include="Lists\IronHive\Repair.aspx" />
+    <Content Include="Lists\IronHive\Schema.xml" />
+    <Content Include="Lists\IronHive\Upload.aspx" />
+    <Content Include="readme.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\SharePointTools\Microsoft.VisualStudio.SharePoint.targets" />
+</Project>
