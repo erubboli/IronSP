@@ -11,6 +11,8 @@ namespace IronSharePoint
 {
     public class IronHost : ScriptHost
     {
+        private IronPlatformAdaptationLayer _ironAdaptationLayer;
+
         private SPSite _hiveSite;
 
         public SPSite HiveSite
@@ -64,7 +66,11 @@ namespace IronSharePoint
         {
             get
             {
-                return new IronPlatformAdaptationLayer(this);
+                if (_ironAdaptationLayer == null)
+                {
+                    _ironAdaptationLayer = new IronPlatformAdaptationLayer(this);
+                }
+                return _ironAdaptationLayer;
             }
         }
     }

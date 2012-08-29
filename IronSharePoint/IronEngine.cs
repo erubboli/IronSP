@@ -27,9 +27,11 @@ namespace IronSharePoint
             get { return _runtime; }
         }
 
+        private ScriptRuntime _scriptRuntime;
+
         public ScriptRuntime ScriptRuntime
         {
-            get { return _scriptEngine.Runtime; }
+            get { return _scriptRuntime; }
         }
 
         private ScriptEngine _scriptEngine;
@@ -55,6 +57,7 @@ namespace IronSharePoint
             try
             {
                 engine._runtime = IronRuntime.GetRuntime(hiveSite);
+                engine._scriptRuntime = engine._runtime.ScriptRuntime;
 
                 engine._scriptEngine = engine._runtime.ScriptRuntime.GetEngineByFileExtension(extension);
 
@@ -72,7 +75,7 @@ namespace IronSharePoint
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby\1.8"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\1.8"),
-                                "@IronHive"
+                                IronConstants.IronHiveRootSymbol
                         });
                     });
                 }
@@ -202,12 +205,13 @@ namespace IronSharePoint
           
             string script = String.Empty;
 
-
+            _runtime.Host.PlatformAdaptationLayer.CurrentDirectory = scriptFile.ParentFolder.ServerRelativeUrl;
+            
             script = scriptFile.Web.GetFileAsString(scriptFile.Url);
 
-         
+
             output = _scriptEngine.CreateScriptSourceFromString(script, SourceCodeKind.File).Execute(_scriptEngine.Runtime.Globals);
-            
+
 
             return output;
         }
