@@ -57,6 +57,7 @@ namespace IronSharePoint
             _hiveWeb = _hiveSite.RootWeb;
             _hiveFolder = _hiveWeb.GetFolder(IronConstants.IronHiveListPath);
             _hiveList = _hiveFolder.DocumentLibrary;
+            _ironAdaptationLayer = null;
 
             var hiveFeature = hiveSite.Features[new Guid(IronConstants.IronHiveSiteFeatureId)];
             _featureFolderPath = new DirectoryInfo(hiveFeature.Definition.RootDirectory).Parent.FullName;
