@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
+using System.IO;
+using IronSharePoint.Diagnostics;
+using Microsoft.SharePoint.Administration;
 
 namespace IronSharePoint
 {
@@ -36,9 +39,7 @@ namespace IronSharePoint
 
         public static IronRuntime GetRuntime(SPSite hiveSite)
         {
-            IronRuntime ironRuntime = null;
-            
-
+            IronRuntime ironRuntime = null;           
 
             if (_runningRuntimes.ContainsKey(hiveSite.ID))
             {
@@ -70,9 +71,65 @@ namespace IronSharePoint
             return ironRuntime;
         }
 
+        public IronEngine GetEngineByExtension(string extension)
+        {
+            IronEngine ironEngine = null;
+
+            try
+            {
+                if (RunningEngines.ContainsKey(extension))
+                {
+                    return RunningEngines[extension];
+                }
+
+                var scriptEngine = ScriptRuntime.GetEngineByFileExtension(extension);
+
+                // ruby
+                if (scriptEngine.Setup.DisplayName == IronConstants.IronRubyLanguageName)
+                {
+                    var ironRubyRootFolder = Path.Combine(Host.FeatureFolderPath, "IronSP_IronRuby10\\");
+
+                    SPSecurity.RunWithElevatedPrivileges(() =>
+                    {
+                        System.Environment.SetEnvironmentVariable("IRONRUBY_10_20", ironRubyRootFolder);
+
+                        scriptEngine.SetSearchPaths(new List<String>() {
+                                Path.Combine(ironRubyRootFolder, @"Lib\IronRuby"),
+                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby\1.8"),
+                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby"),
+                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\1.8"),
+                                IronConstants.IronHiveRootSymbol
+                        });
+                    });
+                }
+
+                ironEngine = new IronEngine(this, scriptEngine);
+
+                RunningEngines.Add(extension, ironEngine);
+
+            }
+            catch (Exception ex)
+            {
+                LogError(String.Format("Error occured while getting engine for extension {0}", extension), ex);
+                throw ex;
+            }
+
+            return ironEngine;
+        }
+
         private IronRuntime()
         {
 
+        }
+
+        public static void LogError(string msg, Exception ex)
+        {
+            IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Controls], TraceSeverity.Unexpected, String.Format("{0}. Error:{1}; Stack:{2}", msg, ex.Message, ex.StackTrace));
+        }
+
+        public static void LogVerbose(string msg)
+        {
+            IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Controls], TraceSeverity.Verbose, String.Format("{0}.", msg));
         }
 
     }

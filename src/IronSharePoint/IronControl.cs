@@ -46,7 +46,7 @@ namespace IronSharePoint
                 if (exception != null)
                     return;
 
-                var engine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, Path.GetExtension(ScriptName));
+                var engine = IronRuntime.GetRuntime(SPContext.Current.Site).GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
@@ -63,7 +63,7 @@ namespace IronSharePoint
             }
             catch (Exception ex)
             {
-                IronEngine.LogError(String.Format("Error executing script {0}", ScriptName), ex);
+                IronRuntime.LogError(String.Format("Error executing script {0}", ScriptName), ex);
                 exception = ex;
             }
 
@@ -85,7 +85,7 @@ namespace IronSharePoint
                 catch (Exception ex)
                 {
                     writer.Write(ex.Message);
-                    IronEngine.LogError("Error", ex);
+                    IronRuntime.LogError("Error", ex);
                 }
             }
         }     

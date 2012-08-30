@@ -18,102 +18,37 @@ namespace IronSharePoint
     
     public class IronEngine
     {
-        private static Dictionary<Guid, ScriptRuntime> _scripRuntimes = new Dictionary<Guid, ScriptRuntime>();
+       // private static Dictionary<Guid, ScriptRuntime> _scripRuntimes = new Dictionary<Guid, ScriptRuntime>();
 
-        private IronRuntime _runtime;
-
-        public IronRuntime Runtime
+        public IronRuntime IronRuntime
         {
-            get { return _runtime; }
+            get;
+            private set;
         }
-
-        private ScriptRuntime _scriptRuntime;
-
-        public ScriptRuntime ScriptRuntime
-        {
-            get { return _scriptRuntime; }
-        }
-
-        private ScriptEngine _scriptEngine;
 
         public ScriptEngine ScriptEngine
         {
-            get { return _scriptEngine; }
+            get;
+            private set;
         }
 
         public string Language 
         { 
             get
             {
-                return _scriptEngine.Setup.DisplayName;
+                return ScriptEngine.Setup.DisplayName;
             }
-        }
-
-        private IronPlatformAdaptationLayer _platformAdaptationLayer;
+        }       
 
         public IronPlatformAdaptationLayer PlatformAdaptationLayer
         {
             get 
             {
-                if (_platformAdaptationLayer == null)
-                {
-                    _platformAdaptationLayer = _runtime.Host.PlatformAdaptationLayer as IronPlatformAdaptationLayer;
-                }
-
-                return _platformAdaptationLayer; 
+                return IronRuntime.Host.PlatformAdaptationLayer as IronPlatformAdaptationLayer;
             }
         }
 
-        public static IronEngine GetEngineByExtension(SPSite hiveSite, string extension)
-        {
-
-            IronEngine engine = null;
-
-            try
-            {
-                var runtime = IronRuntime.GetRuntime(hiveSite);
-
-                if (runtime.RunningEngines.ContainsKey(extension))
-                {
-                    return runtime.RunningEngines[extension];
-                }
-
-                engine = new IronEngine();
-                engine._runtime = runtime;
-                engine._scriptRuntime = engine._runtime.ScriptRuntime;
-
-                engine._scriptEngine = engine._runtime.ScriptRuntime.GetEngineByFileExtension(extension);
-
-                // if ruby
-                if (engine._scriptEngine.Setup.DisplayName == IronConstants.IronRubyLanguageName)
-                {
-                    var ironRubyRootFolder = Path.Combine(engine._runtime.Host.FeatureFolderPath, "IronSP_IronRuby10\\");
-
-                    SPSecurity.RunWithElevatedPrivileges(() =>
-                    {
-                        System.Environment.SetEnvironmentVariable("IRONRUBY_10_20", ironRubyRootFolder);
-
-                        engine._scriptEngine.SetSearchPaths(new List<String>() {
-                                Path.Combine(ironRubyRootFolder, @"Lib\IronRuby"),
-                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby\1.8"),
-                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby"),
-                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\1.8"),
-                                IronConstants.IronHiveRootSymbol
-                        });
-                    });
-                }
-
-                runtime.RunningEngines.Add(extension, engine);
-
-            }
-            catch (Exception ex)
-            { 
-                LogError(String.Format("Error occured while getting engine for extension {0}", extension) , ex);
-                throw ex;
-            }
-
-            return engine;         
-        }
+        
 
         public object CreateDynamicInstance(string className, string scriptName)
         {
@@ -123,14 +58,14 @@ namespace IronSharePoint
             {
                 var rubyClassName = className.Replace(".", "::").Trim();
 
-                obj = _scriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", rubyClassName));
+                obj = ScriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", rubyClassName));
 
                 // load script
                 if (obj == null)
                 {
                     var scriptFile = GetHiveFile(scriptName);
                     ExcecuteScriptFile(scriptFile);
-                    obj = _scriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", rubyClassName));
+                    obj = ScriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", rubyClassName));
                 }
             }
 
@@ -156,39 +91,39 @@ namespace IronSharePoint
                 {
                 
                     object rubyFunc = null;
-                    if (!_runtime.ScriptRuntime.Globals.TryGetVariable(functionName, out rubyFunc))
+                    if (!IronRuntime.ScriptRuntime.Globals.TryGetVariable(functionName, out rubyFunc))
                     {
                         var file = GetHiveFile(scriptName);
                         ExcecuteScriptFile(file);
 
-                        rubyFunc = _runtime.ScriptRuntime.Globals.GetVariable(functionName);
+                        rubyFunc = IronRuntime.ScriptRuntime.Globals.GetVariable(functionName);
                     }
                     
                     if (args != null && args.Length > 0)
                     {
-                        obj = _runtime.ScriptRuntime.Operations.Invoke(rubyFunc, args);
+                        obj = IronRuntime.ScriptRuntime.Operations.Invoke(rubyFunc, args);
                     }
                     else
                     {
-                        obj = _runtime.ScriptRuntime.Operations.Invoke(rubyFunc);
+                        obj = IronRuntime.ScriptRuntime.Operations.Invoke(rubyFunc);
                     }
                 }
                 else
                 {
-                    var rubyModule = _scriptEngine.Execute(String.Format("defined?({0})?({0}):nil", ns.Replace(".", "::").Trim()));
+                    var rubyModule = ScriptEngine.Execute(String.Format("defined?({0})?({0}):nil", ns.Replace(".", "::").Trim()));
                     if (rubyModule == null)
                     {
                         var file = GetHiveFile(scriptName);
                         ExcecuteScriptFile(file);
-                        rubyModule = _scriptEngine.Execute(ns.Replace(".", "::"));
+                        rubyModule = ScriptEngine.Execute(ns.Replace(".", "::"));
                     }
                     if (args != null && args.Length > 0)
                     {
-                        obj = _runtime.ScriptRuntime.Operations.InvokeMember(rubyModule, functionName, args);
+                        obj = IronRuntime.ScriptRuntime.Operations.InvokeMember(rubyModule, functionName, args);
                     }
                     else
                     {
-                        obj = _runtime.ScriptRuntime.Operations.InvokeMember(rubyModule, functionName);
+                        obj = IronRuntime.ScriptRuntime.Operations.InvokeMember(rubyModule, functionName);
                     }
                 }
               
@@ -198,46 +133,15 @@ namespace IronSharePoint
         }
 
 
-        //public object InvokeDyamicMethodIfExists(string methodName, params object[] args)
-        //{
-        //    try
-        //    {
-        //        object dynMethod = null;
-        //        if (ScriptScope.TryGetVariable(methodName, out dynMethod))
-        //        {
-        //            if (args.Length == 0)
-        //            {
-        //                return _scriptEngine.Operations.Invoke(dynMethod);
-        //            }
-        //            else
-        //            {
-        //                return _scriptEngine.Operations.Invoke(dynMethod, args);
-        //            }
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogError(String.Format("Error invoking method {0}", methodName), ex);
-        //        throw;
-        //    }
-
-        //    return null;
-        //}
-
         public object ExcecuteScriptFile(SPFile scriptFile)
         {
             object output = null;
           
-            string script = String.Empty;
-
-           // _runtime.Host.PlatformAdaptationLayer.CurrentDirectory = scriptFile.ParentFolder.ServerRelativeUrl;
+            string script = String.Empty; 
             
             script = scriptFile.Web.GetFileAsString(scriptFile.Url);
 
-
-            output = _scriptEngine.CreateScriptSourceFromString(script, SourceCodeKind.File).Execute(_scriptEngine.Runtime.Globals);
-
+            output = ScriptEngine.CreateScriptSourceFromString(script, SourceCodeKind.File).Execute(ScriptEngine.Runtime.Globals);
 
             return output;
         }
@@ -261,25 +165,15 @@ namespace IronSharePoint
         public string LoadText(string fileName)
         {         
             var file = GetHiveFile(fileName);
-            var str = _runtime.Host.HiveWeb.GetFileAsString(file.Url);
+            var str = IronRuntime.Host.HiveWeb.GetFileAsString(file.Url);
 
             return str;
         }
-        
 
-        public static void LogError(string msg, Exception ex)
+        internal IronEngine(IronRuntime ironRuntime, ScriptEngine scriptEngine)
         {
-            IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Controls], TraceSeverity.Unexpected, String.Format("{0}. Error:{1}; Stack:{2}", msg, ex.Message, ex.StackTrace));
-        }
-
-        public static void LogVerbose(string msg)
-        {
-            IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Controls], TraceSeverity.Verbose, String.Format("{0}.", msg));
-        }
-
-        private IronEngine()
-        {
-
+            this.IronRuntime = ironRuntime;
+            this.ScriptEngine = scriptEngine;
         }
         
     }

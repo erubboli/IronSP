@@ -42,7 +42,7 @@ namespace IronSharePoint
                 if (exception != null)
                     return;
 
-                var engine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, Path.GetExtension(ScriptName));
+                var engine = IronRuntime.GetRuntime(SPContext.Current.Site).GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
@@ -64,9 +64,9 @@ namespace IronSharePoint
                     {
                         var path = TemplatePath.Replace("~site", SPContext.Current.Site.ServerRelativeUrl)
                             .Replace("~web", SPContext.Current.Web.ServerRelativeUrl)
-                            .Replace("~hiveSite", engine.Runtime.Host.HiveSite.ServerRelativeUrl)
-                            .Replace("~hiveWeb", engine.Runtime.Host.HiveWeb.ServerRelativeUrl)
-                            .Replace("~hiveFolder", engine.Runtime.Host.HiveFolder.ServerRelativeUrl);
+                            .Replace("~hiveSite", engine.IronRuntime.Host.HiveSite.ServerRelativeUrl)
+                            .Replace("~hiveWeb", engine.IronRuntime.Host.HiveWeb.ServerRelativeUrl)
+                            .Replace("~hiveFolder", engine.IronRuntime.Host.HiveFolder.ServerRelativeUrl);
 
                         Template = this.LoadTemplate(path);
                         Template.InstantiateIn(ctrl);

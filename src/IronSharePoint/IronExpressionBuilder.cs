@@ -48,7 +48,7 @@ namespace IronSharePoint
                 scriptName = tmp[1];  
             }
 
-            var ironEngine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, Path.GetExtension(scriptName));
+            var ironEngine = IronRuntime.GetRuntime(SPContext.Current.Site).GetEngineByExtension(Path.GetExtension(scriptName));
             var value = ironEngine.InvokeDynamicFunction(functionName, scriptName, target, entry);
            
             return value.ToString();

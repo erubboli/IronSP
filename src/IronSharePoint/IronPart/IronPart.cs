@@ -50,7 +50,7 @@ namespace IronSharePoint.IronPart
 
             try
             {
-                var engine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, Path.GetExtension(ScriptName));
+                var engine = IronRuntime.GetRuntime(SPContext.Current.Site).GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
@@ -69,7 +69,7 @@ namespace IronSharePoint.IronPart
             catch (Exception ex)
             {
                 exception = ex;
-                IronEngine.LogError("IronWebPart Error", exception);
+                IronRuntime.LogError("IronWebPart Error", exception);
             }
         }
 
@@ -88,7 +88,7 @@ namespace IronSharePoint.IronPart
                 catch (Exception ex)
                 {
                     writer.Write(ex.Message);
-                    IronEngine.LogError("Error", ex);
+                    IronRuntime.LogError("Error", ex);
                 }
             }
         }
