@@ -42,7 +42,7 @@ namespace IronSharePoint
                 if (exception != null)
                     return;
 
-                var engine = IronRuntime.GetRuntime(SPContext.Current.Site).GetEngineByExtension(Path.GetExtension(ScriptName));
+                var engine = IronRuntime.GetIronRuntime(SPContext.Current.Site.ID).GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 

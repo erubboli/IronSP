@@ -9,11 +9,13 @@ using System.IO;
 
 namespace IronSharePoint
 {
-    public class IronHost : ScriptHost
+    public class IronHost : ScriptHost, IDisposable
     {
         private IronPlatformAdaptationLayer _ironAdaptationLayer;
 
         private SPSite _hiveSite;
+
+        private bool _disposed = false;
 
         public SPSite HiveSite
         {
@@ -51,15 +53,21 @@ namespace IronSharePoint
         }
 
 
-        internal void SetHiveSite(SPSite hiveSite)
+        internal void SetHiveSite(Guid hiveSiteId)
         {
-            _hiveSite = hiveSite;
+            _hiveSite = new SPSite(hiveSiteId, SPUserToken.SystemAccount);
             _hiveWeb = _hiveSite.RootWeb;
             _hiveFolder = _hiveWeb.GetFolder(IronConstants.IronHiveListPath);
             _hiveList = _hiveFolder.DocumentLibrary;
             _ironAdaptationLayer = null;
 
-            var hiveFeature = hiveSite.Features[new Guid(IronConstants.IronHiveSiteFeatureId)];
+            var hiveFeature = _hiveSite.Features[new Guid(IronConstants.IronHiveSiteFeatureId)];
+
+            if (hiveFeature == null)
+            {
+                throw new InvalidOperationException(String.Format("'IronSP Hive Site' feature is not activated on the site with id {0}", hiveSiteId));
+            }
+
             _featureFolderPath = new DirectoryInfo(hiveFeature.Definition.RootDirectory).Parent.FullName;
         }
 
@@ -72,6 +80,15 @@ namespace IronSharePoint
                     _ironAdaptationLayer = new IronPlatformAdaptationLayer(this);
                 }
                 return _ironAdaptationLayer;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_hiveSite == null && !_disposed)
+            {
+                _hiveSite.Dispose();
+                _disposed=true;
             }
         }
     }

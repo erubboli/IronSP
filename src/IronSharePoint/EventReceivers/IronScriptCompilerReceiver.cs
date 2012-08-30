@@ -25,7 +25,7 @@ namespace IronSharePoint.EventReceivers
         {         
             try
             {
-                var engine =  IronRuntime.GetRuntime(properties.Web.Site).GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));
+                var engine =  IronRuntime.GetIronRuntime(properties.Web.Site.ID).GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));
 
                 EventFiringEnabled = false;
                 properties.ListItem[IronFields.IronOutput] = engine.ExcecuteScriptFile(properties.ListItem.File);

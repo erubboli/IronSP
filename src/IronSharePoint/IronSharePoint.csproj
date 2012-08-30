@@ -99,6 +99,7 @@
     <Compile Include="IronEngine.cs" />
     <Compile Include="IronExpressionBuilder.cs" />
     <Compile Include="IronFields.cs" />
+    <Compile Include="Administration\IronHiveRegistry.cs" />
     <Compile Include="IronHost.cs" />
     <Compile Include="IronPart\IronPart.cs" />
     <Compile Include="IronPlatformAdaptationLayer.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Administration\IronHiveRegistry.ps1" />
     <None Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.feature">
       <FeatureId>{cea2b887-e17d-4dbe-a477-4f7c8bdf03be}</FeatureId>
     </None>

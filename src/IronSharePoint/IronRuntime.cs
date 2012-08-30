@@ -7,10 +7,12 @@ using Microsoft.SharePoint;
 using System.IO;
 using IronSharePoint.Diagnostics;
 using Microsoft.SharePoint.Administration;
+using IronSharePoint.Administration;
+using System.Web;
 
 namespace IronSharePoint
 {
-    public class IronRuntime
+    public class IronRuntime: IDisposable
     {
         // the key is the ID of the hive
         private static readonly Dictionary<Guid, IronRuntime> _runningRuntimes = new Dictionary<Guid, IronRuntime>();
@@ -37,36 +39,59 @@ namespace IronSharePoint
             set { _runningEngines = value; }
         }
 
-        public static IronRuntime GetRuntime(SPSite hiveSite)
+        private List<Guid> _sitesUsingThisRuntime = new List<Guid>();
+
+        public List<Guid> SitesUsingThisRuntime
         {
-            IronRuntime ironRuntime = null;           
+            get { return _sitesUsingThisRuntime; }
+        }
 
-            if (_runningRuntimes.ContainsKey(hiveSite.ID))
-            {
-                ironRuntime = _runningRuntimes[hiveSite.ID];
-            }
-            else
-            {
-                ironRuntime = new IronRuntime();
-                // create new runtime
-                var setup = new ScriptRuntimeSetup();
-                setup.LanguageSetups.Add(new LanguageSetup(
-                       "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", IronConstants.IronRubyLanguageName,
-                             new List<String>() { "IronRuby", "Ruby", "rb" }, new List<String>() { ".rb" }));
+        private Guid _hiveSiteId;
 
-                setup.HostType = typeof(IronHost);
+        public static IronRuntime GetIronRuntime(Guid siteId)
+        {
+            IronRuntime ironRuntime = _runningRuntimes.Values.Where(r => r.SitesUsingThisRuntime.Contains(siteId)).FirstOrDefault();
+
+            if (ironRuntime == null)
+            {
+                var hiveSiteId = IronHiveRegistry.Local.GetHiveBySiteId(siteId);
+                if (hiveSiteId == Guid.Empty)
+                {
+                    throw new InvalidOperationException(String.Format("There is no IronHive mapping for the site with id {0}", siteId));
+                }
+
+                if (_runningRuntimes.ContainsKey(hiveSiteId))
+                {
+                    ironRuntime = _runningRuntimes[hiveSiteId];
+                }
+                else
+                {
+                    ironRuntime = new IronRuntime();
+                    // create new runtime
+                    var setup = new ScriptRuntimeSetup();
+                    setup.LanguageSetups.Add(new LanguageSetup(
+                           "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", IronConstants.IronRubyLanguageName,
+                                 new List<String>() { "IronRuby", "Ruby", "rb" }, new List<String>() { ".rb" }));
+
+                    setup.HostType = typeof(IronHost);
 
 #if DEBUG
-                setup.DebugMode = true;
+                    setup.DebugMode = true;
 #endif
+                    ironRuntime._scriptRuntime = new ScriptRuntime(setup);
+                    
+                    ironRuntime._hiveSiteId = hiveSiteId;
+                    ironRuntime._host = ironRuntime._scriptRuntime.Host as IronHost;
 
-                ironRuntime._scriptRuntime = new ScriptRuntime(setup);               
-
-                _runningRuntimes.Add(hiveSite.ID, ironRuntime);
+                    _runningRuntimes.Add(hiveSiteId, ironRuntime);
+                }
             }
+      
 
-            ironRuntime._host = ironRuntime._scriptRuntime.Host as IronHost;
-            ironRuntime._host.SetHiveSite(hiveSite);
+            if (HttpContext.Current != null)
+            {     
+                ironRuntime._host.SetHiveSite(ironRuntime._hiveSiteId);
+            }
 
             return ironRuntime;
         }
@@ -132,5 +157,13 @@ namespace IronSharePoint
             IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Controls], TraceSeverity.Verbose, String.Format("{0}.", msg));
         }
 
+
+        public void Dispose()
+        {
+            if (_host != null)
+            {
+                _host.Dispose();
+            }
+        }
     }
 }
