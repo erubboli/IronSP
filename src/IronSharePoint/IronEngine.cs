@@ -17,19 +17,9 @@ namespace IronSharePoint
     
     public class IronEngine
     {
-       // private static Dictionary<Guid, ScriptRuntime> _scripRuntimes = new Dictionary<Guid, ScriptRuntime>();
 
-        public IronRuntime IronRuntime
-        {
-            get;
-            private set;
-        }
-
-        public ScriptEngine ScriptEngine
-        {
-            get;
-            private set;
-        }
+        public IronRuntime IronRuntime { get; private set; }
+        public ScriptEngine ScriptEngine { get; private set; }
 
         public string Language 
         { 
@@ -41,13 +31,12 @@ namespace IronSharePoint
 
         public IronPlatformAdaptationLayer PlatformAdaptationLayer
         {
-            get 
+            get
             {
                 return IronRuntime.Host.PlatformAdaptationLayer as IronPlatformAdaptationLayer;
             }
         }
 
-        
 
         public object CreateDynamicInstance(string className, string scriptName)
         {

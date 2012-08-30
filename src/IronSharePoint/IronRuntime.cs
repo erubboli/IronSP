@@ -17,36 +17,24 @@ namespace IronSharePoint
         // the key is the ID of the hive
         private static readonly Dictionary<Guid, IronRuntime> _runningRuntimes = new Dictionary<Guid, IronRuntime>();
 
-        private ScriptRuntime _scriptRuntime;
-
-        public ScriptRuntime ScriptRuntime
-        {
-            get { return _scriptRuntime; }
-        }
-
-        private IronHost _host;
-
-        public IronHost Host
-        {
-            get { return _host; }
-        }
-
         private Dictionary<String, IronEngine> _runningEngines = new Dictionary<String, IronEngine>();
-
         internal Dictionary<String, IronEngine> RunningEngines
         {
             get { return _runningEngines; }
-            set { _runningEngines = value; }
-        }
+        }   
+
+        private Guid _hiveSiteId;
 
         private List<Guid> _sitesUsingThisRuntime = new List<Guid>();
-
-        public List<Guid> SitesUsingThisRuntime
+        internal List<Guid> SitesUsingThisRuntime
         {
             get { return _sitesUsingThisRuntime; }
         }
 
-        private Guid _hiveSiteId;
+        public ScriptRuntime ScriptRuntime { get; private set; }
+        public IronHost Host { get; private set; }
+
+        
 
         public static IronRuntime GetIronRuntime(Guid siteId)
         {
@@ -78,10 +66,10 @@ namespace IronSharePoint
 #if DEBUG
                     setup.DebugMode = true;
 #endif
-                    ironRuntime._scriptRuntime = new ScriptRuntime(setup);
+                    ironRuntime.ScriptRuntime = new ScriptRuntime(setup);
                     
                     ironRuntime._hiveSiteId = hiveSiteId;
-                    ironRuntime._host = ironRuntime._scriptRuntime.Host as IronHost;
+                    ironRuntime.Host = ironRuntime.ScriptRuntime.Host as IronHost;
 
                     _runningRuntimes.Add(hiveSiteId, ironRuntime);
                 }
@@ -90,7 +78,7 @@ namespace IronSharePoint
 
             if (HttpContext.Current != null)
             {     
-                ironRuntime._host.SetHiveSite(ironRuntime._hiveSiteId);
+                ironRuntime.Host.SetHiveSite(ironRuntime._hiveSiteId);
             }
 
             return ironRuntime;
@@ -160,9 +148,9 @@ namespace IronSharePoint
 
         public void Dispose()
         {
-            if (_host != null)
+            if (Host != null)
             {
-                _host.Dispose();
+                Host.Dispose();
             }
         }
     }
