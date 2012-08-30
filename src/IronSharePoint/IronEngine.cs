@@ -17,7 +17,6 @@ namespace IronSharePoint
     
     public class IronEngine
     {
-
         public IronRuntime IronRuntime { get; private set; }
         public ScriptEngine ScriptEngine { get; private set; }
 
@@ -37,24 +36,30 @@ namespace IronSharePoint
             }
         }
 
-
-        public object CreateDynamicInstance(string className, string scriptName)
+        public object CreateDynamicInstance(string className, string scriptName, params object[] args)
         {
             object obj = null;
 
-            if (Language == IronConstants.IronRubyLanguageName)
+            if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
-                var rubyClassName = className.Replace(".", "::").Trim();
+                var scriptFile = IronRuntime.IronHost.GetHiveFile(scriptName);
+                ExcecuteScriptFile(scriptFile);
 
-                obj = ScriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", rubyClassName));
-
-                // load script
-                if (obj == null)
+                if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
                 {
-                    var scriptFile = GetHiveFile(scriptName);
-                    ExcecuteScriptFile(scriptFile);
-                    obj = ScriptEngine.Execute(String.Format("defined?({0})?({0}.new):nil", rubyClassName));
+                    throw new NullReferenceException(String.Format("The class {0} in script file {1} is not regsitered in the DynamicTypeRegistry", className, scriptName));
                 }
+            }
+
+            var dynamicType = IronRuntime.DynamicTypeRegistry[className];
+
+            if (args != null && args.Length > 0)
+            {
+                obj = IronRuntime.ScriptRuntime.Operations.CreateInstance(dynamicType, args);
+            }
+            else
+            {
+                obj = IronRuntime.ScriptRuntime.Operations.CreateInstance(dynamicType);
             }
 
             return obj;
@@ -64,57 +69,26 @@ namespace IronSharePoint
         {
             object obj = null;
 
-            string ns = null;
-            if (functionName.Contains("."))
+            if (!IronRuntime.DynamicTypeRegistry.ContainsKey(functionName))
             {
-                ns = functionName;
-                var split = functionName.Split('.');
-                functionName = split.Last();
-                ns = ns.Replace("." + functionName, String.Empty);
+                var scriptFile = IronRuntime.IronHost.GetHiveFile(scriptName);
+                ExcecuteScriptFile(scriptFile);
+
+                if (!IronRuntime.DynamicTypeRegistry.ContainsKey(functionName))
+                {
+                    throw new NullReferenceException(String.Format("The function {0} in script file {1} is not regsitered in the DynamicFunctionRegistry", functionName, scriptName));
+                }
             }
 
-            if (Language == IronConstants.IronRubyLanguageName)
-            {
-                if (ns == null)
-                {
-                
-                    object rubyFunc = null;
-                    if (!IronRuntime.ScriptRuntime.Globals.TryGetVariable(functionName, out rubyFunc))
-                    {
-                        var file = GetHiveFile(scriptName);
-                        ExcecuteScriptFile(file);
+            var dynamicType = IronRuntime.DynamicTypeRegistry[functionName];
 
-                        rubyFunc = IronRuntime.ScriptRuntime.Globals.GetVariable(functionName);
-                    }
-                    
-                    if (args != null && args.Length > 0)
-                    {
-                        obj = IronRuntime.ScriptRuntime.Operations.Invoke(rubyFunc, args);
-                    }
-                    else
-                    {
-                        obj = IronRuntime.ScriptRuntime.Operations.Invoke(rubyFunc);
-                    }
-                }
-                else
-                {
-                    var rubyModule = ScriptEngine.Execute(String.Format("defined?({0})?({0}):nil", ns.Replace(".", "::").Trim()));
-                    if (rubyModule == null)
-                    {
-                        var file = GetHiveFile(scriptName);
-                        ExcecuteScriptFile(file);
-                        rubyModule = ScriptEngine.Execute(ns.Replace(".", "::"));
-                    }
-                    if (args != null && args.Length > 0)
-                    {
-                        obj = IronRuntime.ScriptRuntime.Operations.InvokeMember(rubyModule, functionName, args);
-                    }
-                    else
-                    {
-                        obj = IronRuntime.ScriptRuntime.Operations.InvokeMember(rubyModule, functionName);
-                    }
-                }
-              
+            if (args != null && args.Length > 0)
+            {
+                obj = IronRuntime.ScriptRuntime.Operations.Invoke(dynamicType, args);
+            }
+            else
+            {
+                obj = IronRuntime.ScriptRuntime.Operations.Invoke(dynamicType);
             }
 
             return obj;
@@ -134,29 +108,7 @@ namespace IronSharePoint
             return output;
         }
 
-        public SPFile GetHiveFile(string fileName)
-        {
-            if (!fileName.Contains(IronConstants.IronHiveRootSymbol))
-            {
-                fileName = (IronConstants.IronHiveRootSymbol + "/" + fileName).Replace("//","/");  
-            }
-
-            if (!PlatformAdaptationLayer.FileExists(fileName))
-            {
-                throw new FileNotFoundException();
-            }
-
-            return PlatformAdaptationLayer.GetIronHiveFile(fileName);
-        }
-
-    
-        public string LoadText(string fileName)
-        {         
-            var file = GetHiveFile(fileName);
-            var str = IronRuntime.IronHost.HiveWeb.GetFileAsString(file.Url);
-
-            return str;
-        }
+        
 
         internal IronEngine(IronRuntime ironRuntime, ScriptEngine scriptEngine)
         {

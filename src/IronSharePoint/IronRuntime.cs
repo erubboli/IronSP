@@ -33,6 +33,8 @@ namespace IronSharePoint
 
         public ScriptRuntime ScriptRuntime { get; private set; }
         public IronHost IronHost { get; private set; }
+        public Dictionary<string, Object> DynamicTypeRegistry { get; private set; }
+        public Dictionary<string, Object> DynamicFunctionRegistry { get; private set; }
 
         public static IronRuntime GetIronRuntime(Guid siteId)
         {
@@ -68,6 +70,8 @@ namespace IronSharePoint
                     
                     ironRuntime._hiveSiteId = hiveSiteId;
                     ironRuntime.IronHost = ironRuntime.ScriptRuntime.Host as IronHost;
+                    ironRuntime.DynamicTypeRegistry = new Dictionary<string, Object>();
+                    ironRuntime.ScriptRuntime.Globals.SetVariable("ironRuntime", ironRuntime);
 
                     _runningRuntimes.Add(hiveSiteId, ironRuntime);
                 }
@@ -131,6 +135,34 @@ namespace IronSharePoint
             }
 
             return ironEngine;
+        }
+
+        public void RegisterDynamicType(string name, object type)
+        {
+            if (!DynamicTypeRegistry.ContainsKey(name))
+            {
+                DynamicTypeRegistry.Add(name, type);
+            }
+        }
+
+        public void RegisterDynamicType(object type)
+        {
+            var name = type.ToString();
+            RegisterDynamicType(name, type);
+        }
+
+        public void RegisterDynamicFunction(string name, object type)
+        {
+            if (!DynamicFunctionRegistry.ContainsKey(name))
+            {
+                DynamicTypeRegistry.Add(name, type);
+            }
+        }
+
+        public void RegisterDynamicFunction(object type)
+        {
+            var name = type.ToString();
+            DynamicFunctionRegistry.Add(name, type);
         }
 
         private IronRuntime()

@@ -102,6 +102,38 @@ namespace IronSharePoint
             }
         }
 
+        public IronPlatformAdaptationLayer IronPlatformAdaptationLayer
+        {
+            get
+            {
+                return _ironAdaptationLayer ?? (_ironAdaptationLayer = new IronPlatformAdaptationLayer(this));
+            }
+        }
+
+        public SPFile GetHiveFile(string fileName)
+        {
+            if (!fileName.Contains(IronConstants.IronHiveRootSymbol))
+            {
+                fileName = (IronConstants.IronHiveRootSymbol + "/" + fileName).Replace("//", "/");
+            }
+
+            if (!PlatformAdaptationLayer.FileExists(fileName))
+            {
+                throw new FileNotFoundException();
+            }
+
+            return IronPlatformAdaptationLayer.GetIronHiveFile(fileName);
+        }
+
+
+        public string LoadText(string fileName)
+        {
+            var file = GetHiveFile(fileName);
+            var str = HiveWeb.GetFileAsString(file.Url);
+
+            return str;
+        }
+
         public void Dispose()
         {
             if (HiveSite != null && !_disposed)
