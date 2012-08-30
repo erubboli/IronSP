@@ -22,7 +22,7 @@ namespace IronSharePoint.Diagnostics
     [System.Runtime.InteropServices.GuidAttribute("8D5F89BA-0DE0-4D46-811C-E631B6FAC228")]
     public class IronDiagnosticsService : SPDiagnosticsServiceBase
     {
-        private static string DiagnosticsAreaName = "IronSP";
+        const string DiagnosticsAreaName = "IronSP";
 
         public IronDiagnosticsService()
         {
@@ -49,7 +49,7 @@ namespace IronSharePoint.Diagnostics
         {
             get
             {
-                return SPDiagnosticsServiceBase.GetLocal<IronDiagnosticsService>();
+                return GetLocal<IronDiagnosticsService>();
             }
         }
 

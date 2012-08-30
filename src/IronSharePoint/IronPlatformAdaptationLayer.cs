@@ -11,8 +11,8 @@ namespace IronSharePoint
 {
     public class IronPlatformAdaptationLayer : PlatformAdaptationLayer
     {
-        private IronHost _host;
-        private Stack<String> _folderHistory;
+        private readonly IronHost _host;
+        private readonly Stack<String> _folderHistory;
         private Dictionary<String, String> _hiveFileDictionary;
 
         public Dictionary<String, String> HiveFileDictionary
@@ -57,7 +57,7 @@ namespace IronSharePoint
             if (!fileExists && path.StartsWith(IronConstants.IronHiveRootSymbol))
             {
                 path = path.ToLower();
-                fileExists = HiveFileDictionary.Values.Where(name => name == Path.GetFileName(path)).Any();
+                fileExists = HiveFileDictionary.Values.Any(name => name == Path.GetFileName(path));
             }
          
             return fileExists;
@@ -115,7 +115,7 @@ namespace IronSharePoint
             foreach (var folder in _folderHistory)
             {
                 var searchPath = (folder + "/" + fileName).Replace("//","/").ToLower();
-                matchingPath = matchingFilePaths.Where(x => x == searchPath).FirstOrDefault();
+                matchingPath = matchingFilePaths.FirstOrDefault(x => x == searchPath);
 
                 if (!String.IsNullOrEmpty(matchingPath))
                 {

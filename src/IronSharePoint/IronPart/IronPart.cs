@@ -29,23 +29,21 @@ namespace IronSharePoint.IronPart
         [Personalizable(PersonalizationScope.Shared)]
         public string Data { get; set; }
 
-        private Exception exception;
-
-        private IDynamicControl dynamicControl;
+        private Exception _exception;
+        private IDynamicControl _dynamicControl;
 
         protected override void OnInit(EventArgs e)
         {
-
             if (String.IsNullOrEmpty(ScriptName))
             {
-                exception = new InvalidEnumArgumentException("Property ScripName is empty!");
+                _exception = new InvalidEnumArgumentException("Property ScriptName is empty!");
             }
             else if (String.IsNullOrEmpty(ScriptClass))
             {
-                exception = new InvalidEnumArgumentException("Property ScripClass is empty!");
+                _exception = new InvalidEnumArgumentException("Property ScriptClass is empty!");
             }
 
-            if (exception != null)
+            if (_exception != null)
                 return;
 
             try
@@ -54,12 +52,12 @@ namespace IronSharePoint.IronPart
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
-                dynamicControl = ctrl as IDynamicControl;
-                if (dynamicControl != null)
+                _dynamicControl = ctrl as IDynamicControl;
+                if (_dynamicControl != null)
                 {
-                    dynamicControl.Engine = engine;
-                    dynamicControl.WebPart = this;
-                    dynamicControl.Data = this;
+                    _dynamicControl.Engine = engine;
+                    _dynamicControl.WebPart = this;
+                    _dynamicControl.Data = this;
                 }
 
                 this.Controls.Add(ctrl);
@@ -68,16 +66,16 @@ namespace IronSharePoint.IronPart
             }
             catch (Exception ex)
             {
-                exception = ex;
-                IronEngine.LogError("IronWebPart Error", exception);
+                _exception = ex;
+                IronEngine.LogError("IronWebPart Error", _exception);
             }
         }
 
         protected override void Render(HtmlTextWriter writer)
         {
-            if (exception != null)
+            if (_exception != null)
             {
-                writer.Write(exception.Message);
+                writer.Write(_exception.Message);
             }
             else
             {
@@ -96,9 +94,9 @@ namespace IronSharePoint.IronPart
         
         public override EditorPartCollection CreateEditorParts()
         {
-            if (dynamicControl != null)
+            if (_dynamicControl != null)
             {
-                 return new EditorPartCollection(base.CreateEditorParts(),dynamicControl.CreateEditorParts());
+                 return new EditorPartCollection(base.CreateEditorParts(),_dynamicControl.CreateEditorParts());
             }
 
             return base.CreateEditorParts();

@@ -23,7 +23,7 @@ namespace IronSharePoint
 
         public string ScriptClass { get; set; }
 
-        private Exception exception;
+        private Exception _exception;
 
         protected override void OnInit(EventArgs e)
         {
@@ -32,14 +32,14 @@ namespace IronSharePoint
 
                 if (String.IsNullOrEmpty(ScriptName))
                 {
-                    exception = new InvalidEnumArgumentException("Property ScripName is empty!");
+                    _exception = new InvalidEnumArgumentException("Property ScripName is empty!");
                 }
                 else if (String.IsNullOrEmpty(ScriptClass))
                 {
-                    exception = new InvalidEnumArgumentException("Property ScripClass is empty!");
+                    _exception = new InvalidEnumArgumentException("Property ScripClass is empty!");
                 }
 
-                if (exception != null)
+                if (_exception != null)
                     return;
 
                 var engine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, Path.GetExtension(ScriptName));
@@ -78,22 +78,17 @@ namespace IronSharePoint
             catch (Exception ex)
             {
                 IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Controls], TraceSeverity.Unexpected, String.Format("Error: {0}; Stack: {1}", ex.Message, ex.StackTrace));
-                exception = ex;
+                _exception = ex;
             }
 
             base.OnInit(e);
         }
 
-        protected override void CreateChildControls()
-        {
-            base.CreateChildControls();
-        }
-
         protected override void Render(HtmlTextWriter writer)
         {
-            if (exception!=null)
+            if (_exception!=null)
             {
-                writer.Write(exception.Message);
+                writer.Write(_exception.Message);
                 return;
             }
             try

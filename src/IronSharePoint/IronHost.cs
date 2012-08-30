@@ -13,65 +13,29 @@ namespace IronSharePoint
     {
         private IronPlatformAdaptationLayer _ironAdaptationLayer;
 
-        private SPSite _hiveSite;
-
-        public SPSite HiveSite
-        {
-            get { return _hiveSite; }
-        }
-
-        private SPWeb _hiveWeb;
-
-        public SPWeb HiveWeb
-        {
-            get { return _hiveWeb; }
-        }
-
-        private SPList _hiveList;
-
-        public SPList HiveList
-        {
-            get { return _hiveList; }
-        }
-
-        private SPFolder _hiveFolder;
-
-        public SPFolder HiveFolder
-        {
-            get { return _hiveFolder; }
-            set { _hiveFolder = value; }
-        }
-
-        private string _featureFolderPath;
-
-        public string FeatureFolderPath
-        {
-            get { return _featureFolderPath; }
-            set { _featureFolderPath = value; }
-        }
-
+        public SPSite HiveSite { get; private set; }
+        public SPWeb HiveWeb { get; private set; }
+        public SPList HiveList { get; private set; }
+        public SPFolder HiveFolder { get; set; }
+        public string FeatureFolderPath { get; set; }
 
         internal void SetHiveSite(SPSite hiveSite)
         {
-            _hiveSite = hiveSite;
-            _hiveWeb = _hiveSite.RootWeb;
-            _hiveFolder = _hiveWeb.GetFolder(IronConstants.IronHiveListPath);
-            _hiveList = _hiveFolder.DocumentLibrary;
+            HiveSite = hiveSite;
+            HiveWeb = HiveSite.RootWeb;
+            HiveFolder = HiveWeb.GetFolder(IronConstants.IronHiveListPath);
+            HiveList = HiveFolder.DocumentLibrary;
             _ironAdaptationLayer = null;
 
             var hiveFeature = hiveSite.Features[new Guid(IronConstants.IronHiveSiteFeatureId)];
-            _featureFolderPath = new DirectoryInfo(hiveFeature.Definition.RootDirectory).Parent.FullName;
+            FeatureFolderPath = new DirectoryInfo(hiveFeature.Definition.RootDirectory).Parent.FullName;
         }
 
         public override PlatformAdaptationLayer PlatformAdaptationLayer
         {
             get
             {
-                if (_ironAdaptationLayer == null)
-                {
-                    _ironAdaptationLayer = new IronPlatformAdaptationLayer(this);
-                }
-                return _ironAdaptationLayer;
+                return _ironAdaptationLayer ?? (_ironAdaptationLayer = new IronPlatformAdaptationLayer(this));
             }
         }
     }

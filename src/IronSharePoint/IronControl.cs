@@ -26,9 +26,8 @@ namespace IronSharePoint
 
         protected IronEngine engine;
       
-        protected System.Web.UI.WebControls.WebParts.WebPart webPart { get; set; }
-
-        protected Exception exception;
+        protected System.Web.UI.WebControls.WebParts.WebPart WebPart { get; set; }
+        protected Exception Exception { get; set; }
 
         protected override void OnInit(EventArgs e)
         {
@@ -36,14 +35,14 @@ namespace IronSharePoint
             {
                 if (String.IsNullOrEmpty(ScriptName))
                 {
-                    exception = new InvalidEnumArgumentException("Property ScripName is empty!");
+                    Exception = new InvalidEnumArgumentException("Property ScriptName is empty!");
                 }
                 else if (String.IsNullOrEmpty(ScriptClass))
                 {
-                    exception = new InvalidEnumArgumentException("Property ScripClass is empty!");
+                    Exception = new InvalidEnumArgumentException("Property ScriptClass is empty!");
                 }
 
-                if (exception != null)
+                if (Exception != null)
                     return;
 
                 var engine = IronEngine.GetEngineByExtension(SPContext.Current.Web.Site, Path.GetExtension(ScriptName));
@@ -64,7 +63,7 @@ namespace IronSharePoint
             catch (Exception ex)
             {
                 IronEngine.LogError(String.Format("Error executing script {0}", ScriptName), ex);
-                exception = ex;
+                Exception = ex;
             }
 
             base.OnInit(e);
@@ -72,9 +71,9 @@ namespace IronSharePoint
 
         protected override void Render(HtmlTextWriter writer)
         {
-            if (exception != null)
+            if (Exception != null)
             {
-                writer.Write(exception.Message);
+                writer.Write(Exception.Message);
             }
             else
             {
