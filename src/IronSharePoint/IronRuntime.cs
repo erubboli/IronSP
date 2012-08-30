@@ -32,9 +32,7 @@ namespace IronSharePoint
         }
 
         public ScriptRuntime ScriptRuntime { get; private set; }
-        public IronHost Host { get; private set; }
-
-        
+        public IronHost IronHost { get; private set; }
 
         public static IronRuntime GetIronRuntime(Guid siteId)
         {
@@ -69,7 +67,7 @@ namespace IronSharePoint
                     ironRuntime.ScriptRuntime = new ScriptRuntime(setup);
                     
                     ironRuntime._hiveSiteId = hiveSiteId;
-                    ironRuntime.Host = ironRuntime.ScriptRuntime.Host as IronHost;
+                    ironRuntime.IronHost = ironRuntime.ScriptRuntime.Host as IronHost;
 
                     _runningRuntimes.Add(hiveSiteId, ironRuntime);
                 }
@@ -78,7 +76,12 @@ namespace IronSharePoint
 
             if (HttpContext.Current != null)
             {     
-                ironRuntime.Host.SetHiveSite(ironRuntime._hiveSiteId);
+                ironRuntime.IronHost.SetHiveSite(ironRuntime._hiveSiteId);
+            }
+
+            if (!ironRuntime.SitesUsingThisRuntime.Contains(siteId))
+            {
+                ironRuntime.SitesUsingThisRuntime.Add(siteId);
             }
 
             return ironRuntime;
@@ -100,7 +103,7 @@ namespace IronSharePoint
                 // ruby
                 if (scriptEngine.Setup.DisplayName == IronConstants.IronRubyLanguageName)
                 {
-                    var ironRubyRootFolder = Path.Combine(Host.FeatureFolderPath, "IronSP_IronRuby10\\");
+                    var ironRubyRootFolder = Path.Combine(IronHost.FeatureFolderPath, "IronSP_IronRuby10\\");
 
                     SPSecurity.RunWithElevatedPrivileges(() =>
                     {
@@ -148,9 +151,9 @@ namespace IronSharePoint
 
         public void Dispose()
         {
-            if (Host != null)
+            if (IronHost != null)
             {
-                Host.Dispose();
+                IronHost.Dispose();
             }
         }
     }

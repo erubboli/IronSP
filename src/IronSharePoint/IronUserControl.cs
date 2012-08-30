@@ -64,9 +64,9 @@ namespace IronSharePoint
                     {
                         var path = TemplatePath.Replace("~site", SPContext.Current.Site.ServerRelativeUrl)
                             .Replace("~web", SPContext.Current.Web.ServerRelativeUrl)
-                            .Replace("~hiveSite", engine.IronRuntime.Host.HiveSite.ServerRelativeUrl)
-                            .Replace("~hiveWeb", engine.IronRuntime.Host.HiveWeb.ServerRelativeUrl)
-                            .Replace("~hiveFolder", engine.IronRuntime.Host.HiveFolder.ServerRelativeUrl);
+                            .Replace("~hiveSite", engine.IronRuntime.IronHost.HiveSite.ServerRelativeUrl)
+                            .Replace("~hiveWeb", engine.IronRuntime.IronHost.HiveWeb.ServerRelativeUrl)
+                            .Replace("~hiveFolder", engine.IronRuntime.IronHost.HiveFolder.ServerRelativeUrl);
 
                         Template = this.LoadTemplate(path);
                         Template.InstantiateIn(ctrl);

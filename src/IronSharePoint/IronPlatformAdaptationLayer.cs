@@ -20,23 +20,21 @@ namespace IronSharePoint
             get 
             {
                 if (_hiveFileDictionary == null)
-                {
-                  
-                        _hiveFileDictionary = new Dictionary<string, string>();
+                {       
+                    _hiveFileDictionary = new Dictionary<string, string>();
 
-                        var query = new SPQuery();
-                        query.Query = "<Where></Where>";
-                        query.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='FileLeafRef'/>";
-                        query.ViewAttributes = "Scope='Recursive'";
-                        query.IncludeMandatoryColumns = false;
+                    var query = new SPQuery();
+                    query.Query = "<Where></Where>";
+                    query.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='FileLeafRef'/>";
+                    query.ViewAttributes = "Scope='Recursive'";
+                    query.IncludeMandatoryColumns = false;
 
-                        var allItems = _host.HiveList.GetItems(query);
+                    var allItems = _host.HiveList.GetItems(query);
 
-                        foreach (SPListItem item in allItems)
-                        {
-                            _hiveFileDictionary.Add(item["FileRef"].ToString().ToLower(), item["FileLeafRef"].ToString().ToLower());
-                        }
-                    
+                    foreach (SPListItem item in allItems)
+                    {
+                        _hiveFileDictionary.Add(item["FileRef"].ToString().ToLower(), item["FileLeafRef"].ToString().ToLower());
+                    }                    
                 }
                 
                 return _hiveFileDictionary; 

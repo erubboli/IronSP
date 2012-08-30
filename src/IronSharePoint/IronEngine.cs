@@ -33,7 +33,7 @@ namespace IronSharePoint
         {
             get
             {
-                return IronRuntime.Host.PlatformAdaptationLayer as IronPlatformAdaptationLayer;
+                return IronRuntime.IronHost.PlatformAdaptationLayer as IronPlatformAdaptationLayer;
             }
         }
 
@@ -153,7 +153,7 @@ namespace IronSharePoint
         public string LoadText(string fileName)
         {         
             var file = GetHiveFile(fileName);
-            var str = IronRuntime.Host.HiveWeb.GetFileAsString(file.Url);
+            var str = IronRuntime.IronHost.HiveWeb.GetFileAsString(file.Url);
 
             return str;
         }
