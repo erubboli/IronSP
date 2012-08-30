@@ -11,7 +11,7 @@ namespace IronSharePoint
         public const string IronSiteFeatureId = "a1752f91-1403-40c1-a257-69eddf8976cf";
         public const string IronHiveSiteFeatureId = "354ee774-7d04-4ad6-91f9-1bc433a70bee";
         public const string IronRubyFeatureId = "183909b9-cfb3-477c-a48c-02e3d5e59844";
-        public const string IronHiveRootSymbol = "X:\\";
+        public const string IronHiveDefaultRoot = "IronHive://";
         public const string IronRubyLanguageName = "IronRuby";
         public const string HiveFileDictionaryKey = "IronSP_hiveFileDictionaryKey";
     }

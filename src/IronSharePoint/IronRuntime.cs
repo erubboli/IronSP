@@ -118,7 +118,7 @@ namespace IronSharePoint
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby\1.8"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\1.8"),
-                                IronConstants.IronHiveRootSymbol
+                                IronConstants.IronHiveDefaultRoot
                         });
                     });
                 }

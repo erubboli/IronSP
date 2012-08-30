@@ -52,7 +52,7 @@ namespace IronSharePoint
         {
             bool fileExists = base.FileExists(path);
 
-            if (!fileExists && path.StartsWith(IronConstants.IronHiveRootSymbol))
+            if (!fileExists && path.StartsWith(IronConstants.IronHiveDefaultRoot))
             {
                 path = path.ToLower();
                 fileExists = HiveFileDictionary.Values.Any(name => name == Path.GetFileName(path));
@@ -63,7 +63,7 @@ namespace IronSharePoint
        
         public override System.IO.Stream OpenOutputFileStream(string path)
         {
-            if (path.StartsWith(IronConstants.IronHiveRootSymbol))
+            if (path.StartsWith(IronConstants.IronHiveDefaultRoot))
             {
                 var file = GetIronHiveFile(path);
 
@@ -76,16 +76,16 @@ namespace IronSharePoint
 
         public override string GetFullPath(string path)
         {
-            if (path.StartsWith(IronConstants.IronHiveRootSymbol))
+            if (path.StartsWith(IronConstants.IronHiveDefaultRoot))
             {
-                return path.Replace(IronConstants.IronHiveRootSymbol, _host.HiveFolder.ServerRelativeUrl);
+                return path.Replace(IronConstants.IronHiveDefaultRoot, _host.HiveFolder.ServerRelativeUrl);
             }
             return base.GetFullPath(path);
         }
 
         public override System.IO.Stream OpenInputFileStream(string path)
         {
-            if (path.StartsWith(IronConstants.IronHiveRootSymbol))
+            if (path.StartsWith(IronConstants.IronHiveDefaultRoot))
             {
                 var file = GetIronHiveFile(path);
 
@@ -97,7 +97,7 @@ namespace IronSharePoint
 
         public SPFile GetIronHiveFile(string path)
         {
-            path = path.Replace(IronConstants.IronHiveRootSymbol, _host.HiveFolder.ServerRelativeUrl + "/").ToLower().Replace("//","/");
+            path = path.Replace(IronConstants.IronHiveDefaultRoot, _host.HiveFolder.ServerRelativeUrl + "/").ToLower().Replace("//","/");
 
             var fileName = Path.GetFileName(path);
 

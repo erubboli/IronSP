@@ -112,9 +112,9 @@ namespace IronSharePoint
 
         public SPFile GetHiveFile(string fileName)
         {
-            if (!fileName.Contains(IronConstants.IronHiveRootSymbol))
+            if (!fileName.Contains(IronConstants.IronHiveDefaultRoot))
             {
-                fileName = (IronConstants.IronHiveRootSymbol + "/" + fileName).Replace("//", "/");
+                fileName = (IronConstants.IronHiveDefaultRoot + "/" + fileName).Replace("//", "/");
             }
 
             if (!PlatformAdaptationLayer.FileExists(fileName))
