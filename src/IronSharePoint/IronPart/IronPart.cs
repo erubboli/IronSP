@@ -7,7 +7,6 @@ using System.Web.UI.WebControls.WebParts;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.WebControls;
 using System.Collections.Generic;
-using IronRuby;
 using Microsoft.Scripting.Hosting;
 using System.IO;
 

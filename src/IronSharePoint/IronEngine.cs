@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using IronRuby;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 using System.IO;
