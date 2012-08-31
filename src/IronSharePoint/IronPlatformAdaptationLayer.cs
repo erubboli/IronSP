@@ -71,7 +71,9 @@ namespace IronSharePoint
 
         public SPFile GetIronHiveFile(string path)
         {
-            path = path.Replace(IronConstant.IronHiveDefaultRoot, _ironHive.Folder.ServerRelativeUrl + "/").ToLower().Replace("//","/");
+            SPFile file = null;
+
+            path = path.Replace(IronConstant.IronHiveDefaultRoot, _ironHive.Folder.Url + "/").ToLower().Replace("//","/");
 
             var fileName = Path.GetFileName(path);
 
@@ -79,23 +81,33 @@ namespace IronSharePoint
 
             if (matchingFilePaths.Count() == 1)
             {
-                return _ironHive.Web.GetFile(matchingFilePaths.First());
+                file = _ironHive.Web.GetFile(matchingFilePaths.First());
             }
 
-            var matchingPath=String.Empty;
+            var matchPath = String.Empty;
 
-            foreach (var folder in _folderHistory)
+            if (file == null)
             {
-                var searchPath = (folder + "/" + fileName).Replace("//","/").ToLower();
-                matchingPath = matchingFilePaths.FirstOrDefault(x => x == searchPath);
-
-                if (!String.IsNullOrEmpty(matchingPath))
+                foreach (var folder in _folderHistory)
                 {
-                    break;
-                }
+                    var searchPath = (folder + "/" + fileName).Replace("//", "/").ToLower();
+                    matchPath = matchingFilePaths.FirstOrDefault(x => x == searchPath);
+
+                    if (!String.IsNullOrEmpty(matchPath))
+                    {
+                        break;
+                    }
+                 }
+                
+                file = _ironHive.Web.GetFile(matchPath);
             }
 
-            var file = _ironHive.Web.GetFile(matchingPath);
+            if (file == null || !file.Exists)
+            {
+                throw new FileNotFoundException();
+            }
+
+             
             _folderHistory.Push(file.ParentFolder.ServerRelativeUrl);
 
             return file;

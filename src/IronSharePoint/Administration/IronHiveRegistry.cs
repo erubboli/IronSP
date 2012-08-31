@@ -5,16 +5,24 @@ using System.Text;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint;
 using System.Collections.ObjectModel;
+using System.Security;
 
 namespace IronSharePoint.Administration
 {
     public class IronHiveRegistry: SPPersistedObject
     {
-        private static readonly Guid _objectId = new Guid("{7AC6F8BC-7977-4F04-AE74-CCA2232AC135}"); 
+       private static readonly Guid _objectId = new Guid("{7AC6F8BC-7977-4F04-AE74-CCA2232AC135}"); 
 
        [Persisted]
-        // key is the target object and value is the hive site id
-        private Dictionary<Guid, String> _hiveMappings = new Dictionary<Guid, String>();
+       private Dictionary<Guid, String> _hiveMappings = new Dictionary<Guid, String>();
+
+       [Persisted]
+       private List<Guid> _trustedHives = new List<Guid>();
+
+       public ReadOnlyCollection<Guid> TrustedHives
+       {
+           get { return new ReadOnlyCollection<Guid>(_trustedHives); }
+       }
 
        public ReadOnlyCollection<HiveMapping> HiveMappings
        {
@@ -55,8 +63,8 @@ namespace IronSharePoint.Administration
            }
        }
 
-        public Guid GetHiveBySiteId(Guid targetSitId)
-        {
+        public Guid GetHiveForSite(Guid targetSitId)
+        {           
             var hiveSiteId = Guid.Empty; 
 
             if (_hiveMappings.Count==0)
@@ -103,15 +111,17 @@ namespace IronSharePoint.Administration
                 }
             });
 
+            EnsureTrustedHive(hiveSiteId);
+
             return hiveSiteId;
             
         }
 
         public void AddHiveMapping(SPSite hiveSite, object targetObject)
-        {
-            var targetSite = targetObject as SPSite;
-            if (targetSite != null)
+        {          
+            if (targetObject is SPSite)
             {
+                var targetSite = targetObject as SPSite;
                 var hiveMapping = new HiveMapping()
                 {
                     HiveSiteId = hiveSite.ID,
@@ -120,13 +130,15 @@ namespace IronSharePoint.Administration
                 };
 
                 _hiveMappings.Add(hiveMapping.TargetObjectId, hiveMapping.ToString());
+                AddTrustedHive(hiveSite.ID);
 
                 return;
             }
 
-            var siteSubscription = targetObject as SPSiteSubscription;
-            if (siteSubscription != null)
+
+            if (targetObject is SPSiteSubscription)
             {
+                var siteSubscription = targetObject as SPSiteSubscription;
                 var hiveMapping = new HiveMapping()
                 {
                     HiveSiteId = hiveSite.ID,
@@ -135,13 +147,16 @@ namespace IronSharePoint.Administration
                 };
 
                 _hiveMappings.Add(hiveMapping.TargetObjectId, hiveMapping.ToString());
+                AddTrustedHive(hiveSite.ID);
 
                 return;
             }
 
-            var webApp = targetObject as SPWebApplication;
-            if (webApp != null)
+
+            if (targetObject is SPWebApplication)
             {
+                var webApp = targetObject as SPWebApplication;
+
                 var hiveMapping = new HiveMapping()
                 {
                     HiveSiteId = hiveSite.ID,
@@ -150,13 +165,15 @@ namespace IronSharePoint.Administration
                 };
 
                 _hiveMappings.Add(hiveMapping.TargetObjectId, hiveMapping.ToString());
+                AddTrustedHive(hiveSite.ID);
 
                 return;
             }
 
-            var farm = targetObject as SPFarm;
-            if (farm != null)
+            
+            if (targetObject is SPFarm)
             {
+                var farm = targetObject as SPFarm;
                 var hiveMapping = new HiveMapping()
                 {
                     HiveSiteId = hiveSite.ID,
@@ -165,6 +182,7 @@ namespace IronSharePoint.Administration
                 };
 
                 _hiveMappings.Add(hiveMapping.TargetObjectId, hiveMapping.ToString());
+                AddTrustedHive(hiveSite.ID);
 
                 return;
             }
@@ -172,9 +190,33 @@ namespace IronSharePoint.Administration
             throw new NotSupportedException("Only mappings for objects of type SPSite, SPSiteSubscription, SPWebApplication and SPFarm allowed!");  
         }
 
+        public void AddTrustedHive(Guid id)
+        {
+            if (!TrustedHives.Contains(id))
+            {              
+                _trustedHives.Add(id);
+            }
+        }
+
+        public void DeleteTrustedHive(Guid id)
+        {
+            if (TrustedHives.Contains(id))
+            {
+                _trustedHives.Remove(id);
+            }
+        }
+
         public void DeleteHiveMapping(Guid targetId)
         {
             _hiveMappings.Remove(targetId);
+        }
+
+        public void EnsureTrustedHive(Guid hiveSiteId)
+        {
+            if (!_trustedHives.Contains(hiveSiteId))
+            {
+                throw new SecurityException(String.Format("Site {0} is not a trusted IronHive site", hiveSiteId));
+            }
         }
 
         [Serializable]
@@ -198,6 +240,26 @@ namespace IronSharePoint.Administration
                 TargetObjectId = new Guid(arr[1]);
                 TargetObjectType = arr[2];
             }
+        }
+
+        public override void Update(bool ensure)
+        {
+            SPSecurity.RunWithElevatedPrivileges(() =>
+            {
+                foreach (var hiveId in _trustedHives)
+                {
+                    using (SPSite hiveSite = new SPSite(hiveId))
+                    {
+                        if (hiveSite.Features[new Guid(IronConstant.IronHiveSiteFeatureId)] == null)
+                        {
+                            hiveSite.Features.Add(new Guid(IronConstant.IronHiveSiteFeatureId));
+                        }
+                    }
+                }
+
+            });
+
+            base.Update(ensure);
         }
     }
 }

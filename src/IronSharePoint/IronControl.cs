@@ -22,6 +22,8 @@ namespace IronSharePoint
 
         public string ScriptClass { get; set; }
 
+        public string ScriptHiveId { get; set; }
+
         public IIronDataStore DataStore { get; set; }
 
         protected IronEngine engine;
@@ -45,7 +47,9 @@ namespace IronSharePoint
                 if (Exception != null)
                     return;
 
-                var engine = IronRuntime.GetIronRuntime(SPContext.Current.Site.ID).GetEngineByExtension(Path.GetExtension(ScriptName));
+                Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
+
+                var engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 

@@ -7,6 +7,8 @@ using Microsoft.SharePoint;
 using Microsoft.Scripting;
 using System.IO;
 using System.Web;
+using IronSharePoint.Administration;
+using System.Security;
 
 namespace IronSharePoint
 {
@@ -114,7 +116,7 @@ namespace IronSharePoint
             }
         }
 
-        public SPFile GetHiveFile(string fileName)
+        public SPFile GetFile(string fileName)
         {
             if (!fileName.Contains(IronConstant.IronHiveDefaultRoot))
             {
@@ -149,7 +151,8 @@ namespace IronSharePoint
 
                     foreach (SPListItem item in allItems)
                     {
-                        _hiveFileDictionary.Add(item["FileRef"].ToString().ToLower(), item["FileLeafRef"].ToString().ToLower());
+                        //todo: refactor
+                        _hiveFileDictionary.Add(item["FileRef"].ToString().Replace((Web.ServerRelativeUrl + "/").Replace("//","/") , String.Empty).ToLower(), item["FileLeafRef"].ToString().ToLower());
                     }
                 }
 
@@ -160,11 +163,11 @@ namespace IronSharePoint
 
         public string LoadText(string fileName)
         {
-            var file = GetHiveFile(fileName);
+            var file = GetFile(fileName);
             var str = Web.GetFileAsString(file.Url);
 
             return str;
-        }
+        } 
 
         public void Close()
         {

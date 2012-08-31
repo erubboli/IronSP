@@ -112,7 +112,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Administration\IronHiveRegistry.ps1" />
+    <Content Include="Administration\IronHiveRegistry.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.feature">
       <FeatureId>{cea2b887-e17d-4dbe-a477-4f7c8bdf03be}</FeatureId>
     </None>

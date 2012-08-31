@@ -42,7 +42,7 @@ namespace IronSharePoint
 
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
-                var scriptFile = IronRuntime.IronHive.GetHiveFile(scriptName);
+                var scriptFile = IronRuntime.IronHive.GetFile(scriptName);
                 ExcecuteScriptFile(scriptFile);
 
                 if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
@@ -69,18 +69,18 @@ namespace IronSharePoint
         {
             object obj = null;
 
-            if (!IronRuntime.DynamicTypeRegistry.ContainsKey(functionName))
+            if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))
             {
-                var scriptFile = IronRuntime.IronHive.GetHiveFile(scriptName);
+                var scriptFile = IronRuntime.IronHive.GetFile(scriptName);
                 ExcecuteScriptFile(scriptFile);
 
-                if (!IronRuntime.DynamicTypeRegistry.ContainsKey(functionName))
+                if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))
                 {
                     throw new NullReferenceException(String.Format("The function {0} in script file {1} is not regsitered in the DynamicFunctionRegistry", functionName, scriptName));
                 }
             }
 
-            var dynamicType = IronRuntime.DynamicTypeRegistry[functionName];
+            var dynamicType = IronRuntime.DynamicFunctionRegistry[functionName];
 
             if (args != null && args.Length > 0)
             {
@@ -97,10 +97,15 @@ namespace IronSharePoint
 
         public object ExcecuteScriptFile(SPFile scriptFile)
         {
+            if (!scriptFile.Exists)
+            {
+                throw new FileNotFoundException();
+            }
+
             object output = null;
           
-            string script = String.Empty; 
-            
+            string script = String.Empty;
+
             script = scriptFile.Web.GetFileAsString(scriptFile.Url);
 
             output = ScriptEngine.CreateScriptSourceFromString(script, SourceCodeKind.File).Execute(ScriptEngine.Runtime.Globals);

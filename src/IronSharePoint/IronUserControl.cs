@@ -23,6 +23,8 @@ namespace IronSharePoint
 
         public string ScriptClass { get; set; }
 
+        public string ScriptHiveId { get; set; }
+
         private Exception _exception;
 
         protected override void OnInit(EventArgs e)
@@ -42,7 +44,9 @@ namespace IronSharePoint
                 if (_exception != null)
                     return;
 
-                var engine = IronRuntime.GetIronRuntime(SPContext.Current.Site.ID).GetEngineByExtension(Path.GetExtension(ScriptName));
+                Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
+
+                var engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 

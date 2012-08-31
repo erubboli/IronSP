@@ -25,6 +25,11 @@ namespace IronSharePoint.IronPart
         [Personalizable(PersonalizationScope.Shared)]
         public string ScriptClass { get; set; }
 
+        [WebBrowsable(false)]
+        [Category("IronPart")]
+        [Personalizable(PersonalizationScope.Shared)]
+        public String ScriptHiveId { get; set; }
+
         [Personalizable(PersonalizationScope.Shared)]
         public string Data { get; set; }
 
@@ -47,7 +52,9 @@ namespace IronSharePoint.IronPart
 
             try
             {
-                var engine = IronRuntime.GetIronRuntime(SPContext.Current.Site.ID).GetEngineByExtension(Path.GetExtension(ScriptName));
+                Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty:new Guid(ScriptHiveId);
+
+                var engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
@@ -101,7 +108,6 @@ namespace IronSharePoint.IronPart
             return base.CreateEditorParts();
         }
        
-
 
         public void SaveData(string data)
         {
