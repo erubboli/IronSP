@@ -92,7 +92,7 @@
     <Compile Include="IDynamicControl.cs" />
     <Compile Include="IIronDataStore.cs" />
     <Compile Include="IronConstant.cs" />
-    <Compile Include="IronContentTypeIds.cs" />
+    <Compile Include="IronContentTypeId.cs" />
     <Compile Include="IronControl.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
     <Compile Include="DynamicControl.cs" />
