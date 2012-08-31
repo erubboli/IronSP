@@ -11,51 +11,25 @@ namespace IronSharePoint
 {
     public class IronPlatformAdaptationLayer : PlatformAdaptationLayer
     {
-        private readonly IronHost _host;
+        private readonly IronHive _ironHive;
         private readonly Stack<String> _folderHistory;
-        private Dictionary<String, String> _hiveFileDictionary;
+       
 
-        public Dictionary<String, String> HiveFileDictionary
-        {
-            get 
-            {
-                if (_hiveFileDictionary == null)
-                {       
-                    _hiveFileDictionary = new Dictionary<string, string>();
-
-                    var query = new SPQuery();
-                    query.Query = "<Where></Where>";
-                    query.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='FileLeafRef'/>";
-                    query.ViewAttributes = "Scope='Recursive'";
-                    query.IncludeMandatoryColumns = false;
-
-                    var allItems = _host.HiveList.GetItems(query);
-
-                    foreach (SPListItem item in allItems)
-                    {
-                        _hiveFileDictionary.Add(item["FileRef"].ToString().ToLower(), item["FileLeafRef"].ToString().ToLower());
-                    }                    
-                }
-                
-                return _hiveFileDictionary; 
-            }
-        }
-
-        public IronPlatformAdaptationLayer(IronHost host)
+        public IronPlatformAdaptationLayer(IronHive host)
         {
             _folderHistory = new Stack<string>();
-            _folderHistory.Push(host.HiveFolder.ServerRelativeUrl);
-            _host=host;
+            _folderHistory.Push(host.Folder.ServerRelativeUrl);
+            _ironHive=host;
         }
 
         public override bool FileExists(string path)
         {
             bool fileExists = base.FileExists(path);
 
-            if (!fileExists && path.StartsWith(IronConstants.IronHiveDefaultRoot))
+            if (!fileExists && path.StartsWith(IronConstant.IronHiveDefaultRoot))
             {
                 path = path.ToLower();
-                fileExists = HiveFileDictionary.Values.Any(name => name == Path.GetFileName(path));
+                fileExists = _ironHive.HiveFileDictionary.Values.Any(name => name == Path.GetFileName(path));
             }
          
             return fileExists;
@@ -63,7 +37,7 @@ namespace IronSharePoint
        
         public override System.IO.Stream OpenOutputFileStream(string path)
         {
-            if (path.StartsWith(IronConstants.IronHiveDefaultRoot))
+            if (path.StartsWith(IronConstant.IronHiveDefaultRoot))
             {
                 var file = GetIronHiveFile(path);
 
@@ -76,16 +50,16 @@ namespace IronSharePoint
 
         public override string GetFullPath(string path)
         {
-            if (path.StartsWith(IronConstants.IronHiveDefaultRoot))
+            if (path.StartsWith(IronConstant.IronHiveDefaultRoot))
             {
-                return path.Replace(IronConstants.IronHiveDefaultRoot, _host.HiveFolder.ServerRelativeUrl);
+                return path.Replace(IronConstant.IronHiveDefaultRoot, _ironHive.Folder.ServerRelativeUrl);
             }
             return base.GetFullPath(path);
         }
 
         public override System.IO.Stream OpenInputFileStream(string path)
         {
-            if (path.StartsWith(IronConstants.IronHiveDefaultRoot))
+            if (path.StartsWith(IronConstant.IronHiveDefaultRoot))
             {
                 var file = GetIronHiveFile(path);
 
@@ -97,15 +71,15 @@ namespace IronSharePoint
 
         public SPFile GetIronHiveFile(string path)
         {
-            path = path.Replace(IronConstants.IronHiveDefaultRoot, _host.HiveFolder.ServerRelativeUrl + "/").ToLower().Replace("//","/");
+            path = path.Replace(IronConstant.IronHiveDefaultRoot, _ironHive.Folder.ServerRelativeUrl + "/").ToLower().Replace("//","/");
 
             var fileName = Path.GetFileName(path);
 
-            var matchingFilePaths = _hiveFileDictionary.Where(x => x.Value == fileName).Select(x => x.Key);
+            var matchingFilePaths = _ironHive.HiveFileDictionary.Where(x => x.Value == fileName).Select(x => x.Key);
 
             if (matchingFilePaths.Count() == 1)
             {
-                return _host.HiveWeb.GetFile(matchingFilePaths.First());
+                return _ironHive.Web.GetFile(matchingFilePaths.First());
             }
 
             var matchingPath=String.Empty;
@@ -121,9 +95,9 @@ namespace IronSharePoint
                 }
             }
 
-            var file = _host.HiveWeb.GetFile(matchingPath);
+            var file = _ironHive.Web.GetFile(matchingPath);
             _folderHistory.Push(file.ParentFolder.ServerRelativeUrl);
-            
+
             return file;
         }
 

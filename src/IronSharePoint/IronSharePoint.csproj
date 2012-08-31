@@ -91,16 +91,18 @@
     </Compile>
     <Compile Include="IDynamicControl.cs" />
     <Compile Include="IIronDataStore.cs" />
-    <Compile Include="IronConstants.cs" />
+    <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeIds.cs" />
     <Compile Include="IronControl.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
     <Compile Include="DynamicControl.cs" />
     <Compile Include="IronEngine.cs" />
     <Compile Include="IronExpressionBuilder.cs" />
-    <Compile Include="IronFields.cs" />
+    <Compile Include="IronField.cs" />
     <Compile Include="Administration\IronHiveRegistry.cs" />
-    <Compile Include="IronHost.cs" />
+    <Compile Include="IronHelper.cs" />
+    <Compile Include="IronHive.cs" />
+    <Compile Include="IronHttpModule.cs" />
     <Compile Include="IronPart\IronPart.cs" />
     <Compile Include="IronPlatformAdaptationLayer.cs" />
     <Compile Include="IronRuntime.cs" />

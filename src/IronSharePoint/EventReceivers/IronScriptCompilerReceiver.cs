@@ -28,14 +28,14 @@ namespace IronSharePoint.EventReceivers
                 var engine =  IronRuntime.GetIronRuntime(properties.Web.Site.ID).GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));
 
                 EventFiringEnabled = false;
-                properties.ListItem[IronFields.IronOutput] = engine.ExcecuteScriptFile(properties.ListItem.File);
-                properties.ListItem[IronFields.IronErrorFlag] = false; 
+                properties.ListItem[IronField.IronOutput] = engine.ExcecuteScriptFile(properties.ListItem.File);
+                properties.ListItem[IronField.IronErrorFlag] = false; 
                 properties.ListItem.SystemUpdate(false);
             }
             catch (Exception ex)
             {
-                properties.ListItem[IronFields.IronOutput] = ex.Message + Environment.NewLine + ex.StackTrace;
-                properties.ListItem[IronFields.IronErrorFlag] = true; 
+                properties.ListItem[IronField.IronOutput] = ex.Message + Environment.NewLine + ex.StackTrace;
+                properties.ListItem[IronField.IronErrorFlag] = true; 
                 properties.ListItem.SystemUpdate(false);
             }
             finally

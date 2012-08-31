@@ -5,6 +5,7 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.Security;
 using Microsoft.SharePoint.Administration;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace IronSharePoint.Features.IronSP_WebApp
 {
@@ -18,23 +19,33 @@ namespace IronSharePoint.Features.IronSP_WebApp
     [Guid("62d325a0-90f5-4b80-a484-4681c4b7de5d")]
     public class IronSP_WebAppEventReceiver : SPFeatureReceiver
     {
-        // Uncomment the method below to handle the event raised after a feature has been activated.
+        private static readonly string modificationOwner = IronHelper.GetPrefixedKey("WebAppEventReceiver");
 
         public override void FeatureActivated(SPFeatureReceiverProperties properties)
         {
             SPSecurity.RunWithElevatedPrivileges(() =>
             {
-                var t = typeof(IronExpressionBuilder);
                 var webApp = properties.Feature.Parent as SPWebApplication;
 
-                SPWebConfigModification myModification = new SPWebConfigModification();
-                myModification.Path = "configuration/system.web/compilation/expressionBuilders";
-                myModification.Name = String.Format("add[@expressionPrefix='Iron'][@type='{0}']",t.AssemblyQualifiedName);
-                myModification.Sequence = 0;
-                myModification.Owner = t.AssemblyQualifiedName;
-                myModification.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
-                myModification.Value = String.Format("<add expressionPrefix='Iron' type='{0}' />", t.AssemblyQualifiedName);
-                webApp.WebConfigModifications.Add(myModification);
+                var expressionBuilderType = typeof(IronExpressionBuilder);        
+                SPWebConfigModification expressionBuilderMod = new SPWebConfigModification();
+                expressionBuilderMod.Path = "configuration/system.web/compilation/expressionBuilders";
+                expressionBuilderMod.Name = String.Format("add[@expressionPrefix='Iron'][@type='{0}']",expressionBuilderType.AssemblyQualifiedName);
+                expressionBuilderMod.Sequence = 0;
+                expressionBuilderMod.Owner = modificationOwner;
+                expressionBuilderMod.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
+                expressionBuilderMod.Value = String.Format("<add expressionPrefix='Iron' type='{0}' />", expressionBuilderType.AssemblyQualifiedName);
+                webApp.WebConfigModifications.Add(expressionBuilderMod);
+
+                var httpModuleType = typeof(IronHttpModule);  
+                SPWebConfigModification httpModuleMod = new SPWebConfigModification();
+                httpModuleMod.Path = "configuration/system.webServer/modules";
+                httpModuleMod.Name = String.Format("add[@name='IronHttpModule'][@type='{0}']", httpModuleType.AssemblyQualifiedName);
+                httpModuleMod.Sequence = 0;
+                httpModuleMod.Owner = modificationOwner;
+                httpModuleMod.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
+                httpModuleMod.Value = String.Format("<add name='IronHttpModule' type='{0}' />", httpModuleType.AssemblyQualifiedName);
+                webApp.WebConfigModifications.Add(httpModuleMod);
 
                 /*Call Update and ApplyWebConfigModifications to save changes*/
                 webApp.Update();
@@ -50,24 +61,21 @@ namespace IronSharePoint.Features.IronSP_WebApp
         {
             SPSecurity.RunWithElevatedPrivileges(() => {
 
-                var t = typeof(IronExpressionBuilder);
+                var webApplication = properties.Feature.Parent as SPWebApplication;
+                var webMods = webApplication.WebConfigModifications;
+                var modsToRemove = new List<SPWebConfigModification>();
 
-                SPWebConfigModification configModFound = null;
-                SPWebApplication webApplication = properties.Feature.Parent as SPWebApplication;
-                Collection<SPWebConfigModification> modsCollection = webApplication.WebConfigModifications;
-
-                // Find the most recent modification of a specified owner
-                int modsCount1 = modsCollection.Count;
-                for (int i = modsCount1 - 1; i > -1; i--)
+                foreach(var mod in webMods)
                 {
-                    if (modsCollection[i].Owner == t.AssemblyQualifiedName)
+                    if (mod.Owner == modificationOwner)
                     {
-                        configModFound = modsCollection[i];
+                        modsToRemove.Add(mod);
                     }
                 }
 
+                modsToRemove.ForEach(m => webMods.Remove(m));
+
                 // Remove it and save the change to the configuration database  
-                modsCollection.Remove(configModFound);
                 webApplication.Update();
 
                 // Reapply all the configuration modifications

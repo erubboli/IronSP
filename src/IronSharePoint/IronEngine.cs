@@ -32,7 +32,7 @@ namespace IronSharePoint
         {
             get
             {
-                return IronRuntime.IronHost.PlatformAdaptationLayer as IronPlatformAdaptationLayer;
+                return IronRuntime.IronHive.PlatformAdaptationLayer as IronPlatformAdaptationLayer;
             }
         }
 
@@ -42,7 +42,7 @@ namespace IronSharePoint
 
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
-                var scriptFile = IronRuntime.IronHost.GetHiveFile(scriptName);
+                var scriptFile = IronRuntime.IronHive.GetHiveFile(scriptName);
                 ExcecuteScriptFile(scriptFile);
 
                 if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
@@ -71,7 +71,7 @@ namespace IronSharePoint
 
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(functionName))
             {
-                var scriptFile = IronRuntime.IronHost.GetHiveFile(scriptName);
+                var scriptFile = IronRuntime.IronHive.GetHiveFile(scriptName);
                 ExcecuteScriptFile(scriptFile);
 
                 if (!IronRuntime.DynamicTypeRegistry.ContainsKey(functionName))
