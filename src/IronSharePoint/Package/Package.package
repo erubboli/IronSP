@@ -12,4 +12,7 @@
     <featureReference itemId="06f5a7bb-0388-41ec-8e0a-3e2ac5197203" />
     <featureReference itemId="cea2b887-e17d-4dbe-a477-4f7c8bdf03be" />
   </features>
+  <projectItems>
+    <projectItemReference itemId="1edf49eb-be85-4c52-a5fd-b4f1cff31be4" />
+  </projectItems>
 </package>

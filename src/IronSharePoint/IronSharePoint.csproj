@@ -13,6 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BB1F664B-9266-4fd6-B973-E1E44974B511};{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SandboxedSolution>False</SandboxedSolution>
+    <TokenReplacementFileExtensions>ashx</TokenReplacementFileExtensions>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -71,6 +72,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
@@ -91,6 +93,14 @@
     </Compile>
     <Compile Include="IDynamicControl.cs" />
     <Compile Include="IIronDataStore.cs" />
+    <Compile Include="IronConsole\IronConsole.cs" />
+    <Compile Include="IronConsole\IronConsoleUserControl.ascx.cs">
+      <DependentUpon>IronConsoleUserControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IronConsole\IronConsoleUserControl.ascx.designer.cs">
+      <DependentUpon>IronConsoleUserControl.ascx.cs</DependentUpon>
+    </Compile>
     <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeId.cs" />
     <Compile Include="IronControl.cs" />
@@ -108,6 +118,9 @@
     <Compile Include="IronRuntime.cs" />
     <Compile Include="IronUserControl.cs">
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Layouts\IronSP\IronConsoleService.ashx.cs">
+      <DependentUpon>IronConsoleService.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -130,6 +143,10 @@
     <None Include="Fields\Fields\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{9672d965-0cb3-483c-b6ae-af9f5d2a78e9}</SharePointProjectItemId>
     </None>
+    <None Include="IronConsole\IronConsole.webpart" />
+    <None Include="IronConsole\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{9288fb1a-95db-4d0a-8ad7-edfe595e6353}</SharePointProjectItemId>
+    </None>
     <None Include="IronPart\IronPart.webpart" />
     <None Include="IronPart\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{11653a36-52dc-4bbc-bb87-74c031f3a971}</SharePointProjectItemId>
@@ -138,6 +155,10 @@
       <SharePointProjectItemId>{5ae035c6-762c-45d6-92cf-ceceb0274afa}</SharePointProjectItemId>
     </None>
     <None Include="key.snk" />
+    <None Include="Layouts\IronSP\IronConsoleService.ashx" />
+    <None Include="Layouts\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{1edf49eb-be85-4c52-a5fd-b4f1cff31be4}</SharePointProjectItemId>
+    </None>
     <None Include="Lists\IronHive\ListInstance\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{4688f8d8-e2fd-425f-a606-573e3496c57d}</SharePointProjectItemId>
     </None>
@@ -167,6 +188,10 @@
       <DependentUpon>IronSP_Site.feature</DependentUpon>
     </Content>
     <Content Include="Fields\Fields\Elements.xml" />
+    <Content Include="IronConsole\Elements.xml" />
+    <Content Include="IronConsole\IronConsoleUserControl.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="IronPart\Elements.xml">
       <SubType>Designer</SubType>
     </Content>

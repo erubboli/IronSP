@@ -205,6 +205,12 @@ namespace IronSharePoint
         }
 
 
+        public void Reset()
+        {
+            _livingRuntimes.Remove(this._hiveId);
+            this.Dispose();
+        }
+
         public void Dispose()
         {
             if (IronHive != null)
