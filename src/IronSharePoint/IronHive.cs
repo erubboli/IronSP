@@ -98,6 +98,7 @@ namespace IronSharePoint
         {
             _siteId = hiveSiteId;
             _site = null;
+            _hiveFileDictionary = null;
         }
 
         public override PlatformAdaptationLayer PlatformAdaptationLayer
