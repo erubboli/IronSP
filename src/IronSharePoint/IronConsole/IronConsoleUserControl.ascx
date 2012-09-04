@@ -116,6 +116,10 @@
                  strg ? $("#ironSP_Console_Script").addClass('ironSP_Console_Alt') : $("#ironSP_Console_Script").removeClass('ironSP_Console_Alt');
                  return false;
              };
+
+             if (event.keyCode == 13 && !strg) {
+                 return false;
+             }
          });
 
      });
