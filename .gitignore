@@ -50,6 +50,7 @@ _ReSharper*/
 
 # Office Temp Files
 ~$*
+~*.tmp
 
 #NuGet
 packages/
