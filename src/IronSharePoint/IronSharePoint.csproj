@@ -85,9 +85,6 @@
     <Compile Include="Features\IronSP_Farm\IronSP_Farm.EventReceiver.cs">
       <DependentUpon>IronSP_Farm.feature</DependentUpon>
     </Compile>
-    <Compile Include="Features\IronSP_Site\IronSP_Site.EventReceiver.cs">
-      <DependentUpon>IronSP_Site.feature</DependentUpon>
-    </Compile>
     <Compile Include="Features\IronSP_WebApp\IronSP_WebApp.EventReceiver.cs">
       <DependentUpon>IronSP_WebApp.feature</DependentUpon>
     </Compile>

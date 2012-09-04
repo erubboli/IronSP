@@ -13,7 +13,6 @@ namespace IronSharePoint.EventReceivers
     /// </summary>
     public class IronScriptCompilerReceiver : SPItemEventReceiver
     {
-
         public override void ItemAdded(SPItemEventProperties properties)
         {
             CompileScript(properties);
@@ -22,7 +21,10 @@ namespace IronSharePoint.EventReceivers
         }
 
         private void CompileScript(SPItemEventProperties properties)
-        {         
+        {
+            if (!properties.ListItem.ContentTypeId.IsChildOf(new SPContentTypeId(IronContentTypeId.IronScript)))
+                return;
+
             try
             {
                 var engine =  IronRuntime.GetDefaultIronRuntime(properties.Web.Site).GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));

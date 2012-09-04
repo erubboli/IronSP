@@ -2,6 +2,7 @@
 <List xmlns:ows="Microsoft SharePoint" Title="IronHive" Direction="$Resources:Direction;" Url="IronSharePoint-IronHive" EnableContentTypes="TRUE" FolderCreation="TRUE" VersioningEnabled="TRUE" BaseType="1" xmlns="http://schemas.microsoft.com/sharepoint/">
   <MetaData>
     <ContentTypes>
+		<ContentTypeRef ID="0x101"></ContentTypeRef>
 		<ContentType ID="0x0101006a73161e57b24e5aa9e79588188ef6aa" Name="IronScript" Group="IronSP" Description="Dynamic Script File" Inherits="TRUE" Version="0">
 			<FieldRefs>
 				<FieldRef ID="{C1183929-9B30-4773-B3B4-F3098079AAA6}" Name="IronOutput" ShowInDisplayForm="TRUE" ShowInEditForm="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" />
