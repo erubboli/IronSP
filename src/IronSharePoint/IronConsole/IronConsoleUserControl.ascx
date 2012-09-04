@@ -43,7 +43,7 @@
 
 </style>
 
- <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.0.min.js" ></script>
+ <script type="text/javascript" src="/_layouts/IronSP/jquery.js" ></script>
 
  <script type="text/javascript">
      $(document).ready(function () {
