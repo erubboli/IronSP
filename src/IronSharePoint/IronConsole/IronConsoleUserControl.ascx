@@ -78,7 +78,9 @@
                      success: function (data) {
                          $("#ironSP_Console_Out").append("<p>" + prompt + $('#ironSP_Console_Script').val().replace(/(\r\n|\n|\r)/gm, "<br/>") + "</p>");
                          $('#ironSP_Console_Script').val("");
-                         $("#ironSP_Console_Out").append("<p>" + data.replace(/(\r\n|\n|\r)/gm, "<br/>") + "</p>");
+                         $.each(data.replace( /(\r\n|\n|\r)/gm , "<br/>").split("<br/>"), function(i, s) {
+                             $("<p/>").text(s).appendTo("#ironSP_Console_Out");
+                         });
                          $('#ironSP_Console_Out').scrollTop($('#ironSP_Console_Out')[0].scrollHeight);
                      }
                  });
