@@ -33,7 +33,7 @@ namespace IronSharePoint
                 var ironRuntime = IronRuntime.GetIronRuntime(site, site.ID);
 
                 var extension = HttpContext.Current.Request["ext"];
-                var script = HttpContext.Current.Request["script"];
+                var script ="_=(" + HttpContext.Current.Request["script"] +");_";
 
                 var engine = ironRuntime.GetEngineByExtension(extension);
 
