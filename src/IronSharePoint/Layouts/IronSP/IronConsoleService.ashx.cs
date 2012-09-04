@@ -43,7 +43,16 @@ namespace IronSharePoint
                     engine.ScriptEngine.Execute(String.Format(@"
 $rb_console_out=''
 def puts(o)
-    $rb_console_out +=o.inspect + '{0}' unless o.nil?
+    if o.respond_to? :GetEnumerator
+        $rb_console_out += '['
+        o.each_with_index do |x,i|
+            $rb_console_out += x.inspect
+            $rb_console_out += ', '
+        end
+        $rb_console_out = $rb_console_out[0...-2] + ']'
+    else
+        $rb_console_out +=o.inspect + '{0}' unless o.nil?
+    end
     return nil
 end
 ", System.Environment.NewLine));
