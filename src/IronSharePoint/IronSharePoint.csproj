@@ -207,7 +207,6 @@
     <Content Include="Lists\IronHive\Repair.aspx" />
     <Content Include="Lists\IronHive\Schema.xml" />
     <Content Include="Lists\IronHive\Upload.aspx" />
-    <Content Include="readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\SharePointTools\Microsoft.VisualStudio.SharePoint.targets" />
