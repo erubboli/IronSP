@@ -47,27 +47,33 @@
 
  <script type="text/javascript">
      $(document).ready(function () {
-        
-        var strg = false;
+
+         var strg = false;
+         var history = [];
+         var historyIndex = 0;
 
          $("#ironSP_Console_Script").keyup(function (event) {
-             
-             var prompt = "&gt;&gt;&nbsp;"
+
+             var prompt = "&gt;&gt;&nbsp;";
+             var command = $("#ironSP_Console_Script").val();
 
              if (event.keyCode == 13 && !strg) {
 
-                if($("#ironSP_Console_Script").val().trim()=='clear'){
+                 if (command.trim() == 'clear') {
                      $("#ironSP_Console_Out").empty();
                      $('#ironSP_Console_Script').val("");
                      return;
-                }
+                 }
+
+                 history.push(command.replace(new RegExp("\\n$"), ""));
+                 historyIndex = -1;
 
                  $.ajax({
                      type: 'POST',
                      url: '<%= SPContext.Current.Web.Url %>/_layouts/IronSP/IronConsoleService.ashx?ext=.rb',
                      dataType: 'text',
                      data: {
-                         script: $('#ironSP_Console_Script').val(),
+                         script: command
                      },
                      success: function (data) {
                          $("#ironSP_Console_Out").append("<p>" + prompt + $('#ironSP_Console_Script').val().replace(/(\r\n|\n|\r)/gm, "<br/>") + "</p>");
@@ -77,20 +83,40 @@
                      }
                  });
              }
-         }).keydown(function (event){
-                
-            var TABKEY = 9; 
-            if(event.keyCode == TABKEY) { 
-                $('#ironSP_Console_Script').val( $('#ironSP_Console_Script').val() + "    ") ;            
-                return false; 
-            } 
-            
-            if (event.keyCode == 45) {
-                strg = !strg;
-                strg?$("#ironSP_Console_Script").addClass('ironSP_Console_Alt'):$("#ironSP_Console_Script").removeClass('ironSP_Console_Alt');
-                return false;
+
+             if (event.keyCode == 38 && !strg) {
+                 historyIndex += 1;
+                 historyIndex = historyIndex % history.length;
+
+                 var index = (history.length - 1) - (historyIndex % history.length);
+                 $('#ironSP_Console_Script').val(history[index]);
+                 event.preventDefault();
+                 return false;
+             }
+             if (event.keyCode == 40 && !strg) {
+                 historyIndex -= 1;
+                 if (historyIndex < 0) historyIndex += history.length;
+                 historyIndex = historyIndex % history.length;
+
+                 var index = (history.length - 1) - (historyIndex % history.length);
+                 $('#ironSP_Console_Script').val(history[index]);
+                 event.preventDefault();
+                 return false;
+             }
+         }).keydown(function (event) {
+
+             var TABKEY = 9;
+             if (event.keyCode == TABKEY) {
+                 $('#ironSP_Console_Script').val($('#ironSP_Console_Script').val() + "    ");
+                 return false;
+             }
+
+             if (event.keyCode == 45) {
+                 strg = !strg;
+                 strg ? $("#ironSP_Console_Script").addClass('ironSP_Console_Alt') : $("#ironSP_Console_Script").removeClass('ironSP_Console_Alt');
+                 return false;
              };
-         }); 
+         });
 
      });
 
