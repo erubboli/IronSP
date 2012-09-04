@@ -8,7 +8,7 @@ using Microsoft.SharePoint;
 
 namespace IronSharePoint
 {
-    public class DynamicCompositeControl : CompositeControl, IDynamicControl
+    public class IronCompositeControl : CompositeControl, IIronControl
     {
         public IronEngine Engine { get; set; }
         public WebPart WebPart { get; set; }

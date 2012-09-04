@@ -11,9 +11,9 @@ using System.IO;
 
 namespace IronSharePoint
 {
-    public class IronUserControl : UserControl
+    public class IronWrapperUserControl : UserControl
     {
-        [TemplateContainer(typeof(IronControl))]
+        [TemplateContainer(typeof(IronWrapperControl))]
         [PersistenceMode(PersistenceMode.InnerDefaultProperty)]
         public ITemplate Template { get; set; }
 
@@ -50,7 +50,7 @@ namespace IronSharePoint
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
-                var dynamicControl = ctrl as IDynamicControl;
+                var dynamicControl = ctrl as IIronControl;
                 if (dynamicControl != null)
                 {
                     dynamicControl.Engine = engine;

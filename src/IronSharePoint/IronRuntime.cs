@@ -202,10 +202,7 @@ namespace IronSharePoint
 
         public void RegisterDynamicFunction(string name, object type)
         {
-            if (!DynamicFunctionRegistry.ContainsKey(name))
-            {
-                DynamicFunctionRegistry.Add(name, type);
-            }
+            DynamicFunctionRegistry[name] = type;        
         }
 
 

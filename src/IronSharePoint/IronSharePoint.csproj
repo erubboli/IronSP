@@ -80,7 +80,7 @@
     <Reference Include="Microsoft.SharePoint.Security" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DynamicCompositeControl.cs" />
+    <Compile Include="IronCompositeControl.cs" />
     <Compile Include="EventReceivers\IronScriptCompilerReceiver.cs" />
     <Compile Include="Features\IronSP_Farm\IronSP_Farm.EventReceiver.cs">
       <DependentUpon>IronSP_Farm.feature</DependentUpon>
@@ -91,7 +91,7 @@
     <Compile Include="Features\IronSP_WebApp\IronSP_WebApp.EventReceiver.cs">
       <DependentUpon>IronSP_WebApp.feature</DependentUpon>
     </Compile>
-    <Compile Include="IDynamicControl.cs" />
+    <Compile Include="IIronControl.cs" />
     <Compile Include="IIronDataStore.cs" />
     <Compile Include="IronConsole\IronConsole.cs" />
     <Compile Include="IronConsole\IronConsoleUserControl.ascx.cs">
@@ -103,9 +103,9 @@
     </Compile>
     <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeId.cs" />
-    <Compile Include="IronControl.cs" />
+    <Compile Include="IronWrapperControl.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
-    <Compile Include="DynamicControl.cs" />
+    <Compile Include="IronControl.cs" />
     <Compile Include="IronEngine.cs" />
     <Compile Include="IronExpressionBuilder.cs" />
     <Compile Include="IronField.cs" />
@@ -116,7 +116,7 @@
     <Compile Include="IronPart\IronPart.cs" />
     <Compile Include="IronPlatformAdaptationLayer.cs" />
     <Compile Include="IronRuntime.cs" />
-    <Compile Include="IronUserControl.cs">
+    <Compile Include="IronWrapperUserControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layouts\IronSP\IronService.ashx.cs">

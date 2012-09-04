@@ -7,7 +7,7 @@ using Microsoft.SharePoint;
 
 namespace IronSharePoint
 {
-    public interface IDynamicControl
+    public interface IIronControl
     {
         IronEngine Engine { get; set; }
         WebPart WebPart { get; set; }

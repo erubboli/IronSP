@@ -34,7 +34,7 @@ namespace IronSharePoint.IronPart
         public string Data { get; set; }
 
         protected Exception Exception {get; set;}
-        protected IDynamicControl DynamicControl{get; private set;}
+        protected IIronControl DynamicControl{get; private set;}
 
         protected override void OnInit(EventArgs e)
         {
@@ -58,7 +58,7 @@ namespace IronSharePoint.IronPart
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
-                DynamicControl = ctrl as IDynamicControl;
+                DynamicControl = ctrl as IIronControl;
                 if (DynamicControl != null)
                 {
                     DynamicControl.Engine = engine;
