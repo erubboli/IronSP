@@ -79,16 +79,20 @@ namespace IronSharePoint
 
         public static IronRuntime GetIronRuntime(SPSite targetSite, Guid hiveId)
         {
+            IronRuntime ironRuntime = null;
+
             if (hiveId == Guid.Empty)
             {
-                return GetDefaultIronRuntime(targetSite);
+                ironRuntime = GetDefaultIronRuntime(targetSite);
             }
-
-            IronRuntime ironRuntime = _livingRuntimes.Values.Where(r => r._hiveId==hiveId).FirstOrDefault();
-
-            if (ironRuntime == null)
+            else
             {
-                ironRuntime = CreateIronRuntime(hiveId);
+                ironRuntime = _livingRuntimes.Values.Where(r => r._hiveId == hiveId).FirstOrDefault();
+
+                if (ironRuntime == null)
+                {
+                    ironRuntime = CreateIronRuntime(hiveId);
+                }
             }
 
             if (HttpContext.Current != null)

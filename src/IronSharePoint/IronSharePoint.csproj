@@ -119,6 +119,9 @@
     <Compile Include="IronUserControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Layouts\IronSP\IronService.ashx.cs">
+      <DependentUpon>IronService.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Layouts\IronSP\IronConsoleService.ashx.cs">
       <DependentUpon>IronConsoleService.ashx</DependentUpon>
     </Compile>
@@ -155,6 +158,7 @@
       <SharePointProjectItemId>{5ae035c6-762c-45d6-92cf-ceceb0274afa}</SharePointProjectItemId>
     </None>
     <None Include="key.snk" />
+    <None Include="Layouts\IronSP\IronService.ashx" />
     <None Include="Layouts\IronSP\IronConsoleService.ashx" />
     <None Include="Layouts\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{1edf49eb-be85-4c52-a5fd-b4f1cff31be4}</SharePointProjectItemId>
@@ -198,6 +202,7 @@
     <Content Include="ContentTypes\IronScript\Elements.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Layouts\IronSP\jquery.js" />
     <Content Include="Lists\IronHive\EditDlg.htm" />
     <Content Include="Lists\IronHive\Elements.xml" />
     <Content Include="Lists\IronHive\FileDlg.htm" />
