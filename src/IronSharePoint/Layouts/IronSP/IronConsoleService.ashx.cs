@@ -33,7 +33,7 @@ namespace IronSharePoint
                 var ironRuntime = IronRuntime.GetIronRuntime(site, site.ID);
 
                 var extension = HttpContext.Current.Request["ext"];
-                var script = HttpContext.Current.Request["script"];
+                var script ="_=(" + HttpContext.Current.Request["script"] +");_";
 
                 var engine = ironRuntime.GetEngineByExtension(extension);
 
@@ -43,7 +43,7 @@ namespace IronSharePoint
                     engine.ScriptEngine.Execute(String.Format(@"
 $rb_console_out=''
 def puts(o)
-    $rb_console_out +=o.ToString() + '{0}'
+    $rb_console_out +=o.inspect + '{0}' unless o.nil?
     return nil
 end
 ", System.Environment.NewLine));
@@ -51,14 +51,14 @@ end
                 
                 var obj = engine.ScriptEngine.Execute(script, engine.IronRuntime.ScriptRuntime.Globals);
 
-                output = obj == null ? String.Empty: "=> " + obj.ToString();
+                output = "=> " + (obj != null ? obj.ToString() : "nil");
 
                 if (extension == ".rb")
                 {
                     var consoleOut = engine.ScriptEngine.Execute("$rb_console_out.ToString()").ToString();
                     if(consoleOut!=String.Empty)
                     {
-                        output = consoleOut + output;
+                        output = consoleOut + System.Environment.NewLine + output;
                     }
                 }
             }
