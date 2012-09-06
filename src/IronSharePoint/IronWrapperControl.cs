@@ -24,6 +24,8 @@ namespace IronSharePoint
 
         public string ScriptHiveId { get; set; }
 
+        public string Config { get; set; }
+
         public IIronDataStore DataStore { get; set; }
 
         protected IronEngine engine;
@@ -59,6 +61,7 @@ namespace IronSharePoint
                     dynamicControl.Engine = engine;
                     dynamicControl.WebPart = null;
                     dynamicControl.Data = null;
+                    dynamicControl.Config = Config;
                 }
 
                 this.Controls.Add(ctrl); 

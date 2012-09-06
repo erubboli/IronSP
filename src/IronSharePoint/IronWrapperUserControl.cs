@@ -25,6 +25,8 @@ namespace IronSharePoint
 
         public string ScriptHiveId { get; set; }
 
+        public string Config { get; set; }
+
         private Exception _exception;
 
         protected override void OnInit(EventArgs e)
@@ -56,6 +58,7 @@ namespace IronSharePoint
                     dynamicControl.Engine = engine;
                     dynamicControl.WebPart = null;
                     dynamicControl.Data = null;
+                    dynamicControl.Config = Config;
                 }
 
                 if (Template != null)
