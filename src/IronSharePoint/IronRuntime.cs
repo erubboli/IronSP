@@ -27,7 +27,7 @@ namespace IronSharePoint
                     var inHttpAppLivingRuntimes = HttpContext.Current.Application[key];
                     if (inHttpAppLivingRuntimes == null)
                     {
-                        HttpContext.Current.Application[IronHelper.GetPrefixedKey(key)] = new Dictionary<Guid, IronRuntime>();
+                        HttpContext.Current.Application[key] = new Dictionary<Guid, IronRuntime>();
                     }
                 }
 
@@ -97,7 +97,7 @@ namespace IronSharePoint
 
             if (HttpContext.Current != null)
             {
-                ironRuntime.IronHive.Open(ironRuntime._hiveId);
+                ironRuntime.IronHive.Init(ironRuntime._hiveId);
 
                 // flag for dispoal in the IronHttpModule
                 HttpContext.Current.Items[IronHelper.GetPrefixedKey("IronRuntime_" + Guid.NewGuid().ToString()) + "_ToDispose"] = ironRuntime;
@@ -137,7 +137,7 @@ namespace IronSharePoint
                 ironRuntime.DynamicTypeRegistry = new Dictionary<string, Object>();
                 ironRuntime.DynamicFunctionRegistry = new Dictionary<string, Object>();
                 ironRuntime.ScriptRuntime.Globals.SetVariable("ironRuntime", ironRuntime);
-                ironRuntime.IronHive.Open(ironRuntime._hiveId);
+                ironRuntime.IronHive.Init(ironRuntime._hiveId);
 
                 _livingRuntimes.Add(hiveSiteId, ironRuntime);
 

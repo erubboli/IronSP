@@ -94,7 +94,7 @@ namespace IronSharePoint
             }
         }
 
-        internal void Open(Guid hiveSiteId)
+        internal void Init(Guid hiveSiteId)
         {
             _siteId = hiveSiteId;
             _site = null;
