@@ -67,7 +67,10 @@ IronConsole = (function() {
   };
 
   IronConsole.prototype.getExpressionFromHistory = function(index) {
-    return this.history[mod(index, this.history.length)];
+    if (this.history.length === 0) {
+      return '';
+    }
+    return this.history[this.history.length - 1 - mod(index, this.history.length)];
   };
 
   IronConsole.prototype.onExecuteSuccess = function(callback) {
@@ -107,6 +110,12 @@ IronConsoleView = (function() {
     if (options == null) {
       options = {};
     }
+    this.showExecuting = __bind(this.showExecuting, this);
+
+    this.toggleEditMode = __bind(this.toggleEditMode, this);
+
+    this.scrollToPrompt = __bind(this.scrollToPrompt, this);
+
     this.append = __bind(this.append, this);
 
     this.insertTab = __bind(this.insertTab, this);
@@ -122,14 +131,15 @@ IronConsoleView = (function() {
     this.consoleTemplate = $(options["consoleTemplateSelector"] || '#ironSP-console-template').html();
     this.consoleLineTemplate = $(options["consoleLineTemplateSelector"] || '#ironSP-console-line-template').html();
     this.historyIndex = 0;
+    this.editMode = false;
     this.render();
     this.registerEventHandlers();
   }
 
   IronConsoleView.prototype.render = function() {
-    this.$console = Mustache.render(this.consoleTemplate, {
+    this.$console = $(Mustache.render(this.consoleTemplate, {
       prompt: this.inputPrefix
-    });
+    }));
     return this.$container.empty().append(this.$console);
   };
 
@@ -139,47 +149,66 @@ IronConsoleView = (function() {
       if (response["output"] != null) {
         _this.append("output", _this.outputPrefix, response["output"]);
       }
-      return _this.append("result", _this.resultPrefix, response["result"]);
+      _this.append("result", _this.resultPrefix, response["result"]);
+      return _this.showExecuting(false);
     });
     this.console.onExecuteError(function(error) {
-      return _this.append("error", '', error);
+      _this.append("error", '', error);
+      return _this.showExecuting(false);
     });
     this.$input || (this.$input = $("#ironSP-console-input"));
     return this.$input.keydown(function(e) {
-      var expression, handled;
-      expression = _this.$input.val();
+      var expression, handled, _ref;
+      expression = (_ref = _this.$input.val()) != null ? _ref.trim() : void 0;
       handled = true;
-      switch (e.keyCode) {
-        case 13:
-          if (expression === 'clear') {
-            _this.clearConsole();
-          } else {
-            _this.append("input", _this.inputPrefix, expression);
-            _this.historyIndex = 0;
-            _this.clearInput();
-            _this.console.execute(expression);
-          }
-          break;
-        case 9:
-          insertTab();
-          break;
-        case 38:
-          _this.historyIndex += 1;
-          _this.$input.val(_this.console.getExpressionFromHistory(_this.historyIndex));
-          break;
-        case 40:
-          _this.historyIndex -= 1;
-          _this.$input.val(_this.console.getExpressionFromHistory(_this.historyIndex));
-          break;
-        default:
-          handled = false;
+      if (!_this.editMode) {
+        switch (e.keyCode) {
+          case 13:
+            if (expression === 'clear') {
+              _this.clearConsole();
+            } else if (expression !== '') {
+              _this.append("input", _this.inputPrefix, expression);
+              _this.historyIndex = 0;
+              _this.clearInput();
+              _this.showExecuting();
+              _this.console.execute(expression);
+            }
+            break;
+          case 9:
+            _this.insertTab();
+            break;
+          case 38:
+            _this.$input.val(_this.console.getExpressionFromHistory(_this.historyIndex));
+            _this.historyIndex += 1;
+            break;
+          case 40:
+            _this.historyIndex -= 1;
+            _this.$input.val(_this.console.getExpressionFromHistory(_this.historyIndex));
+            break;
+          case 13:
+            _this.toggleEditMode();
+            break;
+          default:
+            handled = false;
+        }
+      } else {
+        switch (e.keyCode) {
+          case 9:
+            _this.insertTab();
+            break;
+          case 13:
+            _this.toggleEditMode();
+            break;
+          default:
+            handled = false;
+        }
       }
       return !handled;
     });
   };
 
   IronConsoleView.prototype.insertTab = function() {
-    return this.$input.val(this.$input.val() + "    ");
+    return this.$input.replaceSelection("    ");
   };
 
   IronConsoleView.prototype.clearInput = function() {
@@ -191,26 +220,46 @@ IronConsoleView = (function() {
     return this.$console.find(".ironSP-console-line").remove();
   };
 
-  IronConsoleView.prototype.caretPos = function() {};
-
   IronConsoleView.prototype.append = function(type, prefix, text) {
-    var $line, line, _i, _len, _ref, _results;
-    _ref = text.replace(/[\n|\r]+/gm, '\n').split('\n');
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      line = _ref[_i];
+    var $line, i, line, linePrefix, _i, _len, _ref;
+    _ref = text.replace(/\r/gm, '\n').split('\n');
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      line = _ref[i];
       if ((line != null ? line.trim() : void 0) !== '') {
+        linePrefix = i === 0 ? prefix : '';
         $line = $(Mustache.render(this.consoleLineTemplate, {
           text: line,
           type: type,
-          prefix: prefix
+          prefix: linePrefix
         }));
-        _results.push($(".ironSP-console-prompt").before($line));
-      } else {
-        _results.push(void 0);
+        $(".ironSP-console-prompt").before($line);
       }
     }
-    return _results;
+    return this.scrollToPrompt();
+  };
+
+  IronConsoleView.prototype.scrollToPrompt = function() {
+    return this.$container.scrollTop(this.$container[0].scrollHeight);
+  };
+
+  IronConsoleView.prototype.toggleEditMode = function() {
+    this.editMode = !this.editMode;
+    if (this.editMode) {
+      return this.$input.addClass('ironSP-console-edit');
+    } else {
+      return this.$input.removeClass('ironSP-console-edit');
+    }
+  };
+
+  IronConsoleView.prototype.showExecuting = function(b) {
+    if (b == null) {
+      b = true;
+    }
+    if (b) {
+      return this.$input.addClass('ironSP-console-executing');
+    } else {
+      return this.$input.removeClass('ironSP-console-executing');
+    }
   };
 
   return IronConsoleView;

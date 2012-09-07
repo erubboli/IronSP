@@ -22,7 +22,8 @@ class IronConsole
       error: (args...) => cb(args...) for cb in @errorCallbacks
 
   getExpressionFromHistory: (index) ->
-    @history[mod(index, @history.length)]
+    return '' if @history.length == 0
+    @history[@history.length - 1 - mod(index, @history.length)]
 
   onExecuteSuccess: (callback) ->
     @successCallbacks.push callback
@@ -51,50 +52,64 @@ class IronConsoleView
     @consoleTemplate = $(options["consoleTemplateSelector"] || '#ironSP-console-template').html()
     @consoleLineTemplate = $(options["consoleLineTemplateSelector"] || '#ironSP-console-line-template').html()
     @historyIndex = 0
+    @editMode = false
 
     @render()
     @registerEventHandlers()
 
   render: =>
-    @$console = Mustache.render(@consoleTemplate, prompt: @inputPrefix)
+    @$console = $ Mustache.render(@consoleTemplate, prompt: @inputPrefix)
     @$container.empty().append @$console
 
   registerEventHandlers: =>
     @console.onExecuteSuccess (response) =>
       @append "output", @outputPrefix, response["output"] if response["output"]?
       @append "result", @resultPrefix, response["result"]
+      @showExecuting false
     @console.onExecuteError (error) =>
       @append "error", '', error
+      @showExecuting false
 
     @$input ||= $("#ironSP-console-input")
     @$input.keydown (e) =>
-      expression = @$input.val()
+      expression = @$input.val()?.trim()
 
       handled = true
-      switch e.keyCode
-        when 13 # Return
-          if expression == 'clear'
-            @clearConsole()
-          else
-            @append "input", @inputPrefix, expression
-            @historyIndex = 0
-            @clearInput()
+      if !@editMode
+        switch e.keyCode
+          when 13 # Return
+            if expression == 'clear'
+              @clearConsole()
+            else if expression != ''
+              @append "input", @inputPrefix, expression
+              @historyIndex = 0
+              @clearInput()
+              @showExecuting()
 
-            @console.execute expression
-        when 9 # Tab
-          insertTab()
-        when 38 # Up
-          @historyIndex += 1
-          @$input.val @console.getExpressionFromHistory(@historyIndex)
-        when 40 # Up
-          @historyIndex -= 1
-          @$input.val @console.getExpressionFromHistory(@historyIndex)
-        else handled=false
+              @console.execute expression
+          when 9 # Tab
+            @insertTab()
+          when 38 # Up
+            @$input.val @console.getExpressionFromHistory(@historyIndex)
+            @historyIndex += 1
+          when 40 # Down
+            @historyIndex -= 1
+            @$input.val @console.getExpressionFromHistory(@historyIndex)
+          when 13 # Insert
+            @toggleEditMode()
+          else handled=false
+      else 
+        switch e.keyCode
+          when 9 # Tab
+            @insertTab()
+          when 13 # Insert
+            @toggleEditMode()
+          else handled=false
 
       return !handled
 
   insertTab: =>
-    @$input.val(@$input.val() + "    ")
+    @$input.replaceSelection("    ")
 
   clearInput: ->
     @$input.val('')
@@ -103,10 +118,27 @@ class IronConsoleView
     @clearInput()
     @$console.find(".ironSP-console-line").remove()
 
-  caretPos: ->
-
   append: (type, prefix, text) =>
-    for line in text.replace(/[\n|\r]+/gm, '\n').split('\n')
+    for line,i in text.replace(/\r/gm, '\n').split('\n')
       if line?.trim() != ''
-        $line = $(Mustache.render(@consoleLineTemplate, text: line, type: type, prefix: prefix))
+        linePrefix = if i == 0 then prefix else ''
+
+        $line = $(Mustache.render(@consoleLineTemplate, text: line, type: type, prefix: linePrefix))
         $(".ironSP-console-prompt").before($line)
+    @scrollToPrompt()
+
+  scrollToPrompt: =>
+    @$container.scrollTop(@$container[0].scrollHeight);
+
+  toggleEditMode: =>
+    @editMode = !@editMode
+    if @editMode
+      @$input.addClass 'ironSP-console-edit'
+    else
+      @$input.removeClass 'ironSP-console-edit'
+
+  showExecuting: (b = true) =>
+    if b 
+      @$input.addClass 'ironSP-console-executing'
+    else
+      @$input.removeClass 'ironSP-console-executing'
