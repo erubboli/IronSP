@@ -199,7 +199,9 @@
     <Content Include="ContentTypes\IronScript\Elements.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Layouts\IronSP\IronConsole.js" />
     <Content Include="Layouts\IronSP\jquery.js" />
+    <Content Include="Layouts\IronSP\mustache.js" />
     <Content Include="Lists\IronHive\EditDlg.htm" />
     <Content Include="Lists\IronHive\Elements.xml" />
     <Content Include="Lists\IronHive\FileDlg.htm" />

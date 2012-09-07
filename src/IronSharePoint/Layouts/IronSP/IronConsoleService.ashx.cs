@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Web.Script.Serialization;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.WebControls;
 using System.Web;
@@ -8,6 +10,7 @@ namespace IronSharePoint
 {
     public partial class IronConsoleService : IHttpHandler
     {
+        readonly JavaScriptSerializer _serializer = new JavaScriptSerializer();
         public bool IsReusable
         {
             get { return true; }
@@ -15,7 +18,7 @@ namespace IronSharePoint
 
         public void ProcessRequest(HttpContext context)
         {
-            string output = null;
+            var responseData = new Dictionary<string, string>();
 
             try
             {
@@ -33,10 +36,9 @@ namespace IronSharePoint
                 var ironRuntime = IronRuntime.GetIronRuntime(site, site.ID);
 
                 var extension = HttpContext.Current.Request["ext"];
-                var script ="_=(" + HttpContext.Current.Request["script"] +");_";
+                var expression = HttpContext.Current.Request["expression"];
 
                 var engine = ironRuntime.GetEngineByExtension(extension);
-
 
                 if (extension == ".rb")
                 {
@@ -58,25 +60,21 @@ end
 ", System.Environment.NewLine));
                 }
                 
-                var obj = engine.ScriptEngine.Execute(script, engine.IronRuntime.ScriptRuntime.Globals);
-
-                output = "=> " + (obj != null ? obj.ToString() : "nil");
+                var obj = engine.ScriptEngine.Execute(expression, engine.IronRuntime.ScriptRuntime.Globals);
+                responseData["result"] = (obj != null ? obj.ToString() : "nil");
 
                 if (extension == ".rb")
                 {
-                    var consoleOut = engine.ScriptEngine.Execute("$rb_console_out.ToString()").ToString();
-                    if(consoleOut!=String.Empty)
-                    {
-                        output = consoleOut + System.Environment.NewLine + output;
-                    }
+                    responseData["output"] = engine.ScriptEngine.Execute("$rb_console_out").ToString();
                 }
             }
             catch (Exception ex)
             {
-                output = ex.Message;
+                responseData["error"] = ex.Message + Environment.NewLine + ex.StackTrace;
             }
 
-            context.Response.Write(output);
+            var json = _serializer.Serialize(responseData);
+            context.Response.Write(json);
         }
     }
 }
