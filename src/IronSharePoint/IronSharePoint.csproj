@@ -143,6 +143,9 @@
     <None Include="Fields\Fields\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{9672d965-0cb3-483c-b6ae-af9f5d2a78e9}</SharePointProjectItemId>
     </None>
+    <None Include="Images\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{3e062515-a6fa-49f3-942e-2af3a66f9a8a}</SharePointProjectItemId>
+    </None>
     <None Include="IronConsole\IronConsole.webpart" />
     <None Include="IronConsole\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{9288fb1a-95db-4d0a-8ad7-edfe595e6353}</SharePointProjectItemId>
@@ -189,6 +192,7 @@
       <DependentUpon>IronSP_Site.feature</DependentUpon>
     </Content>
     <Content Include="Fields\Fields\Elements.xml" />
+    <Content Include="Images\IronSP\ajax-loader.gif" />
     <Content Include="IronConsole\Elements.xml" />
     <Content Include="IronConsole\IronConsoleUserControl.ascx">
       <SubType>ASPXCodeBehind</SubType>
@@ -200,6 +204,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Layouts\IronSP\IronConsole.js" />
+    <Content Include="Layouts\IronSP\jquery-fieldselection.min.js" />
     <Content Include="Layouts\IronSP\jquery.js" />
     <Content Include="Layouts\IronSP\mustache.js" />
     <Content Include="Lists\IronHive\EditDlg.htm" />

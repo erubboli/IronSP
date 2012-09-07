@@ -39,27 +39,26 @@
 }
 
 .ironSP-console-prefix {
-    padding-right: 5px;
+  padding-right: 5px;
 }
 
 .ironSP-console-prompt .ironSP-console-prefix {
-    padding-top: 2px;
-    vertical-align: top;
+  padding-top: 2px;
+  vertical-align: top;
 }
 
 .ironSP-console-error td {
-    color: red !important;
-    font-size: 10pt;
+  color: red !important;
+  font-size: 10pt;
 }
 
 .ironSP-console-output {
-    font-style: italic;
+  font-style: italic;
 }
 
 .ironSP-console-executing {
   background: url('_layouts/images/IronSP/ajax-loader.gif') no-repeat right top
 }
-
 </style>
 
 <script type="text/javascript" src="/_layouts/IronSP/jquery.js" ></script>
@@ -75,7 +74,7 @@
 </script>
 
 <script id="ironSP-console-line-template" type='text/html'>
-  <tr class='ironSP-console-line ironSP-console-{{type}}' data-exp-id='{{id}}'>
+  <tr class='ironSP-console-line ironSP-console-{{type}}'>
     <td class='ironSP-console-prefix'>
       <span>{{prefix}}</span>
     </td>
