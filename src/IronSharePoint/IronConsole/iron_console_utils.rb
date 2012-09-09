@@ -1,20 +1,5 @@
 ﻿module IronConsole
   module Utils
-    def self.included base
-      # monkey patch Object#inspect
-      class << Object
-        alias_method :old_inspect, :inspect
-
-        def inspect
-          if self.respond_to? :GetEnumerator
-            self.to_a.inspect
-          else
-            old_inspect
-          end
-        end
-      end
-    end
-
     def puts obj
       ($out_buffer ||= []) << obj.to_s
       return nil
@@ -56,6 +41,19 @@
         puts "#{item[0]}#{item[1]} => #{item[2]}"
       end
       data.size
+    end
+  end
+end
+
+# monkey patch Object#inspect
+class Object
+  alias_method :old_inspect, :inspect
+
+  def inspect
+    if self.respond_to? :GetEnumerator
+      self.to_a.inspect
+    else
+      old_inspect
     end
   end
 end
