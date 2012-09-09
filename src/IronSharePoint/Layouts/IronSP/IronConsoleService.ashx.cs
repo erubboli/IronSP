@@ -6,6 +6,7 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.WebControls;
 using System.Web;
 using IronSharePoint.Administration;
+using System.Linq;
 
 namespace IronSharePoint
 {
@@ -31,7 +32,6 @@ namespace IronSharePoint
                     return;
                 }
 
-
                 IronHiveRegistry.Local.EnsureTrustedHive(site.ID);
 
                 var ironRuntime = IronRuntime.GetIronRuntime(site, site.ID);
@@ -40,13 +40,16 @@ namespace IronSharePoint
                 var expression = HttpContext.Current.Request["expression"];
 
                 var engine = ironRuntime.GetEngineByExtension(extension);
+                var scriptEngine = engine.ScriptEngine;
                 if (extension == ".rb")
                 {
-                    engine.ScriptEngine.Execute(@"
+                    // TODO: fix load path
+                    scriptEngine.Execute(@"
                     unless defined?(IronConsole::Utils)
                       begin
-                        require 'iron_console_utils'
+                        require 'C:\Program Files\Common Files\Microsoft Shared\Web Server Extensions\14\TEMPLATE\FEATURES\IronSP_Hive_Site\IronConsole\iron_console_utils.rb'
                         include IronConsole::Utils 
+                        puts 'IronConsole Utils loaded'
                       rescue
                         raise 'Could not load IronConsole Utils'
                       end
@@ -58,7 +61,8 @@ namespace IronSharePoint
 
                 if (extension == ".rb")
                 {
-                    response.Output = engine.ScriptEngine.Execute("console_out").ToString();
+                    var consoleOut = scriptEngine.Execute(String.Format("console_out '{0}'", Environment.NewLine));
+                    response.Output = Convert.ToString(consoleOut);
                 }
             }
             catch (Exception ex)

@@ -16,7 +16,7 @@
     end
 
     def puts obj
-      (@out_buffer ||= []) << obj.to_s
+      ($out_buffer ||= []) << obj.to_s
       return nil
     end
 
@@ -26,11 +26,10 @@
       inspected
     end
 
-    def console_out clear=true
-      ret = @out_buffer.clone
-      @out_buffer = [] if clear
-
-      return ret
+    def console_out seperator='\n', clear=true
+      out = ($out_buffer || []).join seperator
+      $out_buffer = [] if clear
+      return out;
     end
 
     def pm obj, *options
