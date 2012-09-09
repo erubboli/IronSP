@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint", "src\IronS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint.IronRuby10", "src\IronSharePoint.IronRuby10\IronSharePoint.IronRuby10.csproj", "{6E073DFC-A506-44DF-B378-7C539ED71502}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint.Test", "test\IronSharePoint.Test\IronSharePoint.Test.csproj", "{4E1E1D6A-6564-4307-BF64-17D7724A0230}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{6E073DFC-A506-44DF-B378-7C539ED71502}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E073DFC-A506-44DF-B378-7C539ED71502}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6E073DFC-A506-44DF-B378-7C539ED71502}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4E1E1D6A-6564-4307-BF64-17D7724A0230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E1E1D6A-6564-4307-BF64-17D7724A0230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E1E1D6A-6564-4307-BF64-17D7724A0230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E1E1D6A-6564-4307-BF64-17D7724A0230}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
