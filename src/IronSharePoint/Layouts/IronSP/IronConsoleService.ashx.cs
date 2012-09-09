@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using IronSharePoint.IronConsole;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.WebControls;
 using System.Web;
@@ -18,7 +19,7 @@ namespace IronSharePoint
 
         public void ProcessRequest(HttpContext context)
         {
-            var responseData = new Dictionary<string, string>();
+            var response = new Response();
 
             try
             {
@@ -61,20 +62,20 @@ end
                 }
                 
                 var obj = engine.ScriptEngine.Execute(expression, engine.IronRuntime.ScriptRuntime.Globals);
-                responseData["result"] = (obj != null ? obj.ToString() : "nil");
+                response.Result = (obj != null ? obj.ToString() : "nil");
 
                 if (extension == ".rb")
                 {
-                    responseData["output"] = engine.ScriptEngine.Execute("$rb_console_out").ToString();
+                    response.Output = engine.ScriptEngine.Execute("$rb_console_out").ToString();
                 }
             }
             catch (Exception ex)
             {
-                responseData["error"] = ex.Message + Environment.NewLine + ex.StackTrace;
+                response.Error = ex.Message;
+                response.StackTrace = ex.StackTrace;
             }
 
-            var json = _serializer.Serialize(responseData);
-            context.Response.Write(json);
+            context.Response.Write(response.ToJson());
         }
     }
 }

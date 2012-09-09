@@ -68,6 +68,9 @@
     <Reference Include="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <HintPath>..\..\lib\Microsoft.SharePoint.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.4.5.9\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -91,6 +94,7 @@
     <Compile Include="IIronControl.cs" />
     <Compile Include="IIronDataStore.cs" />
     <Compile Include="IronConsole\IronConsole.cs" />
+    <Compile Include="IronConsole\Response.cs" />
     <Compile Include="IronConsole\IronConsoleUserControl.ascx.cs">
       <DependentUpon>IronConsoleUserControl.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -128,6 +132,7 @@
     <Content Include="Administration\IronHiveRegistry.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="app.config" />
     <None Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.feature">
       <FeatureId>{cea2b887-e17d-4dbe-a477-4f7c8bdf03be}</FeatureId>
     </None>
@@ -170,6 +175,7 @@
     <None Include="Lists\IronHive\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{880960ed-55af-46cc-a291-3bc601bddf46}</SharePointProjectItemId>
     </None>
+    <None Include="packages.config" />
     <None Include="Package\Package.package">
       <PackageId>{aacb7026-8941-4faa-b4bb-04562e317e53}</PackageId>
     </None>
