@@ -93,7 +93,7 @@
     </Compile>
     <Compile Include="IIronControl.cs" />
     <Compile Include="IIronDataStore.cs" />
-    <Compile Include="IronConsole\IronConsole.cs" />
+    <Compile Include="IronConsole\IronConsoleWebPart.cs" />
     <Compile Include="IronConsole\Response.cs" />
     <Compile Include="IronConsole\IronConsoleUserControl.ascx.cs">
       <DependentUpon>IronConsoleUserControl.ascx</DependentUpon>

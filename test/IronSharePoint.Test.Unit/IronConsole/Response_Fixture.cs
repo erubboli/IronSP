@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace IronSharePoint.Test.Unit.IronConsole
 {
     [TestFixture]
-    public class IronConsoleResponse_Fixture
+    public class Response_Fixture
     {
         Response Sut;
 

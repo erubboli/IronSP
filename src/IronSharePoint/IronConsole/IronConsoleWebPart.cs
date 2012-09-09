@@ -9,7 +9,7 @@ using Microsoft.SharePoint.WebControls;
 namespace IronSharePoint.IronConsole
 {
     [ToolboxItemAttribute(false)]
-    public class IronConsole : WebPart
+    public class IronConsoleWebPart : WebPart
     {
         // Visual Studio might automatically update this path when you change the Visual Web Part project item.
         private const string _ascxPath = @"~/_CONTROLTEMPLATES/IronSP/IronConsole/IronConsoleUserControl.ascx";
