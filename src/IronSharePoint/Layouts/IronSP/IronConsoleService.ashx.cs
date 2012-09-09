@@ -19,6 +19,7 @@ namespace IronSharePoint
         public void ProcessRequest(HttpContext context)
         {
             var response = new Response();
+            var jsonResponse = string.Empty;
 
             try
             {
@@ -29,7 +30,7 @@ namespace IronSharePoint
                     context.Response.Write("Only Site Admins are allowed to use the Console");
                     return;
                 }
-                
+
 
                 IronHiveRegistry.Local.EnsureTrustedHive(site.ID);
 
@@ -39,33 +40,25 @@ namespace IronSharePoint
                 var expression = HttpContext.Current.Request["expression"];
 
                 var engine = ironRuntime.GetEngineByExtension(extension);
-
                 if (extension == ".rb")
                 {
-                    engine.ScriptEngine.Execute(String.Format(@"
-$rb_console_out=''
-def puts(o)
-    if o.respond_to? :GetEnumerator
-        $rb_console_out += '['
-        o.each_with_index do |x,i|
-            $rb_console_out += x.inspect
-            $rb_console_out += ', '
-        end
-        $rb_console_out = $rb_console_out[0...-2] + ']'
-    else
-        $rb_console_out +=o.inspect + '{0}' unless o.nil?
-    end
-    return nil
-end
-", System.Environment.NewLine));
+                    engine.ScriptEngine.Execute(@"
+                    unless defined?(IronConsole::Utils)
+                      begin
+                        require 'iron_console_utils'
+                        include IronConsole::Utils 
+                      rescue
+                        raise 'Could not load IronConsole Utils'
+                      end
+                    end");
                 }
-                
+
                 var obj = engine.ScriptEngine.Execute(expression, engine.IronRuntime.ScriptRuntime.Globals);
                 response.Result = (obj != null ? obj.ToString() : "nil");
 
                 if (extension == ".rb")
                 {
-                    response.Output = engine.ScriptEngine.Execute("$rb_console_out").ToString();
+                    response.Output = engine.ScriptEngine.Execute("console_out").ToString();
                 }
             }
             catch (Exception ex)
@@ -73,8 +66,12 @@ end
                 response.Error = ex.Message;
                 response.StackTrace = ex.StackTrace;
             }
+            finally
+            {
+                jsonResponse = response.ToJson();
+            }
 
-            context.Response.Write(response.ToJson());
+            context.Response.Write(jsonResponse);
         }
     }
 }
