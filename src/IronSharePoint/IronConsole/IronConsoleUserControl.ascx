@@ -42,7 +42,7 @@
   padding-right: 5px;
 }
 
-.ironSP-console-prompt .ironSP-console-prefix {
+.ironSP-console-prefix {
   padding-top: 2px;
   vertical-align: top;
 }
