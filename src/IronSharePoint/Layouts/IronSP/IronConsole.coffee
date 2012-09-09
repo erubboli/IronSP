@@ -7,7 +7,7 @@ class IronConsole
 
   execute: (expression) ->
     @addToHistory expression
-    wrapped = wrapExpression(expression)
+    wrapped = @wrapExpression(expression)
     $.ajax
       type: 'POST',
       dataType: 'text',
@@ -35,9 +35,9 @@ class IronConsole
     escaped = expression.replace /\\n$/, ''
     @history.push escaped
 
-  wrapExpression = (expression) ->
+  wrapExpression : (expression) =>
     if @lastResultVariable?
-      "#{@lastResultVariable} = (#{expression});#{@lastResultVariable}"
+      "#{@lastResultVariable} = (#{expression});#{@lastResultVariable}.inspect"
     else
       expression
 
@@ -95,7 +95,7 @@ class IronConsoleView
           when 40 # Down
             @historyIndex -= 1
             @$input.val @console.getExpressionFromHistory(@historyIndex)
-          when 13 # Insert
+          when 45 # insert
             @toggleEditMode()
           else handled=false
       else 

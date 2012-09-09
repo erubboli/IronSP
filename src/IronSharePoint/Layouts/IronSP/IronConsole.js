@@ -4,13 +4,15 @@ var IronConsole, IronConsoleView,
   __slice = [].slice;
 
 IronConsole = (function() {
-  var mod, wrapExpression;
+  var mod;
 
   function IronConsole(serviceUrl, options) {
     this.serviceUrl = serviceUrl;
     if (options == null) {
       options = {};
     }
+    this.wrapExpression = __bind(this.wrapExpression, this);
+
     this.addToHistory = __bind(this.addToHistory, this);
 
     this.lastResultVariable = options['lastResultVariable'] || '_';
@@ -23,7 +25,7 @@ IronConsole = (function() {
     var wrapped,
       _this = this;
     this.addToHistory(expression);
-    wrapped = wrapExpression(expression);
+    wrapped = this.wrapExpression(expression);
     return $.ajax({
       type: 'POST',
       dataType: 'text',
@@ -87,9 +89,9 @@ IronConsole = (function() {
     return this.history.push(escaped);
   };
 
-  wrapExpression = function(expression) {
+  IronConsole.prototype.wrapExpression = function(expression) {
     if (this.lastResultVariable != null) {
-      return "" + this.lastResultVariable + " = (" + expression + ");" + this.lastResultVariable;
+      return "" + this.lastResultVariable + " = (" + expression + ");" + this.lastResultVariable + ".inspect";
     } else {
       return expression;
     }
@@ -185,7 +187,7 @@ IronConsoleView = (function() {
             _this.historyIndex -= 1;
             _this.$input.val(_this.console.getExpressionFromHistory(_this.historyIndex));
             break;
-          case 13:
+          case 45:
             _this.toggleEditMode();
             break;
           default:
