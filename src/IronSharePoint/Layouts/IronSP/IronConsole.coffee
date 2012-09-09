@@ -15,10 +15,10 @@ class IronConsole
       url: @serviceUrl,
       success: (json) =>
         result = $.parseJSON(json)
-        unless result["error"]?
+        unless result["Error"]?
           cb(result) for cb in @successCallbacks
         else
-          cb(result["error"]) for cb in @errorCallbacks
+          cb(result["Error"]) for cb in @errorCallbacks
       error: (args...) => cb(args...) for cb in @errorCallbacks
 
   getExpressionFromHistory: (index) ->
@@ -63,8 +63,8 @@ class IronConsoleView
 
   registerEventHandlers: =>
     @console.onExecuteSuccess (response) =>
-      @append "output", @outputPrefix, response["output"] if response["output"]?
-      @append "result", @resultPrefix, response["result"]
+      @append "output", @outputPrefix, response["Output"] if response["Output"]?
+      @append "result", @resultPrefix, response["Result"]
       @showExecuting false
     @console.onExecuteError (error) =>
       @append "error", '', error

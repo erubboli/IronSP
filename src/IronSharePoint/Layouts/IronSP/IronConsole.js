@@ -34,7 +34,7 @@ IronConsole = (function() {
       success: function(json) {
         var cb, result, _i, _j, _len, _len1, _ref, _ref1, _results, _results1;
         result = $.parseJSON(json);
-        if (result["error"] == null) {
+        if (result["Error"] == null) {
           _ref = _this.successCallbacks;
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -47,7 +47,7 @@ IronConsole = (function() {
           _results1 = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             cb = _ref1[_j];
-            _results1.push(cb(result["error"]));
+            _results1.push(cb(result["Error"]));
           }
           return _results1;
         }
@@ -146,10 +146,10 @@ IronConsoleView = (function() {
   IronConsoleView.prototype.registerEventHandlers = function() {
     var _this = this;
     this.console.onExecuteSuccess(function(response) {
-      if (response["output"] != null) {
-        _this.append("output", _this.outputPrefix, response["output"]);
+      if (response["Output"] != null) {
+        _this.append("output", _this.outputPrefix, response["Output"]);
       }
-      _this.append("result", _this.resultPrefix, response["result"]);
+      _this.append("result", _this.resultPrefix, response["Result"]);
       return _this.showExecuting(false);
     });
     this.console.onExecuteError(function(error) {
