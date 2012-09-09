@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using IronSharePoint.IronConsole;
+﻿using IronSharePoint.IronConsole;
 using NUnit.Framework;
 
-namespace IronSharePoint.Test.IronConsole
+namespace IronSharePoint.Test.Unit.IronConsole
 {
     [TestFixture]
     public class IronConsoleResponse_Fixture

@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint", "src\IronS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint.IronRuby10", "src\IronSharePoint.IronRuby10\IronSharePoint.IronRuby10.csproj", "{6E073DFC-A506-44DF-B378-7C539ED71502}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint.Test", "test\IronSharePoint.Test\IronSharePoint.Test.csproj", "{4E1E1D6A-6564-4307-BF64-17D7724A0230}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint.Test.Unit", "test\IronSharePoint.Test.Unit\IronSharePoint.Test.Unit.csproj", "{4E1E1D6A-6564-4307-BF64-17D7724A0230}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{98343ACA-3499-48BC-A012-F56E04A2CAD8}"
 EndProject
