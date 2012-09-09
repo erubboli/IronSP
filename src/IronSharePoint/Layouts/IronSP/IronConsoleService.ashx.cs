@@ -11,7 +11,6 @@ namespace IronSharePoint
 {
     public partial class IronConsoleService : IHttpHandler
     {
-        readonly JavaScriptSerializer _serializer = new JavaScriptSerializer();
         public bool IsReusable
         {
             get { return true; }
