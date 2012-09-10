@@ -49,7 +49,7 @@ IronConsole = (function() {
           _results1 = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             cb = _ref1[_j];
-            _results1.push(cb(result["Error"]));
+            _results1.push(cb(result["Error"], result["StackTrace"]));
           }
           return _results1;
         }
@@ -154,8 +154,9 @@ IronConsoleView = (function() {
       _this.append("result", _this.resultPrefix, response["Result"]);
       return _this.showExecuting(false);
     });
-    this.console.onExecuteError(function(error) {
+    this.console.onExecuteError(function(error, stackTrace) {
       _this.append("error", '', error);
+      _this.append("stackTrace", '', stackTrace);
       return _this.showExecuting(false);
     });
     this.$input || (this.$input = $("#ironSP-console-input"));
@@ -187,7 +188,7 @@ IronConsoleView = (function() {
             _this.historyIndex -= 1;
             _this.$input.val(_this.console.getExpressionFromHistory(_this.historyIndex));
             break;
-          case 45:
+          case 17:
             _this.toggleEditMode();
             break;
           default:
@@ -198,7 +199,7 @@ IronConsoleView = (function() {
           case 9:
             _this.insertTab();
             break;
-          case 13:
+          case 17:
             _this.toggleEditMode();
             break;
           default:

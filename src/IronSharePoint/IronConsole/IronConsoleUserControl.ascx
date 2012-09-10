@@ -47,7 +47,7 @@
   vertical-align: top;
 }
 
-.ironSP-console-error td {
+.ironSP-console-error td, .ironSP-console-stackTrace td {
   color: red !important;
   font-size: 10pt;
 }

@@ -18,7 +18,7 @@ class IronConsole
         unless result["Error"]?
           cb(result) for cb in @successCallbacks
         else
-          cb(result["Error"]) for cb in @errorCallbacks
+          cb(result["Error"], result["StackTrace"]) for cb in @errorCallbacks
       error: (args...) => cb(args...) for cb in @errorCallbacks
 
   getExpressionFromHistory: (index) ->
@@ -66,8 +66,9 @@ class IronConsoleView
       @append "output", @outputPrefix, response["Output"] if response["Output"]?
       @append "result", @resultPrefix, response["Result"]
       @showExecuting false
-    @console.onExecuteError (error) =>
+    @console.onExecuteError (error, stackTrace) =>
       @append "error", '', error
+      @append "stackTrace", '', stackTrace
       @showExecuting false
 
     @$input ||= $("#ironSP-console-input")
@@ -95,14 +96,14 @@ class IronConsoleView
           when 40 # Down
             @historyIndex -= 1
             @$input.val @console.getExpressionFromHistory(@historyIndex)
-          when 45 # insert
+          when 17 # insert
             @toggleEditMode()
           else handled=false
       else 
         switch e.keyCode
           when 9 # Tab
             @insertTab()
-          when 13 # Insert
+          when 17 # Insert
             @toggleEditMode()
           else handled=false
 
