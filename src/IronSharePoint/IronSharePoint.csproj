@@ -176,7 +176,9 @@
     <None Include="Lists\IronHive\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{880960ed-55af-46cc-a291-3bc601bddf46}</SharePointProjectItemId>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Package\Package.package">
       <PackageId>{aacb7026-8941-4faa-b4bb-04562e317e53}</PackageId>
     </None>
