@@ -4,9 +4,9 @@ using NUnit.Framework;
 namespace IronSharePoint.Test.Unit.IronConsole
 {
     [TestFixture]
-    public class Response_Fixture
+    public class IronConsoleResult_Fixture
     {
-        Response Sut;
+        IronConsoleResult Sut;
 
         #region SetUp & TearDown
 
@@ -19,7 +19,7 @@ namespace IronSharePoint.Test.Unit.IronConsole
         [SetUp]
         public void SetUp()
         {
-            Sut = new Response
+            Sut = new IronConsoleResult
                   {
                       Error = "Error",
                       Output = "Output",
@@ -42,7 +42,7 @@ namespace IronSharePoint.Test.Unit.IronConsole
         [Test]
         public void FromJson()
         {
-            Sut = Response.FromJson(Assets.Load("response.json"));
+            Sut = IronConsoleResult.FromJson(Assets.Load("response.json"));
 
             Assert.AreEqual("Error", Sut.Error);
             Assert.AreEqual(true, Sut.HasError);

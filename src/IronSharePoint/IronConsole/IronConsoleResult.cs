@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace IronSharePoint.IronConsole
 {
-    public class Response
+    public class IronConsoleResult
     {
         public string Output { get; set; }
         public string Result { get; set; }
@@ -14,6 +14,7 @@ namespace IronSharePoint.IronConsole
         {
             get { return !String.IsNullOrEmpty((Error ?? "").Trim()); }
         }
+
         public string ToJson()
         {
             return JsonConvert.SerializeObject(this);
@@ -24,9 +25,9 @@ namespace IronSharePoint.IronConsole
             JsonConvert.PopulateObject(json, this);
         }
 
-        public static Response FromJson(string json)
+        public static IronConsoleResult FromJson(string json)
         {
-            return JsonConvert.DeserializeObject<Response>(json);
+            return JsonConvert.DeserializeObject<IronConsoleResult>(json);
         }
     }
 }

@@ -15,7 +15,11 @@ namespace IronSharePoint
     public class IronRuntime: IDisposable
     {
         // the key is the ID of the hive
-        private static readonly Dictionary<Guid, IronRuntime> _livingRuntimes = new Dictionary<Guid, IronRuntime>();
+        static readonly Dictionary<Guid, IronRuntime> _livingRuntimes = new Dictionary<Guid, IronRuntime>();
+        readonly Dictionary<String, IronEngine> _livingEngines = new Dictionary<String, IronEngine>();
+        readonly List<Guid> _defaultRuntimesForSite = new List<Guid>();
+        IronConsole.IronConsole _console;
+        private Guid _hiveId;
 
         internal static Dictionary<Guid, IronRuntime> LivingRuntimes
         {
@@ -35,18 +39,23 @@ namespace IronSharePoint
             }
         } 
 
-        private Dictionary<String, IronEngine> _livingEngines = new Dictionary<String, IronEngine>();
         internal Dictionary<String, IronEngine> LivingEngines
         {
             get { return _livingEngines; }
         }   
 
-        private Guid _hiveId;
-
-        private List<Guid> _defaultRuntimesForSite = new List<Guid>();
         internal List<Guid> DefaultRuntimesForSite
         {
             get { return _defaultRuntimesForSite; }
+        }
+
+        public IronConsole.IronConsole IronConsole
+        {
+            get
+            {
+                return _console ??
+                       (_console = IronSharePoint.IronConsole.IronConsole.GetConsoleForRuntime(this));
+            }
         }
 
         public ScriptRuntime ScriptRuntime { get; private set; }
@@ -56,7 +65,7 @@ namespace IronSharePoint
 
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
         {
-            IronRuntime ironRuntime = _livingRuntimes.Values.Where(r => r.DefaultRuntimesForSite.Contains(targetSite.ID)).FirstOrDefault();
+            IronRuntime ironRuntime = _livingRuntimes.Values.FirstOrDefault(r => r.DefaultRuntimesForSite.Contains(targetSite.ID));
  
             if (ironRuntime == null)
             {
@@ -87,7 +96,7 @@ namespace IronSharePoint
             }
             else
             {
-                ironRuntime = _livingRuntimes.Values.Where(r => r._hiveId == hiveId).FirstOrDefault();
+                ironRuntime = _livingRuntimes.Values.FirstOrDefault(r => r._hiveId == hiveId);
 
                 if (ironRuntime == null)
                 {
@@ -133,7 +142,7 @@ namespace IronSharePoint
                 ironRuntime.ScriptRuntime = new ScriptRuntime(setup);
 
                 ironRuntime._hiveId = hiveSiteId;
-                ironRuntime.IronHive = ironRuntime.ScriptRuntime.Host as IronHive;
+                ironRuntime.IronHive = (IronHive) ironRuntime.ScriptRuntime.Host;
                 ironRuntime.DynamicTypeRegistry = new Dictionary<string, Object>();
                 ironRuntime.DynamicFunctionRegistry = new Dictionary<string, Object>();
                 ironRuntime.ScriptRuntime.Globals.SetVariable("ironRuntime", ironRuntime);
@@ -185,7 +194,6 @@ namespace IronSharePoint
             catch (Exception ex)
             {
                 LogError(String.Format("Error occured while getting engine for extension {0}", extension), ex);
-                throw ex;
             }
 
             return ironEngine;
@@ -209,6 +217,8 @@ namespace IronSharePoint
         public void Reset()
         {
             _livingRuntimes.Remove(this._hiveId);
+            _console.Dispose();
+            _console = null;
             this.Dispose();
         }
 

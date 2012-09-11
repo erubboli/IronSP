@@ -93,6 +93,11 @@ namespace IronSharePoint
                 return new DirectoryInfo(Feature.Definition.RootDirectory).Parent.FullName;
             }
         }
+        
+        public Guid Id
+        {
+            get { return _siteId; }
+        }
 
         internal void Init(Guid hiveSiteId)
         {

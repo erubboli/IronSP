@@ -93,8 +93,12 @@
     </Compile>
     <Compile Include="IIronControl.cs" />
     <Compile Include="IIronDataStore.cs" />
+    <Compile Include="IronConsole\Hooks\IIronConsoleHook.cs" />
+    <Compile Include="IronConsole\IronConsole.cs" />
+    <Compile Include="IronConsole\Hooks\IronConsoleHookBase.cs" />
+    <Compile Include="IronConsole\IronConsoleTask.cs" />
     <Compile Include="IronConsole\IronConsoleWebPart.cs" />
-    <Compile Include="IronConsole\Response.cs" />
+    <Compile Include="IronConsole\IronConsoleResult.cs" />
     <Compile Include="IronConsole\IronConsoleUserControl.ascx.cs">
       <DependentUpon>IronConsoleUserControl.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -102,6 +106,7 @@
     <Compile Include="IronConsole\IronConsoleUserControl.ascx.designer.cs">
       <DependentUpon>IronConsoleUserControl.ascx.cs</DependentUpon>
     </Compile>
+    <Compile Include="IronConsole\Hooks\RubyConsoleHook.cs" />
     <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeId.cs" />
     <Compile Include="IronWrapperControl.cs" />
@@ -127,6 +132,8 @@
       <DependentUpon>IronConsoleService.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\BlockingQueue.cs" />
+    <Compile Include="Util\IBlockingQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Administration\IronHiveRegistry.ps1">
