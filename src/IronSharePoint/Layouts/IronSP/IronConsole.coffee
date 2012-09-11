@@ -120,6 +120,7 @@ class IronConsoleView
     @$console.find(".ironSP-console-line").remove()
 
   append: (type, prefix, text) =>
+    text ||= ''
     for line,i in text.replace(/\r/gm, '\n').split('\n')
       if line?.trim() != ''
         linePrefix = if i == 0 then prefix else ''

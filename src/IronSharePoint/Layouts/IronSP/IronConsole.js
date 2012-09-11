@@ -225,6 +225,7 @@ IronConsoleView = (function() {
 
   IronConsoleView.prototype.append = function(type, prefix, text) {
     var $line, i, line, linePrefix, _i, _len, _ref;
+    text || (text = '');
     _ref = text.replace(/\r/gm, '\n').split('\n');
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       line = _ref[i];
