@@ -2,13 +2,13 @@
 <webParts>
   <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
     <metaData>
-      <type name="IronSharePoint.IronConsole.IronConsole, $SharePoint.Project.AssemblyFullName$" />
+      <type name="IronSharePoint.IronConsole.IronConsoleWebPart, $SharePoint.Project.AssemblyFullName$" />
       <importErrorMessage>$Resources:core,ImportErrorMessage;</importErrorMessage>
     </metaData>
     <data>
       <properties>
-        <property name="Title" type="string">IronConsole</property>
-        <property name="Description" type="string">My Visual WebPart</property>
+        <property name="Title" type="string">Iron Console</property>
+        <property name="Description" type="string">Iron Console Web Part</property>
       </properties>
     </data>
   </webPart>

@@ -4,13 +4,15 @@ var IronConsole, IronConsoleView,
   __slice = [].slice;
 
 IronConsole = (function() {
-  var mod, wrapExpression;
+  var mod;
 
   function IronConsole(serviceUrl, options) {
     this.serviceUrl = serviceUrl;
     if (options == null) {
       options = {};
     }
+    this.wrapExpression = __bind(this.wrapExpression, this);
+
     this.addToHistory = __bind(this.addToHistory, this);
 
     this.lastResultVariable = options['lastResultVariable'] || '_';
@@ -23,7 +25,7 @@ IronConsole = (function() {
     var wrapped,
       _this = this;
     this.addToHistory(expression);
-    wrapped = wrapExpression(expression);
+    wrapped = this.wrapExpression(expression);
     return $.ajax({
       type: 'POST',
       dataType: 'text',
@@ -34,7 +36,7 @@ IronConsole = (function() {
       success: function(json) {
         var cb, result, _i, _j, _len, _len1, _ref, _ref1, _results, _results1;
         result = $.parseJSON(json);
-        if (result["error"] == null) {
+        if (result["Error"] == null) {
           _ref = _this.successCallbacks;
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -47,7 +49,7 @@ IronConsole = (function() {
           _results1 = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             cb = _ref1[_j];
-            _results1.push(cb(result["error"]));
+            _results1.push(cb(result["Error"], result["StackTrace"]));
           }
           return _results1;
         }
@@ -87,9 +89,9 @@ IronConsole = (function() {
     return this.history.push(escaped);
   };
 
-  wrapExpression = function(expression) {
+  IronConsole.prototype.wrapExpression = function(expression) {
     if (this.lastResultVariable != null) {
-      return "" + this.lastResultVariable + " = (" + expression + ");" + this.lastResultVariable;
+      return "" + this.lastResultVariable + " = (" + expression + ");" + this.lastResultVariable + ".inspect";
     } else {
       return expression;
     }
@@ -146,14 +148,15 @@ IronConsoleView = (function() {
   IronConsoleView.prototype.registerEventHandlers = function() {
     var _this = this;
     this.console.onExecuteSuccess(function(response) {
-      if (response["output"] != null) {
-        _this.append("output", _this.outputPrefix, response["output"]);
+      if (response["Output"] != null) {
+        _this.append("output", _this.outputPrefix, response["Output"]);
       }
-      _this.append("result", _this.resultPrefix, response["result"]);
+      _this.append("result", _this.resultPrefix, response["Result"]);
       return _this.showExecuting(false);
     });
-    this.console.onExecuteError(function(error) {
+    this.console.onExecuteError(function(error, stackTrace) {
       _this.append("error", '', error);
+      _this.append("stackTrace", '', stackTrace);
       return _this.showExecuting(false);
     });
     this.$input || (this.$input = $("#ironSP-console-input"));
@@ -185,7 +188,7 @@ IronConsoleView = (function() {
             _this.historyIndex -= 1;
             _this.$input.val(_this.console.getExpressionFromHistory(_this.historyIndex));
             break;
-          case 13:
+          case 17:
             _this.toggleEditMode();
             break;
           default:
@@ -196,7 +199,7 @@ IronConsoleView = (function() {
           case 9:
             _this.insertTab();
             break;
-          case 13:
+          case 17:
             _this.toggleEditMode();
             break;
           default:
@@ -222,6 +225,7 @@ IronConsoleView = (function() {
 
   IronConsoleView.prototype.append = function(type, prefix, text) {
     var $line, i, line, linePrefix, _i, _len, _ref;
+    text || (text = '');
     _ref = text.replace(/\r/gm, '\n').split('\n');
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       line = _ref[i];

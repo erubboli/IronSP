@@ -7,7 +7,7 @@ class IronConsole
 
   execute: (expression) ->
     @addToHistory expression
-    wrapped = wrapExpression(expression)
+    wrapped = @wrapExpression(expression)
     $.ajax
       type: 'POST',
       dataType: 'text',
@@ -15,10 +15,10 @@ class IronConsole
       url: @serviceUrl,
       success: (json) =>
         result = $.parseJSON(json)
-        unless result["error"]?
+        unless result["Error"]?
           cb(result) for cb in @successCallbacks
         else
-          cb(result["error"]) for cb in @errorCallbacks
+          cb(result["Error"], result["StackTrace"]) for cb in @errorCallbacks
       error: (args...) => cb(args...) for cb in @errorCallbacks
 
   getExpressionFromHistory: (index) ->
@@ -35,9 +35,9 @@ class IronConsole
     escaped = expression.replace /\\n$/, ''
     @history.push escaped
 
-  wrapExpression = (expression) ->
+  wrapExpression : (expression) =>
     if @lastResultVariable?
-      "#{@lastResultVariable} = (#{expression});#{@lastResultVariable}"
+      "#{@lastResultVariable} = (#{expression});#{@lastResultVariable}.inspect"
     else
       expression
 
@@ -63,11 +63,12 @@ class IronConsoleView
 
   registerEventHandlers: =>
     @console.onExecuteSuccess (response) =>
-      @append "output", @outputPrefix, response["output"] if response["output"]?
-      @append "result", @resultPrefix, response["result"]
+      @append "output", @outputPrefix, response["Output"] if response["Output"]?
+      @append "result", @resultPrefix, response["Result"]
       @showExecuting false
-    @console.onExecuteError (error) =>
+    @console.onExecuteError (error, stackTrace) =>
       @append "error", '', error
+      @append "stackTrace", '', stackTrace
       @showExecuting false
 
     @$input ||= $("#ironSP-console-input")
@@ -95,14 +96,14 @@ class IronConsoleView
           when 40 # Down
             @historyIndex -= 1
             @$input.val @console.getExpressionFromHistory(@historyIndex)
-          when 13 # Insert
+          when 17 # insert
             @toggleEditMode()
           else handled=false
       else 
         switch e.keyCode
           when 9 # Tab
             @insertTab()
-          when 13 # Insert
+          when 17 # Insert
             @toggleEditMode()
           else handled=false
 
@@ -119,6 +120,7 @@ class IronConsoleView
     @$console.find(".ironSP-console-line").remove()
 
   append: (type, prefix, text) =>
+    text ||= ''
     for line,i in text.replace(/\r/gm, '\n').split('\n')
       if line?.trim() != ''
         linePrefix = if i == 0 then prefix else ''
