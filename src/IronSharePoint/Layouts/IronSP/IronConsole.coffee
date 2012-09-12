@@ -96,14 +96,14 @@ class IronConsoleView
           when 40 # Down
             @historyIndex -= 1
             @$input.val @console.getExpressionFromHistory(@historyIndex)
-          when 45, 192 # insert, `
+          when 45, 220 # insert, `
             @toggleEditMode()
           else handled=false
       else 
         switch e.keyCode
           when 9 # Tab
             @insertTab()
-          when 45, 192 # Insert, `
+          when 45, 220 # Insert, `
             @toggleEditMode()
           else handled=false
 

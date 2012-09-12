@@ -189,7 +189,7 @@ IronConsoleView = (function() {
             _this.$input.val(_this.console.getExpressionFromHistory(_this.historyIndex));
             break;
           case 45:
-          case 192:
+          case 220:
             _this.toggleEditMode();
             break;
           default:
@@ -201,7 +201,7 @@ IronConsoleView = (function() {
             _this.insertTab();
             break;
           case 45:
-          case 192:
+          case 220:
             _this.toggleEditMode();
             break;
           default:
