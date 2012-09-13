@@ -51,7 +51,7 @@ namespace IronSharePoint
 
                 Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
 
-                var engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
+                engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
@@ -69,7 +69,6 @@ namespace IronSharePoint
             }
             catch (Exception ex)
             {
-                IronRuntime.LogError(String.Format("Error executing script {0}", ScriptName), ex);
                 Exception = ex;
             }
 
@@ -80,7 +79,20 @@ namespace IronSharePoint
         {
             if (Exception != null)
             {
-                writer.Write(Exception.Message);
+                if (SPContext.Current.Web.UserIsSiteAdmin && engine.IronRuntime.IronHive.Web.CurrentUser.IsSiteAdmin)
+                {
+                    var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
+                    string error = eo.FormatException(Exception);
+
+                    IronRuntime.LogError(String.Format("Error executing script {0}: {1}", ScriptName, error), Exception);
+
+                    writer.Write(error);
+                }
+                else
+                {
+                    writer.Write("Error occured.");
+                }
+                
             }
             else
             {

@@ -5,6 +5,7 @@ using Microsoft.SharePoint.Security;
 using Microsoft.SharePoint.Utilities;
 using Microsoft.SharePoint.Workflow;
 using System.IO;
+using Microsoft.Scripting.Hosting;
 
 namespace IronSharePoint.EventReceivers
 {
@@ -13,6 +14,8 @@ namespace IronSharePoint.EventReceivers
     /// </summary>
     public class IronScriptCompilerReceiver : SPItemEventReceiver
     {
+        private IronEngine engine;
+
         public override void ItemAdded(SPItemEventProperties properties)
         {
             CompileScript(properties);
@@ -27,7 +30,7 @@ namespace IronSharePoint.EventReceivers
 
             try
             {
-                var engine =  IronRuntime.GetDefaultIronRuntime(properties.Web.Site).GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));
+                engine =  IronRuntime.GetDefaultIronRuntime(properties.Web.Site).GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));
 
                 EventFiringEnabled = false;
                 properties.ListItem[IronField.IronOutput] = engine.ExcecuteScriptFile(properties.ListItem.File);
@@ -36,7 +39,10 @@ namespace IronSharePoint.EventReceivers
             }
             catch (Exception ex)
             {
-                properties.ListItem[IronField.IronOutput] = ex.Message + Environment.NewLine + ex.StackTrace;
+                var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
+                string error = eo.FormatException(ex);
+
+                properties.ListItem[IronField.IronOutput] = error;
                 properties.ListItem[IronField.IronErrorFlag] = true; 
                 properties.ListItem.SystemUpdate(false);
             }

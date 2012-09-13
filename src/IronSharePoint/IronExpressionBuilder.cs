@@ -9,11 +9,13 @@ using System.ComponentModel;
 using Microsoft.SharePoint;
 using System.IO;
 using System.Text.RegularExpressions;
+using Microsoft.Scripting.Hosting;
 
 namespace IronSharePoint
 {
     public class IronExpressionBuilder: ExpressionBuilder
     {
+        private IronEngine engine;
 
         public override System.CodeDom.CodeExpression GetCodeExpression(System.Web.UI.BoundPropertyEntry entry, object parsedData, ExpressionBuilderContext context)
         {
@@ -32,10 +34,10 @@ namespace IronSharePoint
         public override object EvaluateExpression(object target, System.Web.UI.BoundPropertyEntry entry, object parsedData, ExpressionBuilderContext context)
         {
             string value = String.Empty;
+            string scriptName = entry.Expression;
 
             try
             {
-                string scriptName = entry.Expression;
                 string functionName = null;
 
                 if (scriptName.Contains("@"))
@@ -49,13 +51,26 @@ namespace IronSharePoint
                     throw new ArgumentException("Invalid expression! Use <%$Iron:My.sayHello@my/functions.rb");
                 }
 
-                var ironEngine = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site).GetEngineByExtension(Path.GetExtension(scriptName));
-                value = ironEngine.InvokeDynamicFunction(functionName, scriptName, target, entry).ToString();     
+                engine = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site).GetEngineByExtension(Path.GetExtension(scriptName));
+                value = engine.InvokeDynamicFunction(functionName, scriptName, target, entry).ToString();     
             }
             catch (Exception ex)
             {
                 IronRuntime.LogError("Error", ex);
-                return ex.Message;
+
+                if (SPContext.Current.Web.UserIsSiteAdmin && engine.IronRuntime.IronHive.Web.CurrentUser.IsSiteAdmin)
+                {
+                    var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
+                    string error = eo.FormatException(ex);
+
+                    IronRuntime.LogError(String.Format("Error executing script {0}: {1}", scriptName, error), ex);
+
+                    value = error;
+                }
+                else
+                {
+                    value = "Error occured";
+                }
             }
 
             return value;

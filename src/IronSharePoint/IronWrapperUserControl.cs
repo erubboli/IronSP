@@ -8,6 +8,7 @@ using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint;
 using System.ComponentModel;
 using System.IO;
+using Microsoft.Scripting.Hosting;
 
 namespace IronSharePoint
 {
@@ -29,6 +30,8 @@ namespace IronSharePoint
 
         private Exception _exception;
 
+        private IronEngine engine;
+
         protected override void OnInit(EventArgs e)
         {
             try
@@ -48,7 +51,7 @@ namespace IronSharePoint
 
                 Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
 
-                var engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
+                engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
@@ -95,8 +98,19 @@ namespace IronSharePoint
         {
             if (_exception!=null)
             {
-                writer.Write(_exception.Message);
-                return;
+                if (SPContext.Current.Web.UserIsSiteAdmin && engine.IronRuntime.IronHive.Web.CurrentUser.IsSiteAdmin)
+                {
+                    var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
+                    string error = eo.FormatException(_exception);
+
+                    IronRuntime.LogError(String.Format("Error executing script {0}: {1}", ScriptName, error), _exception);
+
+                    writer.Write(error);
+                }
+                else
+                {
+                    writer.Write("Error occured.");
+                }
             }
             try
             {
