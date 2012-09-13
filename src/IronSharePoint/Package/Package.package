@@ -5,6 +5,7 @@
     <customAssembly location="Microsoft.Scripting.Core.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\Microsoft.Scripting.Core.dll" />
     <customAssembly location="Microsoft.Scripting.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\Microsoft.Scripting.dll" />
     <customAssembly location="Microsoft.Scripting.ExtensionAttribute.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\Microsoft.Scripting.ExtensionAttribute.dll" />
+    <customAssembly location="Newtonsoft.Json.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\packages\Newtonsoft.Json.4.5.9\lib\net35\Newtonsoft.Json.dll" />
   </assemblies>
   <features>
     <featureReference itemId="02961df1-c0a7-44bf-8545-5a24466136f9" />
