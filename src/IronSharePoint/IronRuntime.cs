@@ -146,6 +146,8 @@ namespace IronSharePoint
                 ironRuntime.DynamicTypeRegistry = new Dictionary<string, Object>();
                 ironRuntime.DynamicFunctionRegistry = new Dictionary<string, Object>();
                 ironRuntime.ScriptRuntime.Globals.SetVariable("ironRuntime", ironRuntime);
+                ironRuntime.ScriptRuntime.LoadAssembly(typeof(IronRuntime).Assembly);
+                ironRuntime.ScriptRuntime.LoadAssembly(typeof(SPSite).Assembly);
                 ironRuntime.IronHive.Init(ironRuntime._hiveId);
 
                 _livingRuntimes.Add(hiveSiteId, ironRuntime);
