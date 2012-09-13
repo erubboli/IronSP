@@ -16,7 +16,7 @@ namespace IronSharePoint.IronConsole
         readonly string _extension;
         readonly IronRuntime _runtime;
         readonly AutoResetEvent _waitHandle;
-
+        private IronEngine engine;
 
         public IronConsoleTask(IronRuntime runtime, string expression, string extension)
         {
@@ -33,7 +33,7 @@ namespace IronSharePoint.IronConsole
             IronConsoleResult = new IronConsoleResult();
             try
             {
-                var engine = _runtime.GetEngineByExtension(_extension);
+                engine = _runtime.GetEngineByExtension(_extension);
                 var scriptEngine = engine.ScriptEngine;
 
                 ExecuteBeforeHooks(scriptEngine, IronConsoleResult);
@@ -47,6 +47,9 @@ namespace IronSharePoint.IronConsole
             {
                 IronConsoleResult.Error = ex.Message;
                 IronConsoleResult.StackTrace = ex.StackTrace;
+
+                var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
+                IronConsoleResult.StackTrace = eo.FormatException(ex);
             }
             finally
             {
