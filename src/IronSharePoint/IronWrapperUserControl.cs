@@ -32,6 +32,8 @@ namespace IronSharePoint
 
         private IronEngine engine;
 
+        protected Control ctrl;
+
         protected override void OnInit(EventArgs e)
         {
             try
@@ -53,7 +55,7 @@ namespace IronSharePoint
 
                 engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
 
-                var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
+                ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
                 var dynamicControl = ctrl as IIronControl;
                 if (dynamicControl != null)
@@ -114,7 +116,7 @@ namespace IronSharePoint
             }
             try
             {
-                base.Render(writer);
+                ctrl.RenderControl(writer);
             }
             catch (Exception ex)
             {
