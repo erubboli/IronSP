@@ -48,10 +48,6 @@
     .ironSP-console-executing { background: url('_layouts/images/IronSP/ajax-loader.gif') no-repeat right top }
 </style>
 
-<script type="text/javascript" src="/_layouts/IronSP/jquery.js" > </script>
-<script type="text/javascript" src="/_layouts/IronSP/jquery-fieldselection.min.js" > </script>
-<script type="text/javascript" src="/_layouts/IronSP/mustache.js" ></script>
-<script type="text/javascript" src="/_layouts/IronSP/IronConsole.js" > </script>
 
 <script type="text/javascript">
     $(document).ready(function() {
