@@ -1,0 +1,36 @@
+# Set default behaviour, in case users don't have core.autocrlf set.
+* text=auto
+
+# Can be normalized on OS X
+*.coffee text diff=csharp
+*.md     text
+
+# These files should always have a CRLF ending
+## Code
+*.cs      text eol=crlf
+*.js      text eol=crlf
+*.aspx    text eol=crlf
+*.ashx    text eol=crlf
+*.ascx    text eol=crlf
+*.html    text eol=crlf
+*.xml     text eol=crlf
+*.ps1     text eol=crlf
+
+## Configs
+*.user    text eol=crlf
+*.gemspec text eol=crlf
+*.config  text eol=crlf
+
+## VS Stuff
+*.sln     text eol=crlf
+*.package text eol=crlf
+*.feature text eol=crlf
+*.snk     text eol=crlf
+*.spdata  text eol=crlf
+*.csproj  text eol=crlf
+*.msbuild text eol=crlf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
+*.dll binary
