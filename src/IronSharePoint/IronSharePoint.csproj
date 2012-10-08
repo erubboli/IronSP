@@ -150,9 +150,6 @@
     <Compile Include="Util\IBlockingQueue.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Administration\IronHiveRegistry.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="app.config" />
     <None Include="ControlTemplates\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{59d42f7e-41b6-4989-aa42-58f74002ef8b}</SharePointProjectItemId>
