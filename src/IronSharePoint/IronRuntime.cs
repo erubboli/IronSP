@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Scripting.Hosting;
+using Microsoft.Scripting.Hosting.Providers;
 using Microsoft.SharePoint;
 using System.IO;
 using IronSharePoint.Diagnostics;
@@ -130,12 +131,14 @@ namespace IronSharePoint
                 ironRuntime = new IronRuntime();
                 // create new runtime
                 var setup = new ScriptRuntimeSetup();
-                setup.LanguageSetups.Add(new LanguageSetup(
-                       "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", IronConstant.IronRubyLanguageName,
-                             new List<String>() { "IronRuby", "Ruby", "rb" }, new List<String>() { ".rb" }));
+                var languageSetup = new LanguageSetup(
+                        "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
+                        IronConstant.IronRubyLanguageName,
+                        new[] {"IronRuby", "Ruby", "rb"},
+                        new[] {".rb"});
+                setup.LanguageSetups.Add(languageSetup);
 
                 setup.HostType = typeof(IronHive);
-
 #if DEBUG
                 setup.DebugMode = true;
 #endif
@@ -146,7 +149,6 @@ namespace IronSharePoint
                 ironRuntime.DynamicTypeRegistry = new Dictionary<string, Object>();
                 ironRuntime.DynamicFunctionRegistry = new Dictionary<string, Object>();
                 ironRuntime.ScriptRuntime.Globals.SetVariable("ironRuntime", ironRuntime);
-                ironRuntime.ScriptRuntime.Globals.SetVariable("$ironRuntime", ironRuntime);
                 ironRuntime.ScriptRuntime.LoadAssembly(typeof(IronRuntime).Assembly);
                 ironRuntime.ScriptRuntime.LoadAssembly(typeof(SPSite).Assembly);
                 ironRuntime.IronHive.Init(ironRuntime._hiveId);
@@ -177,21 +179,25 @@ namespace IronSharePoint
                     var gemDirs = new[]
                                       {
                                           Path.Combine(ironRubyRootFolder, "lib/ironruby/gems/1.8").Replace("\\", "/"),
-                                          "IronHive://vendor"
+                                          "IronHive://vendor/rubygems"
                                       };
 
                     SPSecurity.RunWithElevatedPrivileges(() =>
                     {
                         System.Environment.SetEnvironmentVariable("IRONRUBY_10_20", ironRubyRootFolder);
-                        System.Environment.SetEnvironmentVariable("GEM_HOME", String.Join(";", gemDirs));
+                        System.Environment.SetEnvironmentVariable("GEM_PATH", String.Join(";", gemDirs));
+                        System.Environment.SetEnvironmentVariable("GEM_HOME", gemDirs[0]);
 
                         scriptEngine.SetSearchPaths(new List<String>() {
                                 Path.Combine(ironRubyRootFolder, @"Lib\IronRuby"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby\1.8"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\1.8"),
-                                IronConstant.IronHiveDefaultRoot
+                                IronConstant.IronHiveRoot
                         });
+                        var scope = scriptEngine.CreateScope();
+                        scope.SetVariable("iron_runtime", this);
+                        scriptEngine.Execute("$RUNTIME = iron_runtime", scope);
                     });
                 }
 

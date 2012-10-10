@@ -42,7 +42,7 @@ namespace IronSharePoint
 
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
-                var scriptFile = IronRuntime.IronHive.GetFile(scriptName);
+                var scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
                 ExcecuteScriptFile(scriptFile);
 
                 if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
@@ -71,7 +71,7 @@ namespace IronSharePoint
 
             if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))
             {
-                var scriptFile = IronRuntime.IronHive.GetFile(scriptName);
+                var scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
                 ExcecuteScriptFile(scriptFile);
 
                 if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))

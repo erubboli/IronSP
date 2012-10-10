@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 using Microsoft.Scripting;
@@ -103,7 +106,7 @@ namespace IronSharePoint
         {
             _siteId = hiveSiteId;
             _site = null;
-            _hiveFileDictionary = null;
+            _files = null;
         }
 
         public override PlatformAdaptationLayer PlatformAdaptationLayer
@@ -122,31 +125,14 @@ namespace IronSharePoint
             }
         }
 
-        public SPFile GetFile(string fileName)
-        {
-            if (!fileName.Contains(IronConstant.IronHiveDefaultRoot))
-            {
-                fileName = (IronConstant.IronHiveDefaultRoot + "/" + fileName).Replace("//", "/");
-            }
+        private IList<String> _files;
 
-            if (!PlatformAdaptationLayer.FileExists(fileName))
-            {
-                throw new FileNotFoundException();
-            }
-
-            return IronPlatformAdaptationLayer.GetIronHiveFile(fileName);
-        }
-
-        private Dictionary<String, String> _hiveFileDictionary;
-
-        public Dictionary<String, String> HiveFileDictionary
+        public IList<string> Files
         {
             get
             {
-                if (_hiveFileDictionary == null)
+                if (_files == null)
                 {
-                    _hiveFileDictionary = new Dictionary<string, string>();
-
                     var query = new SPQuery();
                     query.Query = "<Where></Where>";
                     query.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='FileLeafRef'/>";
@@ -155,24 +141,32 @@ namespace IronSharePoint
 
                     var allItems = this.List.GetItems(query);
 
+                    var files = new List<String>();
+                    
                     foreach (SPListItem item in allItems)
                     {
-                        //todo: refactor
-                        _hiveFileDictionary.Add(item["FileRef"].ToString().Replace((Web.ServerRelativeUrl + "/").Replace("//","/") , String.Empty).ToLower(), item["FileLeafRef"].ToString().ToLower());
+                        var fileRef = item["FileRef"].ToString();
+                        var siteRelative = fileRef.Replace((Web.ServerRelativeUrl + "/"), String.Empty);
+                        var hiveRelative = siteRelative.Replace(IronConstant.IronHiveListPath + "/", string.Empty);
+
+                        files.Add(hiveRelative);
                     }
+
+                    _files = files.AsReadOnly();
                 }
 
-                return _hiveFileDictionary;
+                return _files;
             }
         }
 
-
-        public string LoadText(string fileName)
+        public string LoadText(string file)
         {
-            var file = GetFile(fileName);
-            var str = Web.GetFileAsString(file.Url);
+            if (ContainsFile(file))
+            {
+                return Web.GetFileAsString(GetFullPath(file));
+            }
 
-            return str;
+            return null;
         } 
 
         public void Close()
@@ -182,6 +176,42 @@ namespace IronSharePoint
                 _site.Dispose();
                 _closed=true;
             }
+        }
+
+        public bool ContainsFile(string file)
+        {
+            file = Normalize(file);
+            return Files.Contains(file);
+        }
+
+        public string GetFullPath(string file)
+        {
+            file = Normalize(file);
+
+            return String.Format("{0}/{1}", Folder.ServerRelativeUrl, file);
+        }
+
+        public SPFile LoadFile(string file)
+        {
+            if (ContainsFile(file))
+            {
+                var spFile = Web.GetFile(GetFullPath(file));
+                if (spFile.Exists)
+                {
+                    return spFile;
+                }
+            }
+
+            return null;
+        }
+
+        private string Normalize(string file)
+        {
+            if (file.StartsWith(IronConstant.IronHiveRoot))
+            {
+                file = file.Replace(IronConstant.IronHiveRoot, string.Empty);
+            }
+            return file;
         }
     }
 }

@@ -12,106 +12,55 @@ namespace IronSharePoint
     public class IronPlatformAdaptationLayer : PlatformAdaptationLayer
     {
         private readonly IronHive _ironHive;
-        private readonly Stack<String> _folderHistory;
-       
 
         public IronPlatformAdaptationLayer(IronHive host)
         {
-            _folderHistory = new Stack<string>();
-            _folderHistory.Push(host.Folder.ServerRelativeUrl);
             _ironHive=host;
         }
 
-        public override bool FileExists(string path)
+        public override bool FileExists(string file)
         {
-            bool fileExists = base.FileExists(path);
+            bool fileExists = base.FileExists(file);
 
-            if (!fileExists && path.StartsWith(IronConstant.IronHiveDefaultRoot))
+            if (!fileExists && file.StartsWith(IronConstant.IronHiveRoot))
             {
-                path = path.ToLower();
-                fileExists = _ironHive.HiveFileDictionary.Values.Any(name => name == Path.GetFileName(path));
+                fileExists = _ironHive.ContainsFile(file);
             }
          
             return fileExists;
         }
        
-        public override System.IO.Stream OpenOutputFileStream(string path)
+        public override System.IO.Stream OpenOutputFileStream(string file)
         {
-            if (path.StartsWith(IronConstant.IronHiveDefaultRoot))
-            {
-                var file = GetIronHiveFile(path);
+            var spFile = _ironHive.LoadFile(file);
 
-                return file.OpenBinaryStream();
+            if (spFile != null)
+            {
+                return spFile.OpenBinaryStream();
             }
 
-            return base.OpenOutputFileStream(path);
-        }
-     
-
-        public override string GetFullPath(string path)
-        {
-            if (path.StartsWith(IronConstant.IronHiveDefaultRoot))
-            {
-                return path.Replace(IronConstant.IronHiveDefaultRoot, _ironHive.Folder.ServerRelativeUrl);
-            }
-            return base.GetFullPath(path);
+            return base.OpenOutputFileStream(file);
         }
 
-        public override System.IO.Stream OpenInputFileStream(string path)
+        public override string GetFullPath(string file)
         {
-            if (path.StartsWith(IronConstant.IronHiveDefaultRoot))
+            if (_ironHive.ContainsFile(file))
             {
-                var file = GetIronHiveFile(path);
-
-                return file.OpenBinaryStream();
+                return _ironHive.GetFullPath(file);
             }
-
-            return base.OpenInputFileStream(path);
+            return base.GetFullPath(file);
         }
 
-        public SPFile GetIronHiveFile(string path)
+        public override System.IO.Stream OpenInputFileStream(string file)
         {
-            SPFile file = null;
+            var spFile = _ironHive.LoadFile(file);
 
-            path = path.Replace(IronConstant.IronHiveDefaultRoot, _ironHive.Folder.Url + "/").ToLower().Replace("//","/");
-
-            var fileName = Path.GetFileName(path);
-
-            var matchingFilePaths = _ironHive.HiveFileDictionary.Where(x => x.Value == fileName).Select(x => x.Key);
-
-            if (matchingFilePaths.Count() == 1)
+            if (spFile != null)
             {
-                file = _ironHive.Web.GetFile(matchingFilePaths.First());
+                return spFile.OpenBinaryStream();
             }
 
-            var matchPath = String.Empty;
-
-            if (file == null)
-            {
-                foreach (var folder in _folderHistory)
-                {
-                    var searchPath = (folder + "/" + fileName).Replace("//", "/").ToLower();
-                    matchPath = matchingFilePaths.FirstOrDefault(x => x == searchPath);
-
-                    if (!String.IsNullOrEmpty(matchPath))
-                    {
-                        break;
-                    }
-                 }
-                
-                file = _ironHive.Web.GetFile(matchPath);
-            }
-
-            if (file == null || !file.Exists)
-            {
-                throw new FileNotFoundException();
-            }
-
-             
-            _folderHistory.Push(file.ParentFolder.ServerRelativeUrl);
-
-            return file;
+            return base.OpenInputFileStream(file);
         }
-
     }
 }
