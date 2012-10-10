@@ -146,6 +146,7 @@ namespace IronSharePoint
                 ironRuntime.DynamicTypeRegistry = new Dictionary<string, Object>();
                 ironRuntime.DynamicFunctionRegistry = new Dictionary<string, Object>();
                 ironRuntime.ScriptRuntime.Globals.SetVariable("ironRuntime", ironRuntime);
+                ironRuntime.ScriptRuntime.Globals.SetVariable("$ironRuntime", ironRuntime);
                 ironRuntime.ScriptRuntime.LoadAssembly(typeof(IronRuntime).Assembly);
                 ironRuntime.ScriptRuntime.LoadAssembly(typeof(SPSite).Assembly);
                 ironRuntime.IronHive.Init(ironRuntime._hiveId);
@@ -173,10 +174,16 @@ namespace IronSharePoint
                 if (scriptEngine.Setup.DisplayName == IronConstant.IronRubyLanguageName)
                 {
                     var ironRubyRootFolder = Path.Combine(IronHive.FeatureFolderPath, "IronSP_IronRuby10\\");
+                    var gemDirs = new[]
+                                      {
+                                          Path.Combine(ironRubyRootFolder, "lib/ironruby/gems/1.8").Replace("\\", "/"),
+                                          "IronHive://vendor"
+                                      };
 
                     SPSecurity.RunWithElevatedPrivileges(() =>
                     {
                         System.Environment.SetEnvironmentVariable("IRONRUBY_10_20", ironRubyRootFolder);
+                        System.Environment.SetEnvironmentVariable("GEM_HOME", String.Join(";", gemDirs));
 
                         scriptEngine.SetSearchPaths(new List<String>() {
                                 Path.Combine(ironRubyRootFolder, @"Lib\IronRuby"),
