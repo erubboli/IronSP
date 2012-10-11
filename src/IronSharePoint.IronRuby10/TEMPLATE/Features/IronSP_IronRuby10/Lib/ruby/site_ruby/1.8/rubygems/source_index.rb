@@ -40,6 +40,10 @@ class Gem::SourceIndex
   class << self
     include Gem::UserInteraction
 
+    def iron_version
+      "0.9"
+    end
+
     ##
     # Factory method to construct a source index instance for a given
     # path.
@@ -83,13 +87,19 @@ class Gem::SourceIndex
     # loaded spec.
 
     def load_specification(file_name)
-      return nil unless file_name and File.exist? file_name
+      return nil unless file_name
 
       spec_code = if RUBY_VERSION < '1.9' then
-                    File.read file_name
+                    if (defined? IronSharePoint) && (file_name.start_with? IronSharePoint::IronConstant.IronHiveRoot)
+                      $RUNTIME.IronHive.LoadText file_name
+                    else
+                      File.read file_name if File.exist? file_name
+                    end
                   else
-                    File.read file_name, :encoding => 'UTF-8'
-                  end.untaint
+                    File.read file_name, :encoding => 'UTF-8' if File.exist? file_name
+                  end.untaint.to_s
+
+      return nil unless spec_code
 
       begin
         gemspec = eval spec_code, binding, file_name
@@ -147,7 +157,16 @@ class Gem::SourceIndex
     @gems.clear
 
     spec_dirs.reverse_each do |spec_dir|
-      spec_files = Dir.glob File.join(spec_dir, '*.gemspec')
+      if (defined? IronSharePoint) && (spec_dir.start_with? IronSharePoint::IronConstant.IronHiveRoot)
+        hive_dir = spec_dir.gsub(IronSharePoint::IronConstant.IronHiveRoot, "")
+        spec_files = $RUNTIME.IronHive.Files.select do |file|
+          file[/^#{hive_dir}\/.*\.gemspec$/]
+        end.map do |file|
+          File.join(IronSharePoint::IronConstant.IronHiveRoot, file)
+        end
+      else
+        spec_files = Dir.glob File.join(spec_dir, '*.gemspec')
+      end
 
       spec_files.each do |spec_file|
         gemspec = self.class.load_specification spec_file.untaint
@@ -357,7 +376,7 @@ class Gem::SourceIndex
       begin
         fetcher = Gem::SpecFetcher.fetcher
         remotes = fetcher.find_matching dependency
-        remotes = remotes.map { |(name, version,_),_| version }
+        remotes = remotes.map { |(_, version,_),_| version }
       rescue Gem::RemoteFetcher::FetchError => e
         raise unless fetcher.warn_legacy e do
           require 'rubygems/source_info_cache'

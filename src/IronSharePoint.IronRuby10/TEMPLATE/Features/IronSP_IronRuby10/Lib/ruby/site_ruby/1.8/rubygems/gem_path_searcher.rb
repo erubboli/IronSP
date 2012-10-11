@@ -72,8 +72,16 @@ class Gem::GemPathSearcher
   # Some of the intermediate results are cached in @lib_dirs for speed.
 
   def matching_files(spec, path)
-    glob = File.join @lib_dirs[spec.object_id], "#{path}#{Gem.suffix_pattern}"
-    Dir[glob].select { |f| File.file? f.untaint }
+    lib_dirs = @lib_dirs[spec.object_id]
+    if (defined? IronSharePoint) && (lib_dirs.start_with? IronSharePoint::IronConstant.IronHiveRoot)
+      regexp = "#{lib_dirs}/#{path}#{Gem.suffix_pattern}".gsub /{([^}]*)}/ do |m|
+        "(#{$1.gsub ",","|"})"
+      end.gsub(IronSharePoint::IronConstant.IronHiveRoot,"")
+      $RUNTIME.IronHive.Files.select {|f| f[/#{regexp}/]}
+    else
+      glob = File.join @lib_dirs[spec.object_id], "#{path}#{Gem.suffix_pattern}"
+      Dir[glob].select { |f| File.file? f.untaint }
+    end
   end
 
   ##
