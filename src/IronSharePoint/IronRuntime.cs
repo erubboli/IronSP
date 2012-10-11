@@ -16,11 +16,11 @@ namespace IronSharePoint
     public class IronRuntime: IDisposable
     {
         // the key is the ID of the hive
-        static readonly Dictionary<Guid, IronRuntime> _livingRuntimes;
+        static readonly Dictionary<Guid, IronRuntime> _staticLivingRuntimes;
 
         static IronRuntime()
         {
-            _livingRuntimes = new Dictionary<Guid, IronRuntime>();
+            _staticLivingRuntimes = new Dictionary<Guid, IronRuntime>();
         }
 
         IronConsole.IronConsole _console;
@@ -43,7 +43,7 @@ namespace IronSharePoint
                     return inHttpAppLivingRuntimes as Dictionary<Guid, IronRuntime>;
                 }
 
-                return _livingRuntimes; 
+                return _staticLivingRuntimes; 
             }
         }
 
@@ -77,7 +77,7 @@ namespace IronSharePoint
 
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
         {
-            IronRuntime ironRuntime = _livingRuntimes.Values
+            IronRuntime ironRuntime = LivingRuntimes.Values
                 .Where(runtime => runtime != null && !runtime.IsDisposed) 
                 .FirstOrDefault(runtime => runtime.IsDefaultRuntime(targetSite));
  
@@ -110,7 +110,7 @@ namespace IronSharePoint
             }
             else
             {
-                ironRuntime = _livingRuntimes.Values
+                ironRuntime = LivingRuntimes.Values
                     .Where(runtime => runtime != null && !runtime.IsDisposed)
                     .FirstOrDefault(runtime => runtime._hiveId == hiveId)
                     ?? CreateIronRuntime(hiveId);
@@ -133,9 +133,9 @@ namespace IronSharePoint
 
             var ironRuntime = new IronRuntime();
 
-            if (_livingRuntimes.ContainsKey(hiveSiteId))
+            if (LivingRuntimes.ContainsKey(hiveSiteId))
             {
-                ironRuntime = _livingRuntimes[hiveSiteId];
+                ironRuntime = LivingRuntimes[hiveSiteId];
             }
             else
             {
@@ -164,7 +164,7 @@ namespace IronSharePoint
                 ironRuntime.ScriptRuntime.LoadAssembly(typeof(SPSite).Assembly);
                 ironRuntime.IronHive.Init(ironRuntime._hiveId);
 
-                _livingRuntimes.Add(hiveSiteId, ironRuntime);
+                LivingRuntimes.Add(hiveSiteId, ironRuntime);
 
             }
             return ironRuntime;
@@ -244,7 +244,7 @@ namespace IronSharePoint
 
         public void Reset()
         {
-            _livingRuntimes.Remove(this._hiveId);
+            LivingRuntimes.Remove(this._hiveId);
             _console.Dispose();
             _console = null;
             this.Dispose();
