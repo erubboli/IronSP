@@ -16,9 +16,13 @@ namespace IronSharePoint
     public class IronRuntime: IDisposable
     {
         // the key is the ID of the hive
-        static readonly Dictionary<Guid, IronRuntime> _livingRuntimes = new Dictionary<Guid, IronRuntime>();
-        readonly Dictionary<String, IronEngine> _livingEngines = new Dictionary<String, IronEngine>();
-        readonly List<Guid> _defaultRuntimesForSite = new List<Guid>();
+        static readonly Dictionary<Guid, IronRuntime> _livingRuntimes;
+
+        static IronRuntime()
+        {
+            _livingRuntimes = new Dictionary<Guid, IronRuntime>();
+        }
+
         IronConsole.IronConsole _console;
         private Guid _hiveId;
 
@@ -32,23 +36,19 @@ namespace IronSharePoint
                     var inHttpAppLivingRuntimes = HttpContext.Current.Application[key];
                     if (inHttpAppLivingRuntimes == null)
                     {
-                        HttpContext.Current.Application[key] = new Dictionary<Guid, IronRuntime>();
+                        inHttpAppLivingRuntimes = new Dictionary<Guid, IronRuntime>();
+                        HttpContext.Current.Application[key] = inHttpAppLivingRuntimes;
                     }
+
+                    return inHttpAppLivingRuntimes as Dictionary<Guid, IronRuntime>;
                 }
 
-                return IronRuntime._livingRuntimes; 
+                return _livingRuntimes; 
             }
-        } 
-
-        internal Dictionary<String, IronEngine> LivingEngines
-        {
-            get { return _livingEngines; }
-        }   
-
-        internal List<Guid> DefaultRuntimesForSite
-        {
-            get { return _defaultRuntimesForSite; }
         }
+
+        internal Dictionary<String, IronEngine> LivingEngines { get; private set; }
+        internal List<Guid> DefaultSiteIds { get; private set; }
 
         public IronConsole.IronConsole IronConsole
         {
@@ -64,9 +64,22 @@ namespace IronSharePoint
         public Dictionary<string, Object> DynamicTypeRegistry { get; private set; }
         public Dictionary<string, Object> DynamicFunctionRegistry { get; private set; }
 
+        private IronRuntime()
+        {
+            LivingEngines = new Dictionary<string, IronEngine>();
+            DefaultSiteIds = new List<Guid>();
+        }
+
+        public bool IsDefaultRuntime(SPSite site)
+        {
+            return DefaultSiteIds.Contains(site.ID);
+        }
+
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
         {
-            IronRuntime ironRuntime = _livingRuntimes.Values.FirstOrDefault(r => r.DefaultRuntimesForSite.Contains(targetSite.ID));
+            IronRuntime ironRuntime = _livingRuntimes.Values
+                .Where(runtime => runtime != null && !runtime.IsDisposed) 
+                .FirstOrDefault(runtime => runtime.IsDefaultRuntime(targetSite));
  
             if (ironRuntime == null)
             {
@@ -78,9 +91,9 @@ namespace IronSharePoint
 
                 ironRuntime = GetIronRuntime(targetSite, hiveId);
 
-                if (!ironRuntime.DefaultRuntimesForSite.Contains(targetSite.ID))
+                if (!ironRuntime.DefaultSiteIds.Contains(targetSite.ID))
                 {
-                    ironRuntime.DefaultRuntimesForSite.Add(targetSite.ID);
+                    ironRuntime.DefaultSiteIds.Add(targetSite.ID);
                 }
             }
       
@@ -97,12 +110,10 @@ namespace IronSharePoint
             }
             else
             {
-                ironRuntime = _livingRuntimes.Values.FirstOrDefault(r => r._hiveId == hiveId);
-
-                if (ironRuntime == null)
-                {
-                    ironRuntime = CreateIronRuntime(hiveId);
-                }
+                ironRuntime = _livingRuntimes.Values
+                    .Where(runtime => runtime != null && !runtime.IsDisposed)
+                    .FirstOrDefault(runtime => runtime._hiveId == hiveId)
+                    ?? CreateIronRuntime(hiveId);
             }
 
             if (HttpContext.Current != null)
@@ -239,16 +250,14 @@ namespace IronSharePoint
 
         public void Dispose()
         {
+            IsDisposed = true;
             if (IronHive != null)
             {
                 IronHive.Close();
             }
         }
 
-        private IronRuntime()
-        {
-
-        }
+        protected bool IsDisposed { get; private set; }
 
         public static void LogError(string msg, Exception ex)
         {
