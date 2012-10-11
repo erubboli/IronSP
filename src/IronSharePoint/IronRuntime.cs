@@ -209,6 +209,8 @@ namespace IronSharePoint
                         var scope = scriptEngine.CreateScope();
                         scope.SetVariable("iron_runtime", this);
                         scriptEngine.Execute("$RUNTIME = iron_runtime", scope);
+                        scriptEngine.Execute("require 'rubygems'");
+                        scriptEngine.Execute("begin; require 'application'; rescue LoadError => ex; end");
                     });
                 }
 
