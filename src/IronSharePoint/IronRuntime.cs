@@ -143,7 +143,7 @@ namespace IronSharePoint
                 // create new runtime
                 var setup = new ScriptRuntimeSetup();
                 var languageSetup = new LanguageSetup(
-                        "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
+                        "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.1, Culture=neutral, PublicKeyToken=baeaf26a6e0611a7",
                         IronConstant.IronRubyLanguageName,
                         new[] {"IronRuby", "Ruby", "rb"},
                         new[] {".rb"});
