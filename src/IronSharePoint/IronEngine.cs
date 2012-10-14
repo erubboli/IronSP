@@ -38,8 +38,6 @@ namespace IronSharePoint
 
         public object CreateDynamicInstance(string className, string scriptName, params object[] args)
         {
-            object obj = null;
-
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
                 var scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
@@ -51,18 +49,7 @@ namespace IronSharePoint
                 }
             }
 
-            var dynamicType = IronRuntime.DynamicTypeRegistry[className];
-
-            if (args != null && args.Length > 0)
-            {
-                obj = IronRuntime.ScriptRuntime.Operations.CreateInstance(dynamicType, args);
-            }
-            else
-            {
-                obj = IronRuntime.ScriptRuntime.Operations.CreateInstance(dynamicType);
-            }
-
-            return obj;
+            return IronRuntime.CreateDynamicInstance(className, args);
         }
 
         public object InvokeDynamicFunction(string functionName, string scriptName, params object[] args)

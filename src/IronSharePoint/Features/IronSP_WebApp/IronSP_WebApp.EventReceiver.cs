@@ -27,31 +27,56 @@ namespace IronSharePoint.Features.IronSP_WebApp
             {
                 var webApp = properties.Feature.Parent as SPWebApplication;
 
-                var expressionBuilderType = typeof(IronExpressionBuilder);        
-                SPWebConfigModification expressionBuilderMod = new SPWebConfigModification();
-                expressionBuilderMod.Path = "configuration/system.web/compilation/expressionBuilders";
-                expressionBuilderMod.Name = String.Format("add[@expressionPrefix='Iron'][@type='{0}']",expressionBuilderType.AssemblyQualifiedName);
-                expressionBuilderMod.Sequence = 0;
-                expressionBuilderMod.Owner = modificationOwner;
-                expressionBuilderMod.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
-                expressionBuilderMod.Value = String.Format("<add expressionPrefix='Iron' type='{0}' />", expressionBuilderType.AssemblyQualifiedName);
-                webApp.WebConfigModifications.Add(expressionBuilderMod);
+                RegisterExpressionBuilder(webApp);
 
-                var httpModuleType = typeof(IronHttpModule);  
-                SPWebConfigModification httpModuleMod = new SPWebConfigModification();
-                httpModuleMod.Path = "configuration/system.webServer/modules";
-                httpModuleMod.Name = String.Format("add[@name='IronHttpModule'][@type='{0}']", httpModuleType.AssemblyQualifiedName);
-                httpModuleMod.Sequence = 0;
-                httpModuleMod.Owner = modificationOwner;
-                httpModuleMod.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
-                httpModuleMod.Value = String.Format("<add name='IronHttpModule' type='{0}' />", httpModuleType.AssemblyQualifiedName);
-                webApp.WebConfigModifications.Add(httpModuleMod);
+                RegisterHttpModule(webApp);
+
+                RegisterHttpHandlerFactory(webApp);
 
                 /*Call Update and ApplyWebConfigModifications to save changes*/
                 webApp.Update();
                 webApp.Farm.Services.GetValue<SPWebService>().ApplyWebConfigModifications();
             });
 
+        }
+
+        private static void RegisterHttpModule(SPWebApplication webApp)
+        {
+            var httpModuleType = typeof(IronHttpModule);
+            SPWebConfigModification httpModuleMod = new SPWebConfigModification();
+            httpModuleMod.Path = "configuration/system.webServer/modules";
+            httpModuleMod.Name = String.Format("add[@name='IronHttpModule'][@type='{0}']", httpModuleType.AssemblyQualifiedName);
+            httpModuleMod.Sequence = 0;
+            httpModuleMod.Owner = modificationOwner;
+            httpModuleMod.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
+            httpModuleMod.Value = String.Format("<add name='IronHttpModule' type='{0}' />", httpModuleType.AssemblyQualifiedName);
+            webApp.WebConfigModifications.Add(httpModuleMod);
+        }
+
+        private static void RegisterHttpHandlerFactory(SPWebApplication webApp)
+        {
+            var httpHandlerType = typeof(IronHttpHandler);
+            SPWebConfigModification httpHandlerFacotry = new SPWebConfigModification();
+            httpHandlerFacotry.Path = "configuration/system.webServer/handlers";
+            httpHandlerFacotry.Name = String.Format("add[@type='{0}']", httpHandlerType.AssemblyQualifiedName);
+            httpHandlerFacotry.Sequence = 0;
+            httpHandlerFacotry.Owner = modificationOwner;
+            httpHandlerFacotry.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
+            httpHandlerFacotry.Value = String.Format("<add  name='IronHttpHandler' path='_ironsp/*' verb='*' type='{0}' />", httpHandlerType.AssemblyQualifiedName);
+            webApp.WebConfigModifications.Add(httpHandlerFacotry);
+        }
+
+        private static void RegisterExpressionBuilder(SPWebApplication webApp)
+        {
+            var expressionBuilderType = typeof(IronExpressionBuilder);
+            SPWebConfigModification expressionBuilderMod = new SPWebConfigModification();
+            expressionBuilderMod.Path = "configuration/system.web/compilation/expressionBuilders";
+            expressionBuilderMod.Name = String.Format("add[@expressionPrefix='Iron'][@type='{0}']", expressionBuilderType.AssemblyQualifiedName);
+            expressionBuilderMod.Sequence = 0;
+            expressionBuilderMod.Owner = modificationOwner;
+            expressionBuilderMod.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
+            expressionBuilderMod.Value = String.Format("<add expressionPrefix='Iron' type='{0}' />", expressionBuilderType.AssemblyQualifiedName);
+            webApp.WebConfigModifications.Add(expressionBuilderMod);
         }
 
 

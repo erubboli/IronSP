@@ -116,6 +116,7 @@
     <Compile Include="IronConsole\Hooks\RubyConsoleHook.cs" />
     <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeId.cs" />
+    <Compile Include="IronHttpHandler.cs" />
     <Compile Include="IronWrapperControl.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
     <Compile Include="IronControl.cs" />

@@ -63,6 +63,7 @@ namespace IronSharePoint
         public IronHive IronHive { get; private set; }
         public Dictionary<string, Object> DynamicTypeRegistry { get; private set; }
         public Dictionary<string, Object> DynamicFunctionRegistry { get; private set; }
+        public string HttpHandlerClass { get; set; }
 
         private IronRuntime()
         {
@@ -162,9 +163,14 @@ namespace IronSharePoint
                 ironRuntime.ScriptRuntime.Globals.SetVariable("ironRuntime", ironRuntime);
                 ironRuntime.ScriptRuntime.LoadAssembly(typeof(IronRuntime).Assembly);
                 ironRuntime.ScriptRuntime.LoadAssembly(typeof(SPSite).Assembly);
+                ironRuntime.ScriptRuntime.LoadAssembly(typeof(IHttpHandler).Assembly);
                 ironRuntime.IronHive.Init(ironRuntime._hiveId);
 
                 LivingRuntimes.Add(hiveSiteId, ironRuntime);
+
+                //load engines
+                //load Ruby Engine
+                ironRuntime.GetEngineByExtension(".rb");
 
             }
             return ironRuntime;
@@ -258,6 +264,26 @@ namespace IronSharePoint
                 IronHive.Close();
             }
         }
+
+        public object CreateDynamicInstance(string className, params object[] args)
+        {
+            object obj = null;
+
+            var dynamicType = DynamicTypeRegistry[className];
+
+            if (args != null && args.Length > 0)
+            {
+                obj = ScriptRuntime.Operations.CreateInstance(dynamicType, args);
+            }
+            else
+            {
+                obj = ScriptRuntime.Operations.CreateInstance(dynamicType);
+            }
+
+            return obj;
+        }
+
+       
 
         protected bool IsDisposed { get; private set; }
 
