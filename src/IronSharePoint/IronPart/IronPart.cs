@@ -35,15 +35,15 @@ namespace IronSharePoint.IronPart
 
         protected Exception Exception {get; set;}
         protected IIronControl DynamicControl{get; private set;}
-        private IronEngine engine;
+        private IronRuntime ironRuntime;
 
         protected override void OnInit(EventArgs e)
         {
-            if (String.IsNullOrEmpty(ScriptName))
-            {
-                Exception = new InvalidEnumArgumentException("Property ScriptName is empty!");
-            }
-            else if (String.IsNullOrEmpty(ScriptClass))
+            Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
+
+            ironRuntime = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId);
+
+            if (String.IsNullOrEmpty(ScriptClass))
             {
                 Exception = new InvalidEnumArgumentException("Property ScriptClass is empty!");
             }
@@ -53,16 +53,21 @@ namespace IronSharePoint.IronPart
 
             try
             {
-                Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty:new Guid(ScriptHiveId);
 
-                engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
-
-                var ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
+                Control ctrl = null;
+                if (!String.IsNullOrEmpty(ScriptName))
+                {
+                    var engine = ironRuntime.GetEngineByExtension(Path.GetExtension(ScriptName));
+                    ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
+                }
+                else
+                {
+                    ctrl = ironRuntime.CreateDynamicInstance(ScriptClass) as Control;
+                }
 
                 DynamicControl = ctrl as IIronControl;
                 if (DynamicControl != null)
                 {
-                    DynamicControl.Engine = engine;
                     DynamicControl.WebPart = this;
                     DynamicControl.Data = this;
                 }
@@ -82,14 +87,11 @@ namespace IronSharePoint.IronPart
         {
             if (Exception != null)
             {
-                if (SPContext.Current.Web.UserIsSiteAdmin && engine.IronRuntime.IronHive.Web.CurrentUser.IsSiteAdmin)
+                if (SPContext.Current.Web.UserIsSiteAdmin && ironRuntime.IronHive.Web.CurrentUser.IsSiteAdmin)
                 {
-                    var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
-                    string error = eo.FormatException(Exception);
+                    IronRuntime.LogError(String.Format("Error: {0}", ScriptName, Exception.Message), Exception);
 
-                    IronRuntime.LogError(String.Format("Error executing script {0}: {1}", ScriptName, error), Exception);
-
-                    writer.Write(error);
+                    writer.Write(Exception.Message);
                 }
                 else
                 {

@@ -9,11 +9,9 @@ namespace IronSharePoint
 {
     public interface IIronControl
     {
-        IronEngine Engine { get; set; }
         WebPart WebPart { get; set; }
         IIronDataStore Data { get; set; }
         string Config { get; set; }
         List<EditorPart> CreateEditorParts();
-
     }
 }

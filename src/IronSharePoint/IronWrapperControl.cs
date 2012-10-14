@@ -61,7 +61,6 @@ namespace IronSharePoint
                 var dynamicControl = ctrl as IIronControl;
                 if (dynamicControl != null)
                 {
-                    dynamicControl.Engine = engine;
                     dynamicControl.WebPart = null;
                     dynamicControl.Data = null;
                     dynamicControl.Config = Config;
