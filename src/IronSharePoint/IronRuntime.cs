@@ -228,6 +228,7 @@ namespace IronSharePoint
             catch (Exception ex)
             {
                 LogError(String.Format("Error occured while getting engine for extension {0}", extension), ex);
+                throw;
             }
 
             return ironEngine;

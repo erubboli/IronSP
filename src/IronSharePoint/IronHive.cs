@@ -21,6 +21,7 @@ namespace IronSharePoint
         private bool _closed = false;
         private Guid _siteId;
         private SPSite _site;
+
         public SPSite Site 
         {
             get
@@ -102,11 +103,30 @@ namespace IronSharePoint
             get { return _siteId; }
         }
 
+        public event EventHandler<HiveChangedArgs> Events;
+
+        internal void FireHiveEvent(object sender, string eventName, SPItemEventProperties eventProperties)
+        {
+            if (Events != null)
+            {
+                Events.Invoke(sender, new HiveChangedArgs(){ Event=eventName, EventProperties=eventProperties});
+            }
+        }
+
         internal void Init(Guid hiveSiteId)
         {
             _siteId = hiveSiteId;
             _site = null;
             _files = null;
+        }
+
+        public void ReloadFiles()
+        {
+            _files = null;
+            
+            //load files
+            var files = Files;
+            
         }
 
         public override PlatformAdaptationLayer PlatformAdaptationLayer
@@ -212,6 +232,12 @@ namespace IronSharePoint
                 file = file.Replace(IronConstant.IronHiveRoot, string.Empty);
             }
             return file;
+        }
+
+        public class HiveChangedArgs : EventArgs
+        {
+            public string Event { get; set; }
+            public SPItemEventProperties EventProperties { get; set; }
         }
     }
 }

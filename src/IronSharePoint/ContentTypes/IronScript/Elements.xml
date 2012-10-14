@@ -20,6 +20,7 @@
 					  <SequenceNumber>10000</SequenceNumber>
 					  <Assembly>$SharePoint.Project.AssemblyFullName$</Assembly>
 					  <Class>IronSharePoint.EventReceivers.IronScriptCompilerReceiver</Class>
+            <Synchronization>Synchronous</Synchronization>
 					  <Data></Data>
 					  <Filter></Filter>
 				  </Receiver>
@@ -29,9 +30,20 @@
 					  <SequenceNumber>10000</SequenceNumber>
 					  <Assembly>$SharePoint.Project.AssemblyFullName$</Assembly>
 					  <Class>IronSharePoint.EventReceivers.IronScriptCompilerReceiver</Class>
+            <Synchronization>Synchronous</Synchronization>
 					  <Data></Data>
 					  <Filter></Filter>
 				  </Receiver>
+          <Receiver>
+            <Name>IronScriptCompilerReceiver_ItemDeleted</Name>
+            <Type>ItemDeleted</Type>
+            <SequenceNumber>10000</SequenceNumber>
+            <Assembly>$SharePoint.Project.AssemblyFullName$</Assembly>
+            <Class>IronSharePoint.EventReceivers.IronScriptCompilerReceiver</Class>
+            <Synchronization>Synchronous</Synchronization>
+            <Data></Data>
+            <Filter></Filter>
+          </Receiver>
 			  </Receivers>
 		  </XmlDocument>
 	  </XmlDocuments>

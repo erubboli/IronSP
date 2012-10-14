@@ -90,6 +90,10 @@
     <Compile Include="ControlTemplates\IronSP\IronHiveScriptControl.ascx.designer.cs">
       <DependentUpon>IronHiveScriptControl.ascx.cs</DependentUpon>
     </Compile>
+    <Compile Include="EventReceivers\IronHiveEventReceiver.cs" />
+    <Compile Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.EventReceiver.cs">
+      <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
+    </Compile>
     <Compile Include="IronCompositeControl.cs" />
     <Compile Include="EventReceivers\IronScriptCompilerReceiver.cs" />
     <Compile Include="Features\IronSP_Farm\IronSP_Farm.EventReceiver.cs">
@@ -140,9 +144,6 @@
     <Compile Include="Layouts\IronSP\IronEditor.aspx.designer.cs">
       <DependentUpon>IronEditor.aspx.cs</DependentUpon>
     </Compile>
-    <Compile Include="Layouts\IronSP\IronService.ashx.cs">
-      <DependentUpon>IronService.ashx</DependentUpon>
-    </Compile>
     <Compile Include="Layouts\IronSP\IronConsoleService.ashx.cs">
       <DependentUpon>IronConsoleService.ashx</DependentUpon>
     </Compile>
@@ -190,7 +191,6 @@
     </None>
     <None Include="key.snk" />
     <None Include="Layouts\IronSP\IronConsole.coffee" />
-    <None Include="Layouts\IronSP\IronService.ashx" />
     <None Include="Layouts\IronSP\IronConsoleService.ashx" />
     <None Include="Layouts\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{1edf49eb-be85-4c52-a5fd-b4f1cff31be4}</SharePointProjectItemId>
