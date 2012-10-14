@@ -30,12 +30,16 @@ namespace IronSharePoint.EventReceivers
 
             try
             {
-                engine =  IronRuntime.GetDefaultIronRuntime(properties.Web.Site).GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));
+                var runtime = IronRuntime.GetDefaultIronRuntime(properties.Web.Site);
+                engine =  runtime.GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));
 
                 EventFiringEnabled = false;
                 properties.ListItem[IronField.IronOutput] = engine.ExcecuteScriptFile(properties.ListItem.File);
                 properties.ListItem[IronField.IronErrorFlag] = false; 
                 properties.ListItem.SystemUpdate(false);
+
+                runtime.IronHive.ReloadFiles();
+
             }
             catch (Exception ex)
             {
@@ -57,6 +61,14 @@ namespace IronSharePoint.EventReceivers
             CompileScript(properties);
 
             base.ItemUpdated(properties);
+        }
+
+        public override void ItemDeleted(SPItemEventProperties properties)
+        {
+            var ironRuntime = IronRuntime.GetDefaultIronRuntime(properties.List.ParentWeb.Site);
+            ironRuntime.IronHive.ReloadFiles();
+
+            base.ItemDeleted(properties);
         }
 
     }
