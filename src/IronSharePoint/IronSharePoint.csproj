@@ -90,6 +90,7 @@
     <Compile Include="ControlTemplates\IronSP\IronHiveScriptControl.ascx.designer.cs">
       <DependentUpon>IronHiveScriptControl.ascx.cs</DependentUpon>
     </Compile>
+    <Compile Include="EventReceivers\IronItemEventReceiver.cs" />
     <Compile Include="EventReceivers\IronHiveEventReceiver.cs" />
     <Compile Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.EventReceiver.cs">
       <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
