@@ -62,7 +62,7 @@ namespace IronSharePoint.Features.IronSP_WebApp
             httpHandlerFacotry.Sequence = 0;
             httpHandlerFacotry.Owner = modificationOwner;
             httpHandlerFacotry.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
-            httpHandlerFacotry.Value = String.Format("<add  name='IronHttpHandler' path='_ironsp/*' verb='*' type='{0}' />", httpHandlerType.AssemblyQualifiedName);
+            httpHandlerFacotry.Value = String.Format("<add  name='IronHttpHandler' path='_iron/*' verb='*' type='{0}' />", httpHandlerType.AssemblyQualifiedName);
             webApp.WebConfigModifications.Add(httpHandlerFacotry);
         }
 
