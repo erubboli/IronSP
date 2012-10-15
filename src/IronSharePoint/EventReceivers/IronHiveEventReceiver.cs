@@ -76,6 +76,15 @@ namespace IronSharePoint.EventReceivers
             IronRuntime.GetDefaultIronRuntime(properties.Web.Site).IronHive.FireHiveEvent(this, "ItemCheckingOut", properties);
         }
 
+        public override void ItemUncheckedOut(SPItemEventProperties properties)
+        {
+            IronRuntime.GetDefaultIronRuntime(properties.Web.Site).IronHive.FireHiveEvent(this, "ItemUncheckedOut", properties);
+        }
+
+        public override void ItemUncheckingOut(SPItemEventProperties properties)
+        {
+            IronRuntime.GetDefaultIronRuntime(properties.Web.Site).IronHive.FireHiveEvent(this, "ItemUncheckingOut", properties);
+        }
 
     }
 }
