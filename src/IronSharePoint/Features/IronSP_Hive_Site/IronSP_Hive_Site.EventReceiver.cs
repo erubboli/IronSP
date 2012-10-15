@@ -1,7 +1,9 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
+using IronSharePoint.IronLog;
 using Microsoft.SharePoint;
+using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint.Security;
 using IronSharePoint.EventReceivers;
 using System.Linq;
@@ -42,6 +44,8 @@ namespace IronSharePoint.Features.IronSP_Hive_Site
             list.EventReceivers.Add(SPEventReceiverType.ItemCheckingOut, assembly, type);
 
             list.Update();
+
+            AddTimerJobs(site.WebApplication);
         }
 
 
@@ -57,6 +61,8 @@ namespace IronSharePoint.Features.IronSP_Hive_Site
 
             list.EventReceivers.OfType<SPEventReceiverDefinition>().Where(d=>d.Class == type).ToList().ForEach(d=>d.Delete());
             list.Update();
+
+            RemoveTimerJobs(site.WebApplication);
         }
 
 
@@ -78,5 +84,32 @@ namespace IronSharePoint.Features.IronSP_Hive_Site
         //public override void FeatureUpgrading(SPFeatureReceiverProperties properties, string upgradeActionName, System.Collections.Generic.IDictionary<string, string> parameters)
         //{
         //}
+
+        private void RemoveTimerJobs(SPWebApplication webapp)
+        {
+            foreach (SPJobDefinition job in webapp.JobDefinitions)
+            {
+                if (job.Name == IronLogWorkItemJobDefinition.JobName)
+                {
+                    job.Delete();
+                }
+            }
+        }
+
+        private void AddTimerJobs(SPWebApplication webApp)
+        {
+            RemoveTimerJobs(webApp);
+
+            var ironLogSchedule = new SPMinuteSchedule {Interval = 1, BeginSecond = 0, EndSecond = 59};
+            var ironLogJobDefinition = new IronLogWorkItemJobDefinition(webApp) {Schedule = ironLogSchedule};
+            ironLogJobDefinition.Update();
+            try
+            {
+                ironLogJobDefinition.RunNow();
+            }
+            catch
+            {
+            }
+        }
     }
 }
