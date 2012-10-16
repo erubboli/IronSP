@@ -45,7 +45,7 @@ namespace IronSharePoint.IronLog
 
             public override string ToString()
             {
-                return string.Format("[{0}] {1} - {2}", Level, Timestamp, Message);
+                return string.Format("[{0}]\t{1} - {2}", Level, Timestamp, Message);
             }
         }
 
@@ -67,7 +67,7 @@ namespace IronSharePoint.IronLog
             {
                 SPSite site = _runtime.IronHive.Site;
 
-                var guid = site.AddWorkItem(Guid.NewGuid(),
+                site.AddWorkItem(Guid.NewGuid(),
                                  DateTime.UtcNow,
                                  IronLogWorkItemJobDefinition.WorkItemGuid,
                                  site.RootWeb.ID,
