@@ -81,11 +81,9 @@ namespace IronSharePoint.IronLog
                                  entry.Base64Serialize(),
                                  Guid.Empty
                     );
-                Console.WriteLine(guid);
             }
             catch (Exception e)
             {
-                Debugger.Break();
             }
         }
     }
