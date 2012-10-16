@@ -14,7 +14,6 @@
         float: left;
     }
 
-
     #ironSP-console-container {
         padding: 5px;
         max-height: 500px;
@@ -27,7 +26,7 @@
 
     .ironSP-console-line td, .ironSP-console-prompt td, #ironSP-console-input {
         color: black !important;
-        font-family: Consolas !important;
+        font-family: "Droid Sans Mono", Consolas, Courier !important;
         font-size: 12pt;
     }
 
