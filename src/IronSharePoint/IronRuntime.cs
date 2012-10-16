@@ -16,33 +16,19 @@ namespace IronSharePoint
     public class IronRuntime: IDisposable
     {
         // the key is the ID of the hive
-        static readonly Dictionary<Guid, IronRuntime> _staticLivingRuntimes;
-
-        static IronRuntime()
-        {
-            _staticLivingRuntimes = new Dictionary<Guid, IronRuntime>();
-        }
+        static Dictionary<Guid, IronRuntime> _staticLivingRuntimes;
 
         IronConsole.IronConsole _console;
         private Guid _hiveId;
 
         internal static Dictionary<Guid, IronRuntime> LivingRuntimes
         {
-            get {
-
-                if (HttpContext.Current != null)
+            get
+            {
+                if (_staticLivingRuntimes == null)
                 {
-                    var key = IronHelper.GetPrefixedKey("LivingRuntimes");
-                    var inHttpAppLivingRuntimes = HttpContext.Current.Application[key];
-                    if (inHttpAppLivingRuntimes == null)
-                    {
-                        inHttpAppLivingRuntimes = new Dictionary<Guid, IronRuntime>();
-                        HttpContext.Current.Application[key] = inHttpAppLivingRuntimes;
-                    }
-
-                    return inHttpAppLivingRuntimes as Dictionary<Guid, IronRuntime>;
+                    _staticLivingRuntimes = new Dictionary<Guid, IronRuntime>();
                 }
-
                 return _staticLivingRuntimes; 
             }
         }
@@ -215,9 +201,7 @@ namespace IronSharePoint
                         var scope = scriptEngine.CreateScope();
                         scope.SetVariable("iron_runtime", this);
                         scriptEngine.Execute("$RUNTIME = iron_runtime", scope);
-                        scriptEngine.Execute(string.Format(@"
-load_assembly '{0}'
-load_assembly '{1}'
+                        scriptEngine.Execute(@"
 require 'rubygems'
 
 begin
@@ -225,7 +209,7 @@ begin
 rescue Exception => ex
     logger = IronSharePoint::IronLog::IronLogger.new $RUNTIME
     logger.log(ex, IronSharePoint::IronLog::LogLevel.Error)
-end", typeof (SPSite).Assembly.FullName, GetType().Assembly.FullName)
+end"
                             );
                     });
                 }
