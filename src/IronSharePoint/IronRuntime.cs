@@ -215,8 +215,18 @@ namespace IronSharePoint
                         var scope = scriptEngine.CreateScope();
                         scope.SetVariable("iron_runtime", this);
                         scriptEngine.Execute("$RUNTIME = iron_runtime", scope);
-                        scriptEngine.Execute("require 'rubygems'");
-                        scriptEngine.Execute("begin; require 'application'; rescue Error => ex; end");
+                        scriptEngine.Execute(string.Format(@"
+load_assembly '{0}'
+load_assembly '{1}'
+require 'rubygems'
+
+begin
+    require 'application'
+rescue Exception => ex
+    logger = IronSharePoint::IronLog::IronLogger.new $RUNTIME
+    logger.log(ex, IronSharePoint::IronLog::LogLevel.Error)
+end", typeof (SPSite).Assembly.FullName, GetType().Assembly.FullName)
+                            );
                     });
                 }
 
