@@ -20,7 +20,8 @@ namespace IronSharePoint
         private IronPlatformAdaptationLayer _ironAdaptationLayer;
         private bool _closed = false;
         private Guid _siteId;
-        private SPSite _site;
+        [ThreadStatic]
+        private static SPSite _site;
 
         public SPSite Site 
         {
