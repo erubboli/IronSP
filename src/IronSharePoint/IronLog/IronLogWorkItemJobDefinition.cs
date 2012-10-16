@@ -111,6 +111,10 @@ namespace IronSharePoint.IronLog
                 {
                     
                     var content = reader.ReadToEnd();
+                    if (!content.EndsWith(Environment.NewLine))
+                    {
+                        content += Environment.NewLine;
+                    }
                     var writeStream = new MemoryStream();
                     using (var writer = new StreamWriter(writeStream, Encoding.UTF8))
                     {
