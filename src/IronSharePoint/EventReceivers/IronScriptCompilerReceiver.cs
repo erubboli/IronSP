@@ -25,12 +25,16 @@ namespace IronSharePoint.EventReceivers
 
         private void CompileScript(SPItemEventProperties properties)
         {
+            
             if (!properties.ListItem.ContentTypeId.IsChildOf(new SPContentTypeId(IronContentTypeId.IronScript)))
                 return;
 
+            IronRuntime runtime = null;
+
+
             try
             {
-                var runtime = IronRuntime.GetDefaultIronRuntime(properties.Web.Site);
+                runtime = IronRuntime.GetDefaultIronRuntime(properties.Web.Site);
                 engine =  runtime.GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));
 
                 EventFiringEnabled = false;
@@ -38,7 +42,8 @@ namespace IronSharePoint.EventReceivers
                 properties.ListItem[IronField.IronErrorFlag] = false; 
                 properties.ListItem.SystemUpdate(false);
 
-                runtime.IronHive.ReloadFiles();
+                //cause compile bug??
+               // runtime.IronHive.ReloadFiles();
 
             }
             catch (Exception ex)
@@ -53,6 +58,11 @@ namespace IronSharePoint.EventReceivers
             finally
             {
                 EventFiringEnabled = true;
+
+                if (runtime != null)
+                {
+                    runtime.IronHive.Dispose();
+                }
             }
         }
 
@@ -65,8 +75,9 @@ namespace IronSharePoint.EventReceivers
 
         public override void ItemDeleted(SPItemEventProperties properties)
         {
-            var ironRuntime = IronRuntime.GetDefaultIronRuntime(properties.List.ParentWeb.Site);
-            ironRuntime.IronHive.ReloadFiles();
+            var ironRuntime = IronRuntime.GetDefaultIronRuntime(properties.List.ParentWeb.Site);       
+            
+            //ironRuntime.IronHive.ReloadFiles();
 
             base.ItemDeleted(properties);
         }
