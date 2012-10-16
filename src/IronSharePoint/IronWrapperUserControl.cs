@@ -53,38 +53,42 @@ namespace IronSharePoint
 
                 Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
 
-                engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
+                IronRuntime ironRuntime = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId);
+                engine = ironRuntime.GetEngineByExtension(Path.GetExtension(ScriptName));
 
-                ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
+                if (engine != null)
+                {
+                    ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
-                var dynamicControl = ctrl as IIronControl;
-                if (dynamicControl != null)
-                {
-                    dynamicControl.WebPart = null;
-                    dynamicControl.Data = null;
-                    dynamicControl.Config = Config;
-                }
-
-                if (Template != null)
-                {
-                    Template.InstantiateIn(ctrl);
-                }
-                else
-                {
-                    if (!String.IsNullOrEmpty(TemplatePath))
+                    var dynamicControl = ctrl as IIronControl;
+                    if (dynamicControl != null)
                     {
-                        var path = TemplatePath.Replace("~site", SPContext.Current.Site.ServerRelativeUrl)
-                            .Replace("~web", SPContext.Current.Web.ServerRelativeUrl)
-                            .Replace("~hiveSite", engine.IronRuntime.IronHive.Site.ServerRelativeUrl)
-                            .Replace("~hiveWeb", engine.IronRuntime.IronHive.Web.ServerRelativeUrl)
-                            .Replace("~hiveFolder", engine.IronRuntime.IronHive.Folder.ServerRelativeUrl);
+                        dynamicControl.WebPart = null;
+                        dynamicControl.Data = null;
+                        dynamicControl.Config = Config;
+                    }
 
-                        Template = this.LoadTemplate(path);
+                    if (Template != null)
+                    {
                         Template.InstantiateIn(ctrl);
                     }
-                }
+                    else
+                    {
+                        if (!String.IsNullOrEmpty(TemplatePath))
+                        {
+                            var path = TemplatePath.Replace("~site", SPContext.Current.Site.ServerRelativeUrl)
+                                .Replace("~web", SPContext.Current.Web.ServerRelativeUrl)
+                                .Replace("~hiveSite", engine.IronRuntime.IronHive.Site.ServerRelativeUrl)
+                                .Replace("~hiveWeb", engine.IronRuntime.IronHive.Web.ServerRelativeUrl)
+                                .Replace("~hiveFolder", engine.IronRuntime.IronHive.Folder.ServerRelativeUrl);
 
-                this.Controls.Add(ctrl);
+                            Template = this.LoadTemplate(path);
+                            Template.InstantiateIn(ctrl);
+                        }
+                    }
+
+                    this.Controls.Add(ctrl);
+                }
             }
             catch (Exception ex)
             {

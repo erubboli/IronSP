@@ -54,19 +54,23 @@ namespace IronSharePoint
 
                 Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
 
-                engine = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId).GetEngineByExtension(Path.GetExtension(ScriptName));
+                IronRuntime ironRuntime = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId);
+                engine = ironRuntime.GetEngineByExtension(Path.GetExtension(ScriptName));
 
-                ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
-
-                var dynamicControl = ctrl as IIronControl;
-                if (dynamicControl != null)
+                if (engine != null)
                 {
-                    dynamicControl.WebPart = null;
-                    dynamicControl.Data = null;
-                    dynamicControl.Config = Config;
-                }
+                    ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
-                this.Controls.Add(ctrl); 
+                    var dynamicControl = ctrl as IIronControl;
+                    if (dynamicControl != null)
+                    {
+                        dynamicControl.WebPart = null;
+                        dynamicControl.Data = null;
+                        dynamicControl.Config = Config;
+                    }
+
+                    this.Controls.Add(ctrl);
+                }
 
             }
             catch (Exception ex)
