@@ -43,20 +43,31 @@ namespace IronSharePoint.IronLog
 
                     if (logEntry.Level <= WebLogLevel(web))
                     {
-                        var logLib = (SPDocumentLibrary) web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronLogsListPath);
-
-                        var logFileCandidates = logLib.GetItems(LogFileQuery(2));
-                        if (logFileCandidates.Count > 0)
+                        SPDocumentLibrary logLib = null;
+                        try
                         {
-                            var logFile = logFileCandidates[0].File;
-                            AppendToFile(logFile, logEntry);
+                            logLib = (SPDocumentLibrary)web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronLogsListPath);
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            var url = DateTime.Now.ToString("s").Replace(":", "_");
-                            url = string.Format("{0}.log", url);
+                            throw new SPException("Couldn't find IronLog document library", ex);
+                            throw ex;
+                        }
+                        if (logLib != null)
+                        {
+                            var logFileCandidates = logLib.GetItems(LogFileQuery(2));
+                            if (logFileCandidates.Count > 0)
+                            {
+                                var logFile = logFileCandidates[0].File;
+                                AppendToFile(logFile, logEntry);
+                            }
+                            else
+                            {
+                                var url = DateTime.Now.ToString("s").Replace(":", "_");
+                                url = string.Format("{0}.log", url);
 
-                            logLib.RootFolder.Files.Add(url, GetBytes(logEntry)); 
+                                logLib.RootFolder.Files.Add(url, GetBytes(logEntry));
+                            }
                         }
                     }
                     // delete the workItem after we've processed it
@@ -72,16 +83,13 @@ namespace IronSharePoint.IronLog
 
         LogLevel WebLogLevel(SPWeb web)
         {
-            string logLevelName = web.Properties[string.Format("{0}LogLevel", IronConstant.IronPrefix)];
+            string logLevelName = web.Properties[IronHelper.GetPrefixedKey("LogLevel")];
 
             if (String.IsNullOrEmpty(logLevelName))
             {
                 return LogLevel.All;
             }
-            else
-            {
-                return (LogLevel) Enum.Parse(typeof (LogLevel), logLevelName);
-            }
+            return (LogLevel) Enum.Parse(typeof (LogLevel), logLevelName);
         }
 
         SPQuery LogFileQuery(double sizeMB)
