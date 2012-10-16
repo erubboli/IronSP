@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using Microsoft.SharePoint;
+using IronSharePoint.IronLog;
+using Microsoft.Scripting.Hosting;
 
 namespace IronSharePoint
 {
@@ -13,9 +16,38 @@ namespace IronSharePoint
         public void Init(HttpApplication application)
         {
             application.EndRequest += new EventHandler(EndRequest);
+            application.Error += new EventHandler(Error);
 
         }
 
+        void Error(object sender, EventArgs e)
+        {
+            var application = sender as HttpApplication;
+
+            if (SPContext.Current != null)
+            {
+                var runtime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
+
+                var logger = new IronLogger(runtime);
+
+                var exception =  application.Server.GetLastError();
+
+                logger.Log(String.Format("Error: {0} at {1}!", exception.Message, exception.StackTrace), LogLevel.Fatal);
+
+                //hack: ruby engine hard coded
+                var engine = runtime.GetEngineByExtension(".rb");
+
+                if (engine != null)
+                {
+                    var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
+                    string error = eo.FormatException(exception);
+
+                    logger.Log(String.Format("Ruby Error: {0} at {1}", exception.Message, error),LogLevel.Fatal);
+
+                }
+            }
+        }
+        
         void EndRequest(object sender, EventArgs e)
         {
             var application = sender as HttpApplication;

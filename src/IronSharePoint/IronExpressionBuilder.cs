@@ -10,6 +10,7 @@ using Microsoft.SharePoint;
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.Scripting.Hosting;
+using IronSharePoint.IronLog;
 
 namespace IronSharePoint
 {
@@ -66,6 +67,11 @@ namespace IronSharePoint
                     IronRuntime.LogError(String.Format("Error executing script {0}: {1}", scriptName, error), ex);
 
                     value = error;
+
+                    if (engine != null)
+                    {
+                        new IronLogger(engine.IronRuntime).Log(String.Format("Ruby Error: {0} at {1}", ex.Message, error));
+                    }
                 }
                 else
                 {

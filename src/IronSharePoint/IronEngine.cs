@@ -41,11 +41,17 @@ namespace IronSharePoint
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
                 var scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
+
+                if (scriptFile == null)
+                {
+                    throw new NullReferenceException(String.Format("Script file {0} not found!", scriptName));
+                }
+
                 ExcecuteScriptFile(scriptFile);
 
                 if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
                 {
-                    throw new NullReferenceException(String.Format("The class {0} in script file {1} is not regsitered in the DynamicTypeRegistry", className, scriptName));
+                    throw new NullReferenceException(String.Format("The class {0} in script file {1} is not registered in the DynamicTypeRegistry", className, scriptName));
                 }
             }
 

@@ -13,6 +13,7 @@ using Microsoft.SharePoint.Administration;
 using System.Web.Caching;
 using System.Web;
 using System.ComponentModel;
+using IronSharePoint.IronLog;
 
 namespace IronSharePoint
 {
@@ -91,6 +92,11 @@ namespace IronSharePoint
                     string error = eo.FormatException(Exception);
 
                     IronRuntime.LogError(String.Format("Error executing script {0}: {1}", ScriptName, error), Exception);
+
+                    if(engine!=null)
+                    {
+                        new IronLogger(engine.IronRuntime).Log(String.Format("Ruby Error: {0} at {1}", Exception.Message, error));
+                    }
 
                     writer.Write(error);
                 }

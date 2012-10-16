@@ -15,13 +15,17 @@ using System.Security;
 
 namespace IronSharePoint
 {
-    public class IronHive : ScriptHost
+    public class IronHive : ScriptHost, IDisposable
     {
         private IronPlatformAdaptationLayer _ironAdaptationLayer;
-        private bool _closed = false;
+        
         private Guid _siteId;
+        
         [ThreadStatic]
         private static SPSite _site;
+
+        [ThreadStatic]
+        private static bool _closed = false;
 
         public SPSite Site 
         {
@@ -121,14 +125,17 @@ namespace IronSharePoint
             _files = null;
         }
 
-        public void ReloadFiles()
-        {
-            _files = null;
+
+        /// maybe cause complie bug?!?!? 
+
+        //public void ReloadFiles()
+        //{
+        //    _files = null;
             
-            //load files
-            var files = Files;
+        //    //load files
+        //    var files = Files;
             
-        }
+        //}
 
         public override PlatformAdaptationLayer PlatformAdaptationLayer
         {
@@ -190,13 +197,18 @@ namespace IronSharePoint
             return null;
         } 
 
-        public void Close()
+        internal void Close()
         {
             if (_site != null && !_closed)
             {
                 _site.Dispose();
                 _closed=true;
             }
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
 
         public bool ContainsFile(string file)
@@ -240,5 +252,7 @@ namespace IronSharePoint
             public string Event { get; set; }
             public SPItemEventProperties EventProperties { get; set; }
         }
+
+
     }
 }
