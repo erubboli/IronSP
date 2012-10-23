@@ -180,10 +180,10 @@ namespace IronSharePoint
                 {
                     var ironRubyRootFolder = Path.Combine(IronHive.FeatureFolderPath, "IronSP_IronRuby10\\");
                     var gemDirs = new[]
-                                      {
-                                          Path.Combine(ironRubyRootFolder, "lib/ironruby/gems/1.8").Replace("\\", "/"),
-                                          "IronHive://vendor/rubygems"
-                                      };
+                        {
+                            Path.Combine(ironRubyRootFolder, "lib/ironruby/gems/1.8").Replace("\\", "/"),
+                            "IronHive://vendor/rubygems"
+                        };
 
                     SPSecurity.RunWithElevatedPrivileges(() =>
                     {
@@ -196,7 +196,11 @@ namespace IronSharePoint
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby\1.8"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby"),
                                 Path.Combine(ironRubyRootFolder, @"Lib\ruby\1.8"),
+#if DEBUG
+                                IronDebug.IronDevHivePah                       
+#else
                                 IronConstant.IronHiveRoot
+#endif
                         });
                         var scope = scriptEngine.CreateScope();
                         scope.SetVariable("iron_runtime", this);

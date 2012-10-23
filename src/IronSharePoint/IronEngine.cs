@@ -38,6 +38,10 @@ namespace IronSharePoint
 
         public object CreateDynamicInstance(string className, string scriptName, params object[] args)
         {
+#if DEBUG
+            ScriptEngine.Execute("load '" + scriptName + "'", IronRuntime.ScriptRuntime.Globals);
+#else
+
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
                 var scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
@@ -54,6 +58,8 @@ namespace IronSharePoint
                     throw new NullReferenceException(String.Format("The class {0} in script file {1} is not registered in the DynamicTypeRegistry", className, scriptName));
                 }
             }
+#endif
+
 
             return IronRuntime.CreateDynamicInstance(className, args);
         }

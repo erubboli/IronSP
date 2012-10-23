@@ -137,6 +137,7 @@ namespace IronSharePoint
             
         //}
 
+
         public override PlatformAdaptationLayer PlatformAdaptationLayer
         {
             get
@@ -153,12 +154,24 @@ namespace IronSharePoint
             }
         }
 
+
+
         private IList<String> _files;
 
         public IList<string> Files
         {
             get
             {
+
+#if DEBUG
+
+                _files = new List<String>(); 
+
+                DirSearch(IronDebug.IronDevHivePah);
+
+                return _files;
+#else
+
                 if (_files == null)
                 {
                     var query = new SPQuery();
@@ -184,8 +197,35 @@ namespace IronSharePoint
                 }
 
                 return _files;
+#endif
+
             }
         }
+
+#if DEBUG
+
+        void DirSearch(string sDir)
+        {
+            try
+            {
+                foreach (string f in Directory.GetFiles(sDir, "*.*"))
+                {
+                    _files.Add(f.Replace(IronDebug.IronDevHivePah+ "\\", "").Replace("\\","/"));
+                }
+
+                foreach (string d in Directory.GetDirectories(sDir))
+                {   
+                    DirSearch(d);
+                }
+            }
+            catch (System.Exception excpt)
+            {
+                Console.WriteLine(excpt.Message);
+            }
+        }
+#endif
+
+
 
         public string LoadText(string file)
         {
