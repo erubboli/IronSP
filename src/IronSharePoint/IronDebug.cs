@@ -11,7 +11,7 @@ namespace IronSharePoint
         public static string IronDevHivePah
         {
 
-             get{ return System.Environment.GetEnvironmentVariable("IRONSPDEVHIVE").Replace("\\","//");}
+             get{ return System.Environment.GetEnvironmentVariable("IRONSPDEVHIVE").Replace("\\","/");}
         }
     }
 }
