@@ -83,6 +83,10 @@ namespace IronSharePoint.IronPart
             }
         }
 
+        public void SetDirty(){
+            this.SetDirty();
+        }
+
         protected override void Render(HtmlTextWriter writer)
         {
             if (Exception != null)
