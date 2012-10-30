@@ -290,11 +290,28 @@ namespace IronSharePoint
             return null;
         }
 
+        public void Add(string file, byte[] data)
+        {
+            if (ContainsFile(file))
+            {
+                var spFile = LoadFile(file);
+                spFile.SaveBinary(data);
+            }
+            else
+            {
+                Folder.Files.Add(GetFullPath(file), data);
+            }
+        }
+
         internal string Normalize(string file)
         {
             if (file.StartsWith(IronConstant.IronHiveRoot))
             {
                 file = file.Replace(IronConstant.IronHiveRoot, string.Empty);
+            }
+            else if (file.StartsWith(IronConstant.IronHiveListPath + "/"))
+            {
+                file = file.Replace(IronConstant.IronHiveListPath + "/", string.Empty);
             }
             else
             {
