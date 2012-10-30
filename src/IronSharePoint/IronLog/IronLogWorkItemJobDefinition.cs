@@ -9,7 +9,7 @@ using Microsoft.SharePoint.Administration;
 
 namespace IronSharePoint.IronLog
 {
-    internal class IronLogWorkItemJobDefinition : SPWorkItemJobDefinition
+    public class IronLogWorkItemJobDefinition : SPWorkItemJobDefinition
     {
         public static readonly Guid WorkItemGuid = new Guid("{2C59953B-1344-4D94-8ADF-3FB291342D30}");
         public static readonly String JobName = "IronLog Worker";
@@ -39,9 +39,9 @@ namespace IronSharePoint.IronLog
             {
                 using (var web = site.OpenWeb(workItem.WebId))
                 {
-                    var logEntry = IronLogger.Entry.Base64Deserialize(workItem.TextPayload);
+                    //var logEntry = IronLogger.Entry.Base64Deserialize(workItem.TextPayload);
 
-                    if (logEntry.Level <= WebLogLevel(web))
+                    if (true)//logEntry.Level <= WebLogLevel(web))
                     {
                         SPDocumentLibrary logLib = null;
                         try
@@ -59,14 +59,14 @@ namespace IronSharePoint.IronLog
                             if (logFileCandidates.Count > 0)
                             {
                                 var logFile = logFileCandidates[0].File;
-                                AppendToFile(logFile, logEntry);
+                                AppendToFile(logFile, workItem.TextPayload);
                             }
                             else
                             {
                                 var url = DateTime.Now.ToString("s").Replace(":", "_");
                                 url = string.Format("{0}.log", url);
 
-                                logLib.RootFolder.Files.Add(url, GetBytes(logEntry));
+                                logLib.RootFolder.Files.Add(url, GetBytes(workItem.TextPayload));
                             }
                         }
                     }
@@ -111,7 +111,7 @@ namespace IronSharePoint.IronLog
             return new SPQuery() {Query = String.Format(queryString, sizeByte)};
         }
 
-        public void AppendToFile(SPFile file, IronLogger.Entry logEntry)
+        public void AppendToFile(SPFile file, string message)
         {
             using (var stream = file.OpenBinaryStream())
             {
@@ -127,16 +127,16 @@ namespace IronSharePoint.IronLog
                     using (var writer = new StreamWriter(writeStream, Encoding.UTF8))
                     {
                         writer.Write(content);
-                        writer.WriteLine(logEntry);
+                        writer.WriteLine(message);
                     }
                     file.SaveBinary(writeStream.ToArray());
                 }
             }
         }
 
-        public byte[] GetBytes(IronLogger.Entry entry)
+        public byte[] GetBytes(string message)
         {
-            return Encoding.UTF8.GetBytes(entry.ToString());
+            return Encoding.UTF8.GetBytes(message);
         }
     }
 }

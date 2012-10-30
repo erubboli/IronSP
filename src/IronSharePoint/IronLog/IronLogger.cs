@@ -16,39 +16,6 @@ namespace IronSharePoint.IronLog
             _runtime = runtime;
         }
 
-        [Serializable]
-        internal class Entry
-        {
-            static readonly IFormatter _formatter = new BinaryFormatter();
-
-            public LogLevel Level { get; set; }
-            public string Message { get; set; }
-            public DateTime Timestamp { get; set; }
-
-            public string Base64Serialize()
-            {
-                using (var ms = new MemoryStream())
-                {
-                    _formatter.Serialize(ms, this);
-                    return Convert.ToBase64String(ms.ToArray());
-                }
-            }
-
-            public static Entry Base64Deserialize(string base64)
-            {
-                var bytes = Convert.FromBase64String(base64);
-                using (var stream = new MemoryStream(bytes))
-                {
-                    return (Entry)_formatter.Deserialize(stream);
-                }
-            }
-
-            public override string ToString()
-            {
-                return string.Format("[{0}]\t{1} - {2}", Level, Timestamp, Message);
-            }
-        }
-
         public void Log(string message)
         {
             Log(message, LogLevel.Info);
@@ -56,12 +23,7 @@ namespace IronSharePoint.IronLog
 
         public void Log(string message, LogLevel level)
         {
-            var entry = new IronLogger.Entry()
-                            {
-                                Level = level,
-                                Message = message,
-                                Timestamp = DateTime.Now
-                            };
+            var logText = string.Format("[{0}]\t{1} - {2}", level, DateTime.Now, message);
 
             try
             {
@@ -78,11 +40,11 @@ namespace IronSharePoint.IronLog
                                  Guid.Empty,
                                  site.SystemAccount.ID,
                                  null,
-                                 entry.Base64Serialize(),
+                                 logText,
                                  Guid.Empty
                     );
             }
-            catch (Exception e)
+            catch
             {
             }
         }
