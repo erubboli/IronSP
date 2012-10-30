@@ -125,6 +125,10 @@ namespace IronSharePoint
             _files = null;
         }
 
+        public IronHive()
+        {
+            _currentDir = Directory.GetCurrentDirectory() + "\\";
+        }
 
         /// maybe cause complie bug?!?!? 
 
@@ -157,6 +161,7 @@ namespace IronSharePoint
 
 
         private IList<String> _files;
+        private string _currentDir;
 
         public IList<string> Files
         {
@@ -257,6 +262,13 @@ namespace IronSharePoint
             return Files.Contains(file);
         }
 
+        public bool ContainsDirectory(string path)
+        {
+            path = Normalize(path);
+
+            return Files.Any(file => file.StartsWith(path));
+        }
+
         public string GetFullPath(string file)
         {
             file = Normalize(file);
@@ -278,13 +290,26 @@ namespace IronSharePoint
             return null;
         }
 
-        private string Normalize(string file)
+        internal string Normalize(string file)
         {
             if (file.StartsWith(IronConstant.IronHiveRoot))
             {
                 file = file.Replace(IronConstant.IronHiveRoot, string.Empty);
             }
-            return file;
+            else
+            {
+                string fullPath;
+                try
+                {
+                    file = Path.GetFullPath(file).Replace(_currentDir, string.Empty);
+                }
+                catch
+                {
+                    // do nothing
+                }
+            }
+
+            return file.Replace('\\', '/');
         }
 
         public class HiveChangedArgs : EventArgs
@@ -294,5 +319,36 @@ namespace IronSharePoint
         }
 
 
+        public string[] GetDirectories(string path, string searchPattern)
+        {
+            path = Normalize(path);
+
+            var regexPattern = string.Format("({0}/{1})/", path, searchPattern.Replace("*", "[^/]+"));
+            var regex = new Regex(regexPattern);
+            return Files.Select(file =>
+                                    {
+                                        var match = regex.Match(file);
+                                        return match.Success ? match.Groups[1].Value : null;
+                                    })
+                .Where(x => x != null)
+                .Distinct()
+                .ToArray();
+        }
+
+        public string[] GetFiles(string path, string searchPattern)
+        {
+            path = Normalize(path);
+
+            var regexPattern = string.Format("{0}/{1}", path, searchPattern.Replace("*", ".+"));
+            var regex = new Regex(regexPattern);
+            return Files.Select(file =>
+            {
+                var match = regex.Match(file);
+                return match.Success ? match.Groups[0].Value : null;
+            })
+                .Where(x => x != null)
+                .Distinct()
+                .ToArray();
+        }
     }
 }
