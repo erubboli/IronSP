@@ -15,7 +15,7 @@ namespace IronSharePoint
         public IIronDataStore Data { get; set; }
         public string Config { get; set; }
 
-        public List<EditorPart> CreateEditorParts()
+        public virtual List<EditorPart> CreateEditorParts()
         {
             return new List<EditorPart>();
         }
