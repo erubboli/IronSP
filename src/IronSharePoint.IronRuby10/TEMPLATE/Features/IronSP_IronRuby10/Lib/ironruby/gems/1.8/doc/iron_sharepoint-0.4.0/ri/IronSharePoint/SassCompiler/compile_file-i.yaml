@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: IronSharePoint::SassCompiler#compile_file
+is_singleton: false
+name: compile_file
+params: (url)
+visibility: public

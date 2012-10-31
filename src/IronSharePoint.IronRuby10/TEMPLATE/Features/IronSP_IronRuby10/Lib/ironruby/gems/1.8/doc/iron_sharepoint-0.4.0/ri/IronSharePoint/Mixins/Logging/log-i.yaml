@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: IronSharePoint::Mixins::Logging#log
+is_singleton: false
+name: log
+params: (message, level = :info)
+visibility: public
