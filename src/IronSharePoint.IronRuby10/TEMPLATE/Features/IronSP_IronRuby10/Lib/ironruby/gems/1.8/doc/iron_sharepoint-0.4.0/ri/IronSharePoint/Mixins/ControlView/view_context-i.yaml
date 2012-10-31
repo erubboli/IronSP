@@ -1,0 +1,11 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: "Alias for #render_context"
+full_name: IronSharePoint::Mixins::ControlView#view_context
+is_singleton: false
+name: view_context
+params: ()
+visibility: public

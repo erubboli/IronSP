@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: IronSharePoint::Mixins::Logging::included
+is_singleton: true
+name: included
+params: (klass)
+visibility: public

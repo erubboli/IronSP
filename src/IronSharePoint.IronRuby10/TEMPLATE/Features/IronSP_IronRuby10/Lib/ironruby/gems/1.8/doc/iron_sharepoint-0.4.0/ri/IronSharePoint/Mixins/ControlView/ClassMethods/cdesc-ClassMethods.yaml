@@ -1,0 +1,22 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+constants: []
+full_name: IronSharePoint::Mixins::ControlView::ClassMethods
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: default_template
+- !ruby/object:RI::MethodSummary 
+  name: default_template
+- !ruby/object:RI::MethodSummary 
+  name: template_file
+- !ruby/object:RI::MethodSummary 
+  name: template_file
+- !ruby/object:RI::MethodSummary 
+  name: with_template
+- !ruby/object:RI::MethodSummary 
+  name: with_template
+name: ClassMethods
+superclass: 

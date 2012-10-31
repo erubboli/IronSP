@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: IronSharePoint::Mixins::ControlView::ClassMethods#with_template
+is_singleton: false
+name: with_template
+params: (template_file)
+visibility: public
