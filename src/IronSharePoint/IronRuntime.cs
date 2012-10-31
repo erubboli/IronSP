@@ -207,12 +207,13 @@ namespace IronSharePoint
                         scriptEngine.Execute("$RUNTIME = iron_runtime", scope);
                         scriptEngine.Execute(@"
 require 'rubygems'
+require 'iron_sharepoint'
+require 'iron_templates'
 
 begin
     require 'application'
 rescue Exception => ex
-    logger = IronSharePoint::IronLog::IronLogger.new $RUNTIME
-    logger.log(ex, IronSharePoint::IronLog::LogLevel.Error)
+    IRON_DEFAULT_LOGGER.error ex
 end"
                             );
                     });
