@@ -570,11 +570,6 @@
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\getsource-0.2.1\Rakefile" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\getsource-0.2.1\README" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\getsource-0.2.1\TODO" />
-    <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\haml-3.0.25\bin\css2sass" />
-    <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\haml-3.0.25\bin\haml" />
-    <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\haml-3.0.25\bin\html2haml" />
-    <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\haml-3.0.25\bin\sass" />
-    <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\haml-3.0.25\bin\sass-convert" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\haml-3.0.25\CONTRIBUTING" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\haml-3.0.25\extra\haml-mode.el" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\haml-3.0.25\extra\sass-mode.el" />
@@ -1168,7 +1163,6 @@
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\partialruby-0.2.0\spec\operator_spec.rb" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\partialruby-0.2.0\spec\xstr_spec.rb" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\partialruby-0.2.0\TODO" />
-    <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\rack-1.1.0\bin\rackup" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\rack-1.1.0\COPYING" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\rack-1.1.0\example\lobster.ru" />
     <None Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\rack-1.1.0\example\protectedlobster.rb" />
