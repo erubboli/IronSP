@@ -83,8 +83,8 @@ namespace IronSharePoint.IronPart
             }
         }
 
-        public void SetDirty(){
-            this.SetDirty();
+        public new void SetPersonalizationDirty(){
+            base.SetPersonalizationDirty();
         }
 
         protected override void Render(HtmlTextWriter writer)
