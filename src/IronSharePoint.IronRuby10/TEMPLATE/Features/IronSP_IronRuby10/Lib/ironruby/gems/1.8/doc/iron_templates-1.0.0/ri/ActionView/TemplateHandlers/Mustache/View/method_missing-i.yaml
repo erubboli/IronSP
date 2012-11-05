@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: ActionView::TemplateHandlers::Mustache::View#method_missing
+is_singleton: false
+name: method_missing
+params: (method, *args, &block)
+visibility: public

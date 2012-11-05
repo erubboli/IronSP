@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>watch (IronSharePoint::SassCompiler)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/iron_sharepoint/sass_compiler.rb, line 14</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">watch</span>
+        <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">watching?</span>
+          <span class="ruby-ivar">@handler</span> = <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">sender</span>, <span class="ruby-identifier">args</span><span class="ruby-operator">|</span>
+            <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">args</span>.<span class="ruby-identifier">event</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;ItemUpdated&quot;</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">event</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;ItemAdded&quot;</span>)
+              <span class="ruby-identifier">props</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">event_properties</span>
+              <span class="ruby-identifier">extension</span> = <span class="ruby-identifier">parse_extension</span> <span class="ruby-identifier">props</span>.<span class="ruby-identifier">after_url</span>
+              <span class="ruby-keyword kw">if</span> ([<span class="ruby-identifier">:scss</span>, <span class="ruby-identifier">:sass</span>, <span class="ruby-identifier">:css</span>].<span class="ruby-identifier">include?</span> <span class="ruby-identifier">extension</span>)
+                <span class="ruby-identifier">compile_files</span>
+              <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">hive</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">add</span> <span class="ruby-ivar">@handler</span>
+          <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-value str">&quot;SassCompiler is watching sass files.&quot;</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

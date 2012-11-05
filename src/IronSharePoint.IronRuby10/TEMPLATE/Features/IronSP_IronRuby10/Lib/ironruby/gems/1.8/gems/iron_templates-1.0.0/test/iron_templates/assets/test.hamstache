@@ -1,0 +1,4 @@
+%p {{from_view}}
+{{# from_context}}
+  %p {{from_context}}
+{{/ from_context}}

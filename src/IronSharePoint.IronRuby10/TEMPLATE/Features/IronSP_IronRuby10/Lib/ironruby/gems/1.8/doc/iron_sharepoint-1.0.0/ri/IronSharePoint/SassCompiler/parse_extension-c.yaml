@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: IronSharePoint::SassCompiler::parse_extension
+is_singleton: true
+name: parse_extension
+params: (url)
+visibility: public

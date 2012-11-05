@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: ActionView::TemplateHandlers::Hamstache::Handler#compile
+is_singleton: false
+name: compile
+params: (template)
+visibility: public

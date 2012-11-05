@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: TestView#from_view
+is_singleton: false
+name: from_view
+params: ()
+visibility: public
