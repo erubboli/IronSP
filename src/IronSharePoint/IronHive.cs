@@ -18,22 +18,18 @@ namespace IronSharePoint
     public class IronHive : ScriptHost, IDisposable
     {
         private IronPlatformAdaptationLayer _ironAdaptationLayer;
-        
-        private Guid _siteId;
-        
-        [ThreadStatic]
-        private static SPSite _site;
 
-        [ThreadStatic]
-        private static bool _closed = false;
+        public Guid Id { get; internal set; }
+        
+        private SPSite _site;
 
         public SPSite Site 
         {
             get
             {
-                if (_site == null || _closed)
+                if (_site == null)
                 {
-                    var key = IronHelper.GetPrefixedKey(_siteId.ToString());
+                    var key = IronHelper.GetPrefixedKey(Id.ToString());
 
                     if (HttpContext.Current != null && HttpContext.Current.Items[key] != null)
                     {
@@ -41,8 +37,7 @@ namespace IronSharePoint
                     }
                     else
                     {
-                        _site = new SPSite(_siteId, SPUserToken.SystemAccount);
-                        _closed = false;
+                        _site = new SPSite(Id, SPUserToken.SystemAccount);
 
                         if (HttpContext.Current != null)
                         {                 
@@ -87,7 +82,7 @@ namespace IronSharePoint
 
                 if (hiveFeature == null)
                 {
-                    throw new InvalidOperationException(String.Format("'IronSP Hive Site' feature is not activated on the site with the id {0}", _siteId));
+                    throw new InvalidOperationException(String.Format("'IronSP Hive Site' feature is not activated on the site with the id {0}", Id));
                 }
 
                 return hiveFeature;
@@ -103,11 +98,6 @@ namespace IronSharePoint
             }
         }
         
-        public Guid Id
-        {
-            get { return _siteId; }
-        }
-
         public event EventHandler<HiveChangedArgs> Events;
 
         internal void FireHiveEvent(object sender, string eventName, SPItemEventProperties eventProperties)
@@ -116,13 +106,6 @@ namespace IronSharePoint
             {
                 Events.Invoke(sender, new HiveChangedArgs(){ Event=eventName, EventProperties=eventProperties});
             }
-        }
-
-        internal void Init(Guid hiveSiteId)
-        {
-            _siteId = hiveSiteId;
-            _site = null;
-            _files = null;
         }
 
         public IronHive()
@@ -176,7 +159,6 @@ namespace IronSharePoint
 
                 return _files;
 #else
-
                 if (_files == null)
                 {
                     var query = new SPQuery();
@@ -203,7 +185,6 @@ namespace IronSharePoint
 
                 return _files;
 #endif
-
             }
         }
 
@@ -244,10 +225,11 @@ namespace IronSharePoint
 
         internal void Close()
         {
-            if (_site != null && !_closed)
+            if (_site != null )
             {
                 _site.Dispose();
-                _closed=true;
+                _site = null;
+                _files = null;
             }
         }
 
@@ -259,6 +241,7 @@ namespace IronSharePoint
         public bool ContainsFile(string file)
         {
             file = Normalize(file);
+
             return Files.Contains(file);
         }
 

@@ -41,7 +41,8 @@ namespace IronSharePoint.IronPart
         {
             Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
 
-            ironRuntime = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId);
+            //ironRuntime = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId);
+            ironRuntime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
 
             if (String.IsNullOrEmpty(ScriptClass))
             {

@@ -63,7 +63,7 @@ namespace IronSharePoint.Administration
            }
        }
 
-        public Guid GetHiveForSite(Guid targetSitId)
+        public Guid GetHiveForSite(Guid targetSiteId)
         {           
             var hiveSiteId = Guid.Empty; 
 
@@ -75,12 +75,12 @@ namespace IronSharePoint.Administration
             SPSecurity.RunWithElevatedPrivileges(() =>
             {
 
-                using (SPSite site = new SPSite(targetSitId))
+                using (SPSite site = new SPSite(targetSiteId))
                 {
                     // target site is mapped to a hive site
-                    if (_hiveMappings.ContainsKey(targetSitId))
+                    if (_hiveMappings.ContainsKey(targetSiteId))
                     {
-                        hiveSiteId = new HiveMapping(_hiveMappings[targetSitId]).HiveSiteId;
+                        hiveSiteId = new HiveMapping(_hiveMappings[targetSiteId]).HiveSiteId;
                     }
                     else
                     {

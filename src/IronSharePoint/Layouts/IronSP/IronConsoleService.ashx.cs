@@ -34,7 +34,8 @@ namespace IronSharePoint
 
                 IronHiveRegistry.Local.EnsureTrustedHive(site.ID);
 
-                var ironRuntime = IronRuntime.GetIronRuntime(site, site.ID);
+                //var ironRuntime = IronRuntime.GetIronRuntime(site, site.ID);
+                var ironRuntime = IronRuntime.GetDefaultIronRuntime(site);
                 var extension = HttpContext.Current.Request["ext"];
                 var expression = HttpContext.Current.Request["expression"];
 
