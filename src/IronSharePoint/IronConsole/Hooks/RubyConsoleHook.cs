@@ -11,11 +11,11 @@ namespace IronSharePoint.IronConsole.Hooks
             base.BeforeExecute(scriptEngine, result);
             scriptEngine.Execute(
                 @"
-                    unless respond_to? :console_out
+                    unless respond_to? :out
                       begin
-                        include IronSharePoint::IronConsole::Utils 
+                        include IronSharePoint::Console::Utils 
                       rescue
-                        raise 'Could not load IronConsole Utils'
+                        raise 'Could not load console utils'
                       end
                     end");
         }
@@ -23,7 +23,7 @@ namespace IronSharePoint.IronConsole.Hooks
         public override void AfterExecute(ScriptEngine scriptEngine, IronConsoleResult result)
         {
             base.AfterExecute(scriptEngine, result);
-            var consoleOut = scriptEngine.Execute(String.Format("console_out '{0}'", Environment.NewLine));
+            var consoleOut = scriptEngine.Execute(String.Format("out '{0}'", Environment.NewLine));
             result.Output = Convert.ToString(consoleOut);
             result.Result = result.Result ?? "nil";
         }

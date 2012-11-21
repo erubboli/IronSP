@@ -1,8 +1,8 @@
 module IronSharePoint
-  module IronConsole
+  module Console
     module Utils
       def puts obj
-        (@console_out_buffer ||= []) << obj.to_s
+        out_buffer << obj.to_s
         return nil
       end
 
@@ -12,10 +12,10 @@ module IronSharePoint
         inspected
       end
 
-      def console_out seperator = '\n', clear = true
-        out = (@console_out_buffer || []).join seperator
-        @console_out_buffer = [] if clear
-        return out
+      def out seperator = '\n', clear = true
+        response = out_buffer.join seperator
+        out_buffer.clear
+        response
       end
 
       def pm obj, *options
@@ -48,6 +48,12 @@ module IronSharePoint
         end
 
         data.size
+      end
+
+      private
+
+      def out_buffer
+        $out_buffer ||= []
       end
     end
   end

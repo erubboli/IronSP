@@ -981,7 +981,7 @@ module Gem
   # Suffixes for require-able paths.
 
   def self.suffixes
-    ['', '.rb', '.rbw', '.so', '.bundle', '.dll', '.sl', '.jar']
+    ['', '.rb', '.dll']
   end
 
   ##
