@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: IronSharePoint::IronView#context=
-is_singleton: false
-name: context=
-params: (context)
-visibility: public

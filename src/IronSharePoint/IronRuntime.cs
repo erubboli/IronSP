@@ -122,34 +122,6 @@ namespace IronSharePoint
             return ironRuntime;
         }
 
-        //public static IronRuntime GetIronRuntime(SPSite targetSite, Guid hiveId)
-        //{
-        //    IronRuntime ironRuntime;
-
-        //    if (hiveId == Guid.Empty)
-        //    {
-        //        ironRuntime = GetDefaultIronRuntime(targetSite);
-        //    }
-        //    else
-        //    {
-        //        if (!LivingRuntimes.TryGetValue(hiveId, out ironRuntime))
-        //        {
-        //            ironRuntime = CreateIronRuntime(hiveId);
-        //        }
-        //    }
-
-        //    if (HttpContext.Current != null)
-        //    {
-        //        ironRuntime.IronHive.Init(hiveId);
-
-        //        // flag for dispoal in the IronHttpModule
-        //        HttpContext.Current.Items[
-        //            IronHelper.GetPrefixedKey("IronRuntime_" + Guid.NewGuid().ToString()) + "_ToDispose"] = ironRuntime;
-        //    }
-
-        //    return ironRuntime;
-        //}
-
         public IronEngine GetEngineByExtension(string extension)
         {
             IronEngine ironEngine = null;

@@ -81,7 +81,7 @@ namespace IronSharePoint
                 if (key.StartsWith(IronConstant.IronPrefix))
                 {
                     var disposableObj = application.Context.Items[key] as IDisposable;
-                    if (disposableObj != null)
+                    if (disposableObj != null && !(disposableObj is IronRuntime))
                     {
                         ironObjectsToDispose.Add(disposableObj);
                     }

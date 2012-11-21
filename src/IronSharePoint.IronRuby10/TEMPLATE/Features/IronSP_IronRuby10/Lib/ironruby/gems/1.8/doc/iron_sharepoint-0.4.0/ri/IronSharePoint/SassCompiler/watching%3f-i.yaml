@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: IronSharePoint::SassCompiler#watching?
-is_singleton: false
-name: watching?
-params: ()
-visibility: public

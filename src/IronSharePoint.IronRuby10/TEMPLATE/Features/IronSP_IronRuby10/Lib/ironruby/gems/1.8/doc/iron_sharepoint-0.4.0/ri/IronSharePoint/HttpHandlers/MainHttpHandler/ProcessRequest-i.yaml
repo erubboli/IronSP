@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: IronSharePoint::HttpHandlers::MainHttpHandler#ProcessRequest
-is_singleton: false
-name: ProcessRequest
-params: (context)
-visibility: public

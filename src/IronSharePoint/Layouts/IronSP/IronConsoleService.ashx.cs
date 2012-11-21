@@ -48,6 +48,12 @@ namespace IronSharePoint
             }
             finally
             {
+                if (response == null)
+                {
+                    response = new IronConsoleResult();
+                    response.Error = "Request timed out";
+                }
+
                 jsonResponse = response.ToJson();
             }
 
