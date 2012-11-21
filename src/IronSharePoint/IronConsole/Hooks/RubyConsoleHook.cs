@@ -11,11 +11,9 @@ namespace IronSharePoint.IronConsole.Hooks
             base.BeforeExecute(scriptEngine, result);
             scriptEngine.Execute(
                 @"
-                    unless defined?(IronConsole::Utils)
+                    unless respond_to? :console_out
                       begin
-                        require 'C:\Program Files\Common Files\Microsoft Shared\Web Server Extensions\14\TEMPLATE\FEATURES\IronSP_Hive_Site\IronConsole\iron_console_utils.rb'
-                        include IronConsole::Utils 
-                        puts 'IronConsole Utils loaded'
+                        include IronSharePoint::IronConsole::Utils 
                       rescue
                         raise 'Could not load IronConsole Utils'
                       end

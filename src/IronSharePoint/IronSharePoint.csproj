@@ -183,7 +183,6 @@
       <SharePointProjectItemId>{3e062515-a6fa-49f3-942e-2af3a66f9a8a}</SharePointProjectItemId>
     </None>
     <None Include="IronConsole\IronConsole.webpart" />
-    <None Include="IronConsole\iron_console_utils.rb" />
     <None Include="IronConsole\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{9288fb1a-95db-4d0a-8ad7-edfe595e6353}</SharePointProjectItemId>
     </None>

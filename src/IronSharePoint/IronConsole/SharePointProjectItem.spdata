@@ -4,7 +4,6 @@
     <ProjectItemFile Source="Elements.xml" Target="IronConsole\" Type="ElementManifest" />
     <ProjectItemFile Source="IronConsole.webpart" Target="IronConsole\" Type="ElementFile" />
     <ProjectItemFile Source="IronConsoleUserControl.ascx" Target="CONTROLTEMPLATES\IronSP\IronConsole\" Type="TemplateFile" />
-    <ProjectItemFile Source="iron_console_utils.rb" Target="IronConsole\" Type="ElementFile" />
   </Files>
   <SafeControls>
     <SafeControl Name="SafeControlEntry1" Assembly="$SharePoint.Project.AssemblyFullName$" Namespace="IronSharePoint.IronConsole" TypeName="*" IsSafe="true" IsSafeAgainstScript="false" />
