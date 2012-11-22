@@ -1,0 +1,13 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: 
+- !ruby/object:RI::AliasName 
+  name: view_context
+- !ruby/object:RI::AliasName 
+  name: view_context
+block_params: 
+comment: 
+full_name: IronSharePoint::Mixins::ControlView#render_context
+is_singleton: false
+name: render_context
+params: ()
+visibility: public

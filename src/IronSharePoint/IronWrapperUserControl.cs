@@ -54,8 +54,12 @@ namespace IronSharePoint
 
                 Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
 
+<<<<<<< HEAD
                 //IronRuntime ironRuntime = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId);
                 IronRuntime ironRuntime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
+=======
+                IronRuntime ironRuntime = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId);
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
                 engine = ironRuntime.GetEngineByExtension(Path.GetExtension(ScriptName));
 
                 if (engine != null)

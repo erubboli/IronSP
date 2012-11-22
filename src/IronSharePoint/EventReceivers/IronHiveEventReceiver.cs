@@ -8,7 +8,6 @@ namespace IronSharePoint.EventReceivers
 {
     public class IronHiveEventReceiver : SPItemEventReceiver
     {
-
         public new bool EventFiringEnabled
         {
             get { return base.EventFiringEnabled; }
@@ -34,7 +33,6 @@ namespace IronSharePoint.EventReceivers
         {
             IronRuntime.GetDefaultIronRuntime(properties.Web.Site).IronHive.FireHiveEvent(this, "ItemDeleted", properties);
         }
-
 
         public override void ItemCheckedIn(SPItemEventProperties properties)
         {
@@ -85,6 +83,5 @@ namespace IronSharePoint.EventReceivers
         {
             IronRuntime.GetDefaultIronRuntime(properties.Web.Site).IronHive.FireHiveEvent(this, "ItemUncheckingOut", properties);
         }
-
     }
 }

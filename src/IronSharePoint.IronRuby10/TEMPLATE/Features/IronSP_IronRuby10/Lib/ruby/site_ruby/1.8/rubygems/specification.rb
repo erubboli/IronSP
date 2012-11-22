@@ -620,8 +620,12 @@ class Gem::Specification
     unless @loaded_from then
       raise Gem::Exception, "spec #{full_name} is not from an installed gem"
     end
-
-    File.expand_path File.dirname(File.dirname(@loaded_from))
+    if (defined? IronSharePoint) && (@loaded_from.start_with? IronSharePoint::IronConstant.IronHiveRoot)
+      match = @loaded_from.match(/(.*)\/specifications\/.*/)
+      match[1] if match
+    else
+      File.expand_path File.dirname(File.dirname(@loaded_from))
+    end
   end
 
   ##

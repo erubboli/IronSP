@@ -74,7 +74,11 @@ module ActiveSupport
         def encode(value, options = nil)
           options = {} unless Hash === options
           seen = (options[:seen] ||= [])
+<<<<<<< HEAD
           raise CircularReferenceError, 'object references itself' if seen.detect { |i| value.equal?(i) } 
+=======
+          raise CircularReferenceError, 'object references itself' if seen.include?(value)
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
           seen << value
           value.to_json(options)
         ensure

@@ -18,6 +18,7 @@ namespace IronSharePoint
     public class IronHive : ScriptHost, IDisposable
     {
         private IronPlatformAdaptationLayer _ironAdaptationLayer;
+<<<<<<< HEAD
 
         public Guid Id { get; internal set; }
 
@@ -27,6 +28,16 @@ namespace IronSharePoint
         {
             get { return _sites ?? (_sites = new Dictionary<Guid, SPSite>()); }
         }
+=======
+        
+        private Guid _siteId;
+        
+        [ThreadStatic]
+        private static SPSite _site;
+
+        [ThreadStatic]
+        private static bool _closed = false;
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
 
         public SPSite Site 
         {
@@ -115,10 +126,41 @@ namespace IronSharePoint
             }
         }
 
+<<<<<<< HEAD
+        public IronHive()
+=======
+        public event EventHandler<HiveChangedArgs> Events;
+
+        internal void FireHiveEvent(object sender, string eventName, SPItemEventProperties eventProperties)
+        {
+            if (Events != null)
+            {
+                Events.Invoke(sender, new HiveChangedArgs(){ Event=eventName, EventProperties=eventProperties});
+            }
+        }
+
+        internal void Init(Guid hiveSiteId)
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
+        {
+            _currentDir = Directory.GetCurrentDirectory() + "\\";
+        }
+
         public IronHive()
         {
             _currentDir = Directory.GetCurrentDirectory() + "\\";
         }
+
+        /// maybe cause complie bug?!?!? 
+
+        //public void ReloadFiles()
+        //{
+        //    _files = null;
+            
+        //    //load files
+        //    var files = Files;
+            
+        //}
+
 
         public override PlatformAdaptationLayer PlatformAdaptationLayer
         {
@@ -154,6 +196,10 @@ namespace IronSharePoint
 
                 return _files;
 #else
+<<<<<<< HEAD
+=======
+
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
                 if (_files == null)
                 {
                     var query = new SPQuery();
@@ -180,6 +226,10 @@ namespace IronSharePoint
 
                 return _files;
 #endif
+<<<<<<< HEAD
+=======
+
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
             }
         }
 
@@ -226,6 +276,11 @@ namespace IronSharePoint
                 Sites.Remove(Id);
             }
             _files = null;
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
 
         public void Dispose()

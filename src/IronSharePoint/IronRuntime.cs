@@ -14,15 +14,22 @@ namespace IronSharePoint
     public class IronRuntime : IDisposable
     {
         // the key is the ID of the hive
+<<<<<<< HEAD
         private static readonly Dictionary<Guid, IronRuntime> _staticLivingRuntimes = new Dictionary<Guid, IronRuntime>();
 
         private static readonly object _lock = new Object();
 
         private IronConsole.IronConsole _console;
+=======
+        static Dictionary<Guid, IronRuntime> _staticLivingRuntimes;
+
+        IronConsole.IronConsole _console;
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
         private Guid _hiveId;
 
         private IronRuntime(Guid hiveId)
         {
+<<<<<<< HEAD
             _hiveId = hiveId;
 
             var setup = new ScriptRuntimeSetup();
@@ -58,6 +65,20 @@ namespace IronSharePoint
         }
 
         internal Dictionary<String, IronEngine> LivingEngines { get; private set; }
+=======
+            get
+            {
+                if (_staticLivingRuntimes == null)
+                {
+                    _staticLivingRuntimes = new Dictionary<Guid, IronRuntime>();
+                }
+                return _staticLivingRuntimes; 
+            }
+        }
+
+        internal Dictionary<String, IronEngine> LivingEngines { get; private set; }
+        internal List<Guid> DefaultSiteIds { get; private set; }
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
 
         public IronConsole.IronConsole IronConsole
         {
@@ -73,24 +94,55 @@ namespace IronSharePoint
         public Dictionary<string, Object> DynamicTypeRegistry { get; private set; }
         public Dictionary<string, Object> DynamicFunctionRegistry { get; private set; }
         public string HttpHandlerClass { get; set; }
+<<<<<<< HEAD
         public bool IsDisposed { get; private set; }
         public Guid Id { get { return _hiveId; } }
+=======
+
+        private IronRuntime()
+        {
+            LivingEngines = new Dictionary<string, IronEngine>();
+            DefaultSiteIds = new List<Guid>();
+        }
+
+        public bool IsDefaultRuntime(SPSite site)
+        {
+            return DefaultSiteIds.Contains(site.ID);
+        }
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
 
         #region IDisposable Members
 
         public void Dispose()
         {
+<<<<<<< HEAD
             if (!IsDisposed)
+=======
+            IronRuntime ironRuntime = LivingRuntimes.Values
+                .Where(runtime => runtime != null && !runtime.IsDisposed) 
+                .FirstOrDefault(runtime => runtime.IsDefaultRuntime(targetSite));
+ 
+            if (ironRuntime == null)
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
             {
                 IsDisposed = true;
                 if (IronHive != null)
                 {
                     IronHive.Close();
                 }
+<<<<<<< HEAD
                 if (_console != null)
                 {
                     _console.Dispose();
                     _console = null;
+=======
+
+                ironRuntime = GetIronRuntime(targetSite, hiveId);
+
+                if (!ironRuntime.DefaultSiteIds.Contains(targetSite.ID))
+                {
+                    ironRuntime.DefaultSiteIds.Add(targetSite.ID);
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
                 }
                 LivingRuntimes.Remove(_hiveId);
             }
@@ -106,6 +158,7 @@ namespace IronSharePoint
                 throw new InvalidOperationException(
                     String.Format("There is no IronHive mapping for the site with id {0}", targetSite.ID));
             }
+<<<<<<< HEAD
 
             if (!LivingRuntimes.ContainsKey(hiveId))
             {
@@ -119,6 +172,73 @@ namespace IronSharePoint
             }
 
             return LivingRuntimes[hiveId];
+=======
+            else
+            {
+                ironRuntime = LivingRuntimes.Values
+                    .Where(runtime => runtime != null && !runtime.IsDisposed)
+                    .FirstOrDefault(runtime => runtime._hiveId == hiveId)
+                    ?? CreateIronRuntime(hiveId);
+            }
+
+            if (HttpContext.Current != null)
+            {
+                ironRuntime.IronHive.Init(ironRuntime._hiveId);
+
+                // flag for dispoal in the IronHttpModule
+                HttpContext.Current.Items[IronHelper.GetPrefixedKey("IronRuntime_" + Guid.NewGuid().ToString()) + "_ToDispose"] = ironRuntime;
+            }
+
+            return ironRuntime;
+        }
+
+        private static IronRuntime CreateIronRuntime(Guid hiveSiteId)
+        {
+            IronHiveRegistry.Local.EnsureTrustedHive(hiveSiteId);
+
+            var ironRuntime = new IronRuntime();
+
+            if (LivingRuntimes.ContainsKey(hiveSiteId))
+            {
+                ironRuntime = LivingRuntimes[hiveSiteId];
+            }
+            else
+            {
+                ironRuntime = new IronRuntime();
+                // create new runtime
+                var setup = new ScriptRuntimeSetup();
+                var languageSetup = new LanguageSetup(
+                        "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.1, Culture=neutral, PublicKeyToken=baeaf26a6e0611a7",
+                        IronConstant.IronRubyLanguageName,
+                        new[] {"IronRuby", "Ruby", "rb"},
+                        new[] {".rb"});
+                setup.LanguageSetups.Add(languageSetup);
+
+                setup.HostType = typeof(IronHive);
+#if DEBUG
+                setup.DebugMode = true;
+#endif
+                ironRuntime.ScriptRuntime = new ScriptRuntime(setup);
+
+                ironRuntime._hiveId = hiveSiteId;
+                ironRuntime.IronHive = (IronHive) ironRuntime.ScriptRuntime.Host;
+                ironRuntime.DynamicTypeRegistry = new Dictionary<string, Object>();
+                ironRuntime.DynamicFunctionRegistry = new Dictionary<string, Object>();
+                ironRuntime.ScriptRuntime.Globals.SetVariable("ironRuntime", ironRuntime);
+                ironRuntime.ScriptRuntime.LoadAssembly(typeof(IronRuntime).Assembly);
+                ironRuntime.ScriptRuntime.LoadAssembly(typeof(SPSite).Assembly);
+                ironRuntime.ScriptRuntime.LoadAssembly(typeof(IHttpHandler).Assembly);
+                ironRuntime.IronHive.Init(ironRuntime._hiveId);
+
+                LivingRuntimes.Add(hiveSiteId, ironRuntime);
+
+                //load engines
+                //load Ruby Engine
+                ironRuntime.GetEngineByExtension(".rb");
+
+            }
+            return ironRuntime;
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
         }
 
         public IronEngine GetEngineByExtension(string extension)
@@ -139,6 +259,7 @@ namespace IronSharePoint
                 {
                     string ironRubyRootFolder = Path.Combine(IronHive.FeatureFolderPath, "IronSP_IronRuby10\\");
                     var gemDirs = new[]
+<<<<<<< HEAD
                                       {
                                           Path.Combine(ironRubyRootFolder, "lib/ironruby/gems/1.8").Replace("\\", "/"),
                                           //"IronHive://vendor/rubygems"
@@ -177,6 +298,34 @@ IronDebug.IronDevHivePah
                         scriptEngine.Execute("$RUNTIME = iron_runtime", scope);
                         scriptEngine.Execute(
                             @"
+=======
+                        {
+                            Path.Combine(ironRubyRootFolder, "lib/ironruby/gems/1.8").Replace("\\", "/"),
+                            "IronHive://vendor/rubygems"
+                        };
+
+                    SPSecurity.RunWithElevatedPrivileges(() =>
+                    {
+                        System.Environment.SetEnvironmentVariable("IRONRUBY_10_20", ironRubyRootFolder);
+                        System.Environment.SetEnvironmentVariable("GEM_PATH", String.Join(";", gemDirs));
+                        System.Environment.SetEnvironmentVariable("GEM_HOME", gemDirs[0]);
+
+                        scriptEngine.SetSearchPaths(new List<String>() {
+                                Path.Combine(ironRubyRootFolder, @"Lib\IronRuby"),
+                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby\1.8"),
+                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\site_ruby"),
+                                Path.Combine(ironRubyRootFolder, @"Lib\ruby\1.8"),
+#if DEBUG
+                                IronDebug.IronDevHivePah                       
+#else
+                                IronConstant.IronHiveRoot
+#endif
+                        });
+                        var scope = scriptEngine.CreateScope();
+                        scope.SetVariable("iron_runtime", this);
+                        scriptEngine.Execute("$RUNTIME = iron_runtime", scope);
+                        scriptEngine.Execute(@"
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
 require 'rubygems'
 require 'iron_sharepoint'
 require 'iron_templates'
@@ -218,9 +367,41 @@ end"
 
         public object CreateDynamicInstance(string className, params object[] args)
         {
+<<<<<<< HEAD
             object obj = null;
 
             object dynamicType = DynamicTypeRegistry[className];
+
+            if (args != null && args.Length > 0)
+=======
+            LivingRuntimes.Remove(this._hiveId);
+            _console.Dispose();
+            _console = null;
+            this.Dispose();
+        }
+
+        public void Dispose()
+        {
+            IsDisposed = true;
+            if (IronHive != null)
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
+            {
+                obj = ScriptRuntime.Operations.CreateInstance(dynamicType, args);
+            }
+            else
+            {
+                obj = ScriptRuntime.Operations.CreateInstance(dynamicType);
+            }
+<<<<<<< HEAD
+
+=======
+        }
+
+        public object CreateDynamicInstance(string className, params object[] args)
+        {
+            object obj = null;
+
+            var dynamicType = DynamicTypeRegistry[className];
 
             if (args != null && args.Length > 0)
             {
@@ -231,8 +412,13 @@ end"
                 obj = ScriptRuntime.Operations.CreateInstance(dynamicType);
             }
 
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
             return obj;
         }
+
+       
+
+        protected bool IsDisposed { get; private set; }
 
         public static void LogError(string msg, Exception ex)
         {

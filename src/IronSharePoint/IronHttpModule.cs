@@ -16,7 +16,10 @@ namespace IronSharePoint
             application.PreRequestHandlerExecute += new EventHandler(OnPreRequest);
             application.EndRequest += new EventHandler(EndRequest);
             application.Error += new EventHandler(Error);
+<<<<<<< HEAD
         }
+=======
+>>>>>>> 58c97e3e0ec9fe53c71a7bc197cbaf3c61af290c
 
         private void OnPreRequest(object sender, EventArgs e)
         {

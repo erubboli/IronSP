@@ -10,7 +10,6 @@ namespace IronSharePoint.EventReceivers
     {
         public static void Register(SPList list, SPEventReceiverType eventType, SPEventReceiverSynchronization synchronization, int sequenceNumber, string className)
         {
-
             if (!IsRegistered(list, eventType, className))
             {
                 list.ParentWeb.AllowUnsafeUpdates = true;
