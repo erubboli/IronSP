@@ -20,33 +20,40 @@ namespace IronSharePoint
         private IronPlatformAdaptationLayer _ironAdaptationLayer;
 
         public Guid Id { get; internal set; }
-        
-        private SPSite _site;
+
+        [ThreadStatic] private static Dictionary<Guid, SPSite> _sites;
+
+        public Dictionary<Guid, SPSite> Sites
+        {
+            get { return _sites ?? (_sites = new Dictionary<Guid, SPSite>()); }
+        }
 
         public SPSite Site 
         {
             get
             {
-                if (_site == null)
+                var key = IronHelper.GetPrefixedKey("Hive_" + Id);
+                var context = HttpContext.Current;
+                SPSite site;
+
+                if (context != null)
                 {
-                    var key = IronHelper.GetPrefixedKey(Id.ToString());
-
-                    if (HttpContext.Current != null && HttpContext.Current.Items[key] != null)
+                    if (!context.Items.Contains(key))
                     {
-                        _site = HttpContext.Current.Items[key] as SPSite;
+                        context.Items[key] = new SPSite(Id, SPUserToken.SystemAccount);
                     }
-                    else
+                    site = context.Items[key] as SPSite;
+                }
+                else
+                {
+                    if (!Sites.ContainsKey(Id))
                     {
-                        _site = new SPSite(Id, SPUserToken.SystemAccount);
-
-                        if (HttpContext.Current != null)
-                        {                 
-                            HttpContext.Current.Items[key] = _site;                         
-                        }
+                        Sites[Id] = new SPSite(Id, SPUserToken.SystemAccount);
                     }
+                    site = Sites[Id];
                 }
 
-                return _site;
+                return site;
             }
         }
 
@@ -112,18 +119,6 @@ namespace IronSharePoint
         {
             _currentDir = Directory.GetCurrentDirectory() + "\\";
         }
-
-        /// maybe cause complie bug?!?!? 
-
-        //public void ReloadFiles()
-        //{
-        //    _files = null;
-            
-        //    //load files
-        //    var files = Files;
-            
-        //}
-
 
         public override PlatformAdaptationLayer PlatformAdaptationLayer
         {
@@ -225,12 +220,12 @@ namespace IronSharePoint
 
         internal void Close()
         {
-            if (_site != null )
+            if (Sites.ContainsKey(Id))
             {
-                _site.Dispose();
-                _site = null;
-                _files = null;
+                Sites[Id].Dispose();
+                Sites.Remove(Id);
             }
+            _files = null;
         }
 
         public void Dispose()

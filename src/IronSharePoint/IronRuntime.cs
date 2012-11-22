@@ -14,8 +14,7 @@ namespace IronSharePoint
     public class IronRuntime : IDisposable
     {
         // the key is the ID of the hive
-        private static readonly Dictionary<Guid, IronRuntime> _staticLivingRuntimes =
-            new Dictionary<Guid, IronRuntime>();
+        private static readonly Dictionary<Guid, IronRuntime> _staticLivingRuntimes = new Dictionary<Guid, IronRuntime>();
 
         private static readonly object _lock = new Object();
 
@@ -108,18 +107,18 @@ namespace IronSharePoint
                     String.Format("There is no IronHive mapping for the site with id {0}", targetSite.ID));
             }
 
-            IronRuntime ironRuntime;
-
-            lock (_lock)
+            if (!LivingRuntimes.ContainsKey(hiveId))
             {
-                if (!LivingRuntimes.TryGetValue(hiveId, out ironRuntime))
+                lock (_lock)
                 {
-                    ironRuntime = new IronRuntime(hiveId);
-                    LivingRuntimes[hiveId] = ironRuntime;
+                    if (!LivingRuntimes.ContainsKey(hiveId))
+                    {
+                        LivingRuntimes[hiveId] = new IronRuntime(hiveId);
+                    }
                 }
             }
 
-            return ironRuntime;
+            return LivingRuntimes[hiveId];
         }
 
         public IronEngine GetEngineByExtension(string extension)
