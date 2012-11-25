@@ -13,22 +13,22 @@ namespace IronSharePoint
     {
         public void Init(HttpApplication application)
         {
-            application.PreRequestHandlerExecute += new EventHandler(OnPreRequest);
+            //application.PreRequestHandlerExecute += new EventHandler(OnPreRequest);
             application.EndRequest += new EventHandler(EndRequest);
             application.Error += new EventHandler(Error);
         }
 
-        private void OnPreRequest(object sender, EventArgs e)
-        {
-            var application = sender as HttpApplication;
-            var context = application.Context;
+        //private void OnPreRequest(object sender, EventArgs e)
+        //{
+        //    var application = sender as HttpApplication;
+        //    var context = application.Context;
 
-            if (SPContext.Current != null)
-            {
-                var runtime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-                context.Items[IronHelper.GetPrefixedKey("Runtime")] = runtime;
-            }
-        }
+        //    if (SPContext.Current != null)
+        //    {
+        //        var runtime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
+        //        context.Items[IronHelper.GetPrefixedKey("Runtime")] = runtime;
+        //    }
+        //}
 
         void Error(object sender, EventArgs e)
         {
@@ -67,12 +67,12 @@ namespace IronSharePoint
 
         private static void CleanUp(HttpApplication application)
         {
-            var runtime = HttpContext.Current.Items[IronHelper.GetPrefixedKey("Runtime")] as IronRuntime;
+            //var runtime = HttpContext.Current.Items[IronHelper.GetPrefixedKey("Runtime")] as IronRuntime;
 
-            if (runtime != null)
-            {
-                runtime.IronHive.Close();
-            }
+            //if (runtime != null)
+            //{
+            //    runtime.IronHive.Close();
+            //}
 
             var ironObjectsToDispose = new List<IDisposable>();
 
