@@ -46,7 +46,7 @@ namespace IronSharePoint.IronLog
                         SPDocumentLibrary logLib = null;
                         try
                         {
-                            logLib = (SPDocumentLibrary)web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronLogsListPath);
+                            logLib = (SPDocumentLibrary)web.GetList(web.ServerRelativeUrl + "/" + IronConstants.IronLogsListPath);
                         }
                         catch (Exception ex)
                         {

@@ -83,7 +83,7 @@ namespace IronSharePoint
         }
         public override bool FileExists(string file)
         {
-            bool fileExists = !file.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(file);
+            bool fileExists = !file.StartsWith(IronConstants.IronHiveRoot) && base.FileExists(file);
 
             if (!fileExists)
             {

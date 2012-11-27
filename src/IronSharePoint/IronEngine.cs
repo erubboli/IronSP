@@ -1,39 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
-using System.IO;
-using IronSharePoint.Diagnostics;
-using Microsoft.Scripting.Runtime;
-using System.Web;
-using Microsoft.SharePoint.Administration;
-using Microsoft.Scripting;
-using System.Dynamic;
 
 namespace IronSharePoint
 {
-    
     public class IronEngine
     {
+        internal IronEngine(IronRuntime ironRuntime, ScriptEngine scriptEngine)
+        {
+            IronRuntime = ironRuntime;
+            ScriptEngine = scriptEngine;
+        }
+
         public IronRuntime IronRuntime { get; private set; }
         public ScriptEngine ScriptEngine { get; private set; }
 
-        public string Language 
-        { 
-            get
-            {
-                return ScriptEngine.Setup.DisplayName;
-            }
-        }       
-
-        public IronPlatformAdaptationLayer PlatformAdaptationLayer
+        public string Language
         {
-            get
-            {
-                return IronRuntime.IronHive.PlatformAdaptationLayer as IronPlatformAdaptationLayer;
-            }
+            get { return ScriptEngine.Setup.DisplayName; }
         }
 
         public object CreateDynamicInstance(string className, string scriptName, params object[] args)
@@ -44,7 +30,7 @@ namespace IronSharePoint
 
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
-                var scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
+                SPFile scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
 
                 if (scriptFile == null)
                 {
@@ -55,7 +41,9 @@ namespace IronSharePoint
 
                 if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
                 {
-                    throw new NullReferenceException(String.Format("The class {0} in script file {1} is not registered in the DynamicTypeRegistry", className, scriptName));
+                    throw new NullReferenceException(
+                        String.Format("The class {0} in script file {1} is not registered in the DynamicTypeRegistry",
+                                      className, scriptName));
                 }
             }
 #endif
@@ -70,16 +58,19 @@ namespace IronSharePoint
 
             if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))
             {
-                var scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
+                SPFile scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
                 ExcecuteScriptFile(scriptFile);
 
                 if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))
                 {
-                    throw new NullReferenceException(String.Format("The function {0} in script file {1} is not regsitered in the DynamicFunctionRegistry", functionName, scriptName));
+                    throw new NullReferenceException(
+                        String.Format(
+                            "The function {0} in script file {1} is not registered in the DynamicFunctionRegistry",
+                            functionName, scriptName));
                 }
             }
 
-            var dynamicType = IronRuntime.DynamicFunctionRegistry[functionName];
+            object dynamicType = IronRuntime.DynamicFunctionRegistry[functionName];
 
             if (args != null && args.Length > 0)
             {
@@ -102,25 +93,16 @@ namespace IronSharePoint
             }
 
             object output = null;
-          
+
             string script = String.Empty;
 
             script = scriptFile.Web.GetFileAsString(scriptFile.Url);
 
-            output = ScriptEngine.CreateScriptSourceFromString(script, SourceCodeKind.File).Execute(ScriptEngine.Runtime.Globals);
+            output =
+                ScriptEngine.CreateScriptSourceFromString(script, SourceCodeKind.File).Execute(
+                    ScriptEngine.Runtime.Globals);
 
             return output;
         }
-
-        
-
-        internal IronEngine(IronRuntime ironRuntime, ScriptEngine scriptEngine)
-        {
-            this.IronRuntime = ironRuntime;
-            this.ScriptEngine = scriptEngine;
-        }
-        
     }
-
-    
 }

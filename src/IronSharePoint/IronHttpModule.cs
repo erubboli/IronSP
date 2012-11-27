@@ -78,7 +78,7 @@ namespace IronSharePoint
 
             foreach (var key in application.Context.Items.Keys.OfType<String>())
             {
-                if (key.StartsWith(IronConstant.IronPrefix))
+                if (key.StartsWith(IronConstants.IronPrefix))
                 {
                     var disposableObj = application.Context.Items[key] as IDisposable;
                     if (disposableObj != null && !(disposableObj is IronRuntime))

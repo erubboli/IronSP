@@ -250,9 +250,9 @@ namespace IronSharePoint.Administration
                 {
                     using (SPSite hiveSite = new SPSite(hiveId))
                     {
-                        if (hiveSite.Features[new Guid(IronConstant.IronHiveSiteFeatureId)] == null)
+                        if (hiveSite.Features[new Guid(IronConstants.IronHiveSiteFeatureId)] == null)
                         {
-                            hiveSite.Features.Add(new Guid(IronConstant.IronHiveSiteFeatureId));
+                            hiveSite.Features.Add(new Guid(IronConstants.IronHiveSiteFeatureId));
                         }
                     }
                 }

@@ -35,10 +35,10 @@ namespace IronSharePoint.Diagnostics
 
         protected override IEnumerable<SPDiagnosticsArea> ProvideAreas()
         {
-            List<SPDiagnosticsCategory> categories = new List<SPDiagnosticsCategory>();
-            foreach (string catName in Enum.GetNames(typeof(IronCategoryDiagnosticsId)))
+            var categories = new List<SPDiagnosticsCategory>();
+            foreach (var catName in Enum.GetNames(typeof(IronCategoryDiagnosticsId)))
             {
-                uint catId = (uint)(int)Enum.Parse(typeof(IronCategoryDiagnosticsId), catName);
+                var catId = (uint) (int)Enum.Parse(typeof(IronCategoryDiagnosticsId), catName);
                 categories.Add(new SPDiagnosticsCategory(catName, TraceSeverity.Verbose, EventSeverity.Error, 0, catId));
             }
 
@@ -61,5 +61,4 @@ namespace IronSharePoint.Diagnostics
             }
         }
     }
-
 }

@@ -119,9 +119,10 @@
       <DependentUpon>IronConsoleUserControl.ascx.cs</DependentUpon>
     </Compile>
     <Compile Include="IronConsole\Hooks\RubyConsoleHook.cs" />
-    <Compile Include="IronConstant.cs" />
+    <Compile Include="IronConstants.cs" />
     <Compile Include="IronContentTypeId.cs" />
     <Compile Include="IronDebug.cs" />
+    <Compile Include="IronEnvironment.cs" />
     <Compile Include="IronHttpHandler.cs" />
     <Compile Include="IronLog\IronLogger.cs" />
     <Compile Include="IronLog\IronLogWorkItemJobDefinition.cs" />
@@ -217,7 +218,6 @@
     <None Include="Package\Package.Template.xml">
       <DependentUpon>Package.package</DependentUpon>
     </None>
-    <None Include="_RubyGemsFix\config_file.rb" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

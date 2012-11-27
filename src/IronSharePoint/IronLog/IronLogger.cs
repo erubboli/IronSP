@@ -36,7 +36,7 @@ namespace IronSharePoint.IronLog
                                  site.ID,
                                  1,
                                  false,
-                                 site.RootWeb.GetList(site.RootWeb.ServerRelativeUrl + "/" + IronConstant.IronLogsListPath).ID,
+                                 site.RootWeb.GetList(site.RootWeb.ServerRelativeUrl + "/" + IronConstants.IronLogsListPath).ID,
                                  Guid.Empty,
                                  site.SystemAccount.ID,
                                  null,
