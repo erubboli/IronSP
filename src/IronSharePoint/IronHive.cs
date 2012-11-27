@@ -115,9 +115,9 @@ namespace IronSharePoint
             }
         }
 
-        public IronHive()
+        public string CurrentDir
         {
-            _currentDir = Directory.GetCurrentDirectory() + "\\";
+            get { return Directory.GetCurrentDirectory() + "\\"; }
         }
 
         public override PlatformAdaptationLayer PlatformAdaptationLayer
@@ -139,7 +139,6 @@ namespace IronSharePoint
 
 
         private IList<String> _files;
-        private string _currentDir;
 
         public IList<string> Files
         {
@@ -296,7 +295,7 @@ namespace IronSharePoint
                 string fullPath;
                 try
                 {
-                    file = Path.GetFullPath(file).Replace(_currentDir, string.Empty);
+                    file = Path.GetFullPath(file).Replace(CurrentDir, string.Empty);
                 }
                 catch
                 {
