@@ -2348,6 +2348,7 @@
     <Content Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\sexp_processor-3.2.0\History.txt" />
     <Content Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\sexp_processor-3.2.0\Manifest.txt" />
     <Content Include="TEMPLATE\Features\IronSP_IronRuby10\Lib\ironruby\gems\1.8\gems\sexp_processor-3.2.0\README.txt" />
+    <Content Include="TEMPLATE\Features\IronSP_Root\_IMPORTANT.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\SharePointTools\Microsoft.VisualStudio.SharePoint.targets" />

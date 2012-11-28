@@ -16,12 +16,13 @@ namespace IronSharePoint
         public const string IronRubyFeatureId = "183909b9-cfb3-477c-a48c-02e3d5e59844";
         public const string IronRubyLanguageName = "IronRuby";
         public const string IronPrefix = "IronSP_";
+        public const string IronSpRoot = IronPrefix + "Root";
 
         public static IronEnvironment IronEnv
         {
             get
             {
-                var env = IronEnvironment.Staging;
+                var env = IronEnvironment.Development;
 
                 var environmentVariable = System.Environment.GetEnvironmentVariable("IRONSP_ENV");
                 if (!String.IsNullOrEmpty(environmentVariable))
@@ -32,7 +33,7 @@ namespace IronSharePoint
                     }
                     catch(ArgumentException)
                     {
-                        env = IronEnvironment.Staging;
+                        env = IronEnvironment.Development;
                     }
                 }
 

@@ -24,20 +24,9 @@ namespace IronSharePoint
 
         public object CreateDynamicInstance(string className, string scriptName, params object[] args)
         {
-#if DEBUG
-            ScriptEngine.Execute("load '" + scriptName + "'", IronRuntime.ScriptRuntime.Globals);
-#else
-
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
-                SPFile scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
-
-                if (scriptFile == null)
-                {
-                    throw new NullReferenceException(String.Format("Script file {0} not found!", scriptName));
-                }
-
-                ExcecuteScriptFile(scriptFile);
+                ScriptEngine.Execute("load '" + scriptName + "'", IronRuntime.ScriptRuntime.Globals);
 
                 if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
                 {
@@ -46,8 +35,6 @@ namespace IronSharePoint
                                       className, scriptName));
                 }
             }
-#endif
-
 
             return IronRuntime.CreateDynamicInstance(className, args);
         }
@@ -58,8 +45,7 @@ namespace IronSharePoint
 
             if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))
             {
-                SPFile scriptFile = IronRuntime.IronHive.LoadFile(scriptName);
-                ExcecuteScriptFile(scriptFile);
+                ScriptEngine.Execute("load '" + scriptName + "'", IronRuntime.ScriptRuntime.Globals);
 
                 if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))
                 {

@@ -120,7 +120,7 @@ namespace IronSharePoint
                             new[] {".rb"});
                         setup.LanguageSetups.Add(languageSetup);
                         setup.HostType = typeof (IronHive);
-                        setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Staging;
+                        setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Development;
 
                         _scriptRuntime = new ScriptRuntime(setup);
                         (_scriptRuntime.Host as IronHive).Id = _hiveId;
@@ -144,9 +144,13 @@ namespace IronSharePoint
 
                             ScriptScope scope = rubyEngine.CreateScope();
                             scope.SetVariable("iron_runtime", this);
-                            rubyEngine.Execute("$RUNTIME = iron_runtime", scope);
+                            scope.SetVariable("rails_root", Path.Combine(IronHive.FeatureFolderPath, IronConstant.IronSpRoot));
+                            scope.SetVariable("rails_env", IronConstant.IronEnv.ToString().ToLower());
+                            rubyEngine.Execute("$RUNTIME = iron_runtime; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
                             rubyEngine.Execute(
                                 @"
+Dir.chdir RAILS_ROOT
+
 require 'rubygems'
 require 'iron_sharepoint'
 require 'iron_templates'

@@ -2,7 +2,7 @@ namespace IronSharePoint
 {
     public enum IronEnvironment
     {
-        Staging,
+        Development,
         Production,
         Test
     }

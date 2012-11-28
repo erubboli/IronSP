@@ -219,7 +219,7 @@ namespace IronSharePoint
         {
             path = Normalize(path);
 
-            return Files.Any(file => file.StartsWith(path));
+            return !Files.Contains(path) && Files.Any(x => x.StartsWith(path));
         }
 
         public string GetFullPath(string file)

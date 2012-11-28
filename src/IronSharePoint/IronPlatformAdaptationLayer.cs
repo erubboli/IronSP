@@ -7,6 +7,7 @@ using Microsoft.Scripting;
 using Microsoft.SharePoint;
 using System.IO;
 using System.Web;
+using Microsoft.SharePoint.Utilities;
 
 namespace IronSharePoint
 {
@@ -21,11 +22,14 @@ namespace IronSharePoint
        
         public override string[] GetFileSystemEntries(string path, string searchPattern, bool includeFiles, bool includeDirectories)
         {
-            var entries = base.GetFileSystemEntries(path, searchPattern, includeFiles, includeDirectories);
-            /*
-             * HACK: if you just return 'app/foo/bar.rb', IronRuby removes the first two characters for whatever reason. Therefore, appending to random chars fixes this
-             */
-            return entries.Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x).ToArray();
+            using (new SPMonitoredScope(string.Format("AdaptionLayer Query - {0}", path)))
+            {
+                var entries = base.GetFileSystemEntries(path, searchPattern, includeFiles, includeDirectories);
+                /*
+                 * HACK: if you just return 'app/foo/bar.rb', IronRuby removes the first two characters for whatever reason. Therefore, appending to random chars fixes this
+                 */
+                return entries.Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x).ToArray();
+            }
 
         }
         public override string[] GetFiles(string path, string searchPattern)
@@ -65,6 +69,7 @@ namespace IronSharePoint
         {
             return base.IsAbsolutePath(path);
         }
+
         public override bool DirectoryExists(string path)
         {
             return base.DirectoryExists(path) || _ironHive.ContainsDirectory(path);
@@ -81,6 +86,7 @@ namespace IronSharePoint
                 base.CurrentDirectory = value;
             }
         }
+
         public override bool FileExists(string file)
         {
             bool fileExists = !file.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(file);
@@ -161,6 +167,5 @@ namespace IronSharePoint
 
             return fileStream;
         }
-
     }
 }

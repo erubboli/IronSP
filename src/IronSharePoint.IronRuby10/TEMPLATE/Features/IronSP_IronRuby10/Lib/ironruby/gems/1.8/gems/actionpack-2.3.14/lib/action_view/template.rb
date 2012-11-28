@@ -194,7 +194,7 @@ module ActionView #:nodoc:
     def source
       File.read(filename)
     end
-    memoize :source
+    #memoize :source
 
     def method_segment
       relative_path.to_s.gsub(/([^a-zA-Z0-9_])/) { $1.ord }
