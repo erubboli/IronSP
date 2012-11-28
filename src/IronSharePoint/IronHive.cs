@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using IronSharePoint.Util;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 using Microsoft.Scripting;
@@ -12,11 +13,14 @@ using System.IO;
 using System.Web;
 using IronSharePoint.Administration;
 using System.Security;
+using Microsoft.SharePoint.Utilities;
 
 namespace IronSharePoint
 {
     public class IronHive : ScriptHost, IDisposable
     {
+        private static object _sync = new object();
+
         private IronPlatformAdaptationLayer _ironAdaptationLayer;
 
         public Guid Id { get; internal set; }
@@ -138,74 +142,46 @@ namespace IronSharePoint
 
 
 
-        private IList<String> _files;
+        private volatile string[] _files;
 
-        public IList<string> Files
+        public string[] Files
         {
             get
             {
-
-#if DEBUG
-
-                _files = new List<String>(); 
-
-                DirSearch(IronDebug.IronDevHivePah);
-
-                return _files;
-#else
                 if (_files == null)
                 {
-                    var query = new SPQuery();
-                    query.Query = "<Where></Where>";
-                    query.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='FileLeafRef'/>";
-                    query.ViewAttributes = "Scope='Recursive'";
-                    query.IncludeMandatoryColumns = false;
-
-                    var allItems = this.List.GetItems(query);
-
-                    var files = new List<String>();
-                    
-                    foreach (SPListItem item in allItems)
+                    lock (_sync)
                     {
-                        var fileRef = item["FileRef"].ToString();
-                        var siteRelative = fileRef.Replace((Web.ServerRelativeUrl + "/"), String.Empty);
-                        var hiveRelative = siteRelative.Replace(IronConstants.IronHiveListPath + "/", string.Empty);
+                        if (_files == null)
+                        {
+                            var query = new SPQuery();
+                            query.Query = "<Where></Where>";
+                            query.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='FileLeafRef'/>";
+                            query.ViewAttributes = "Scope='Recursive'";
+                            query.IncludeMandatoryColumns = false;
 
-                        files.Add(hiveRelative);
+                            var allItems = this.List.GetItems(query);
+
+                            var files = new List<String>();
+
+                            foreach (SPListItem item in allItems)
+                            {
+                                var fileRef = item["FileRef"].ToString();
+                                var siteRelative = fileRef.Replace((Web.ServerRelativeUrl + "/"), String.Empty);
+                                var hiveRelative = siteRelative.Replace(IronConstants.IronHiveListPath + "/",
+                                                                        string.Empty);
+
+                                files.Add(hiveRelative);
+                            }
+
+                            _files = files.ToArray();
+                        }
                     }
-
-                    _files = files.AsReadOnly();
                 }
 
                 return _files;
-#endif
             }
         }
-
-#if DEBUG
-
-        void DirSearch(string sDir)
-        {
-            try
-            {
-                foreach (string f in Directory.GetFiles(sDir, "*.*"))
-                {
-                    _files.Add(f.Replace(IronDebug.IronDevHivePah+ "\\", "").Replace("\\","/"));
-                }
-
-                foreach (string d in Directory.GetDirectories(sDir))
-                {   
-                    DirSearch(d);
-                }
-            }
-            catch (System.Exception excpt)
-            {
-                Console.WriteLine(excpt.Message);
-            }
-        }
-#endif
-
-
 
         public string LoadText(string file)
         {
@@ -224,12 +200,12 @@ namespace IronSharePoint
                 Sites[Id].Dispose();
                 Sites.Remove(Id);
             }
-            _files = null;
         }
 
         public void Dispose()
         {
             Close();
+            _files = null;
         }
 
         public bool ContainsFile(string file)
@@ -255,16 +231,19 @@ namespace IronSharePoint
 
         public SPFile LoadFile(string file)
         {
-            if (ContainsFile(file))
+            using (new SPMonitoredScope(string.Format("IronHive Access - {0}", file)))
             {
-                var spFile = Web.GetFile(GetFullPath(file));
-                if (spFile.Exists)
+                if (ContainsFile(file))
                 {
-                    return spFile;
+                    var spFile = Web.GetFile(GetFullPath(file));
+                    if (spFile.Exists)
+                    {
+                        return spFile;
+                    }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
         public void Add(string file, byte[] data)
