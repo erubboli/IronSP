@@ -15,7 +15,7 @@ namespace IronSharePoint.IronConsole.Hooks
                       begin
                         include IronSharePoint::Console::Utils 
                       rescue
-                        raise 'Could not load console utils'
+#raise 'Could not load console utils'
                       end
                     end");
         }

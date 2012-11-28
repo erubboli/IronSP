@@ -65,6 +65,7 @@ namespace IronSharePoint
         public bool IsInitialized
         {
             get { return _isInitialized; }
+            set { _isInitialized = value; }
         }
 
         public IronHive IronHive
@@ -147,7 +148,26 @@ namespace IronSharePoint
                             scope.SetVariable("rails_root", Path.Combine(IronHive.FeatureFolderPath, IronConstant.IronSpRoot));
                             scope.SetVariable("rails_env", IronConstant.IronEnv.ToString().ToLower());
                             rubyEngine.Execute("$RUNTIME = iron_runtime; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
-                            rubyEngine.Execute(
+
+//                            rubyEngine.Execute(
+//                                @"
+//Dir.chdir RAILS_ROOT
+//
+//require 'rubygems'
+//require 'iron_sharepoint'
+//require 'iron_templates'
+//
+//begin
+//    require 'application'
+//rescue Exception => ex
+//    IRON_DEFAULT_LOGGER.error ex
+//end");
+
+                            Engines[".rb"] = new IronEngine(this, rubyEngine);
+
+                            SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
+
+                            IronConsole.Execute(
                                 @"
 Dir.chdir RAILS_ROOT
 
@@ -157,12 +177,15 @@ require 'iron_templates'
 
 begin
     require 'application'
+    IronControl.new.view.view_paths
+    ActionController::Base
 rescue Exception => ex
     IRON_DEFAULT_LOGGER.error ex
-end");
-
-                            Engines[".rb"] = new IronEngine(this, rubyEngine);
-                            SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
+ensure
+    $RUNTIME.is_initialized = true;
+end",
+                                ".rb");
+                            
                         }
                     }
                 }
@@ -188,7 +211,7 @@ end");
                     throw new InvalidOperationException(
                         String.Format("There is no IronHive mapping for the site with id {0}", targetSite.ID));
                 }
-
+                IronRuntime runtime;
                 if (!LivingRuntimes.ContainsKey(hiveId))
                 {
                     lock (_sync)
@@ -197,15 +220,26 @@ end");
                         {
                             using (new SPMonitoredScope("Creating IronRuntime"))
                             {
-                                var runtime = new IronRuntime(hiveId);
-                                runtime.Initialize();
+                                runtime = new IronRuntime(hiveId);
                                 LivingRuntimes[hiveId] = runtime;
+                                runtime.Initialize();
                             }
                         }
                     }
                 }
 
-                return LivingRuntimes[hiveId];
+                runtime = LivingRuntimes[hiveId];
+                if (!runtime.IsInitialized)
+                {
+                    if (HttpContext.Current != null)
+                    {
+                        HttpContext.Current.Response.StatusCode = 200;
+                        HttpContext.Current.Response.Write("I'm alive ! Just loading some stuff...");
+                        HttpContext.Current.Response.End();
+                    }
+                }
+
+                return runtime;
             }
         }
 

@@ -14,11 +14,14 @@ module IronSharePoint
     end
 
     def Render(writer)
+      scope = Microsoft::SharePoint::Utilities::SPMonitoredScope.new "Render #{self.class.name}"
       begin
         writer.Write(to_html)
       rescue Exception => ex
         logger.error ex
         writer.Write(ex.message)
+      ensure
+        scope.dispose
       end
     end
   end
