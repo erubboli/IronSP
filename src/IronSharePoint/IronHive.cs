@@ -73,7 +73,7 @@ namespace IronSharePoint
         {
             get
             {
-                return Web.GetFolder(IronConstants.IronHiveListPath);
+                return Web.GetFolder(IronConstant.IronHiveListPath);
             }
         }
 
@@ -89,7 +89,7 @@ namespace IronSharePoint
         { 
             get
             {
-                var hiveFeature = Site.Features[new Guid(IronConstants.IronHiveSiteFeatureId)];
+                var hiveFeature = Site.Features[new Guid(IronConstant.IronHiveSiteFeatureId)];
 
                 if (hiveFeature == null)
                 {
@@ -168,7 +168,7 @@ namespace IronSharePoint
                             {
                                 var fileRef = item["FileRef"].ToString();
                                 var siteRelative = fileRef.Replace((Web.ServerRelativeUrl + "/"), String.Empty);
-                                var hiveRelative = siteRelative.Replace(IronConstants.IronHiveListPath + "/",
+                                var hiveRelative = siteRelative.Replace(IronConstant.IronHiveListPath + "/",
                                                                         string.Empty);
 
                                 files.Add(hiveRelative);
@@ -261,13 +261,13 @@ namespace IronSharePoint
 
         internal string Normalize(string file)
         {
-            if (file.StartsWith(IronConstants.IronHiveRoot))
+            if (file.StartsWith(IronConstant.IronHiveRoot))
             {
-                file = file.Replace(IronConstants.IronHiveRoot, string.Empty);
+                file = file.Replace(IronConstant.IronHiveRoot, string.Empty);
             }
-            else if (file.StartsWith(IronConstants.IronHiveListPath + "/"))
+            else if (file.StartsWith(IronConstant.IronHiveListPath + "/"))
             {
-                file = file.Replace(IronConstants.IronHiveListPath + "/", string.Empty);
+                file = file.Replace(IronConstant.IronHiveListPath + "/", string.Empty);
             }
             else
             {

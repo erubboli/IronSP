@@ -115,12 +115,12 @@ namespace IronSharePoint
                         var setup = new ScriptRuntimeSetup();
                         var languageSetup = new LanguageSetup(
                             "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.1, Culture=neutral, PublicKeyToken=baeaf26a6e0611a7",
-                            IronConstants.IronRubyLanguageName,
+                            IronConstant.IronRubyLanguageName,
                             new[] {"IronRuby", "Ruby", "rb"},
                             new[] {".rb"});
                         setup.LanguageSetups.Add(languageSetup);
                         setup.HostType = typeof (IronHive);
-                        setup.DebugMode = IronConstants.IronEnv == IronEnvironment.Staging;
+                        setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Staging;
 
                         _scriptRuntime = new ScriptRuntime(setup);
                         (_scriptRuntime.Host as IronHive).Id = _hiveId;
@@ -139,7 +139,7 @@ namespace IronSharePoint
                                                               Path.Combine(ironRubyRoot, @"Lib\IronRuby"),
                                                               Path.Combine(ironRubyRoot, @"Lib\ruby\site_ruby\1.8"),
                                                               Path.Combine(ironRubyRoot, @"Lib\ruby\1.8"),
-                                                              IronConstants.IronHiveRoot
+                                                              IronConstant.IronHiveRoot
                                                           });
 
                             ScriptScope scope = rubyEngine.CreateScope();

@@ -83,7 +83,7 @@ namespace IronSharePoint
         }
         public override bool FileExists(string file)
         {
-            bool fileExists = !file.StartsWith(IronConstants.IronHiveRoot) && base.FileExists(file);
+            bool fileExists = !file.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(file);
 
             if (!fileExists)
             {
@@ -96,7 +96,7 @@ namespace IronSharePoint
         public override System.IO.Stream OpenOutputFileStream(string path)
         {
             Stream fileStream = null;
-            if (!path.StartsWith(IronConstants.IronHiveRoot) && base.FileExists(path))
+            if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
             {
                 fileStream = base.OpenOutputFileStream(path);
             }
@@ -125,7 +125,7 @@ namespace IronSharePoint
         public override Stream OpenInputFileStream(string path)
         {
             Stream fileStream = null;
-            if (!path.StartsWith(IronConstants.IronHiveRoot) && base.FileExists(path))
+            if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
             {
                 fileStream = base.OpenInputFileStream(path);
             }
@@ -145,7 +145,7 @@ namespace IronSharePoint
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share)
         {
             Stream fileStream = null;
-            if (!path.StartsWith(IronConstants.IronHiveRoot) && base.FileExists(path))
+            if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
             {
                 fileStream = base.OpenInputFileStream(path, mode, access, share);
             }

@@ -119,7 +119,7 @@
       <DependentUpon>IronConsoleUserControl.ascx.cs</DependentUpon>
     </Compile>
     <Compile Include="IronConsole\Hooks\RubyConsoleHook.cs" />
-    <Compile Include="IronConstants.cs" />
+    <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeId.cs" />
     <Compile Include="IronDebug.cs" />
     <Compile Include="IronEnvironment.cs" />

@@ -9,7 +9,7 @@ namespace IronSharePoint
     {
         public static string GetPrefixedKey(string name)
         {
-            return IronConstants.IronPrefix + name;
+            return IronConstant.IronPrefix + name;
         }
     }
 }

@@ -6,7 +6,7 @@ using IronSharePoint.Diagnostics;
 
 namespace IronSharePoint
 {
-    public static class IronConstants
+    public static class IronConstant
     {
         public const string IronHiveRoot = "IronHive://";
         public const string IronHiveListPath = "_catalogs/IronHive";
