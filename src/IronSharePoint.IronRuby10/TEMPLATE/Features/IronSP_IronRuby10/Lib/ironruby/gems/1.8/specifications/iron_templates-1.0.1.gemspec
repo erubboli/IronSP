@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{iron_templates}
-  s.version = "1.0.0"
+  s.version = "1.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kevin Mees"]
-  s.date = %q{2012-11-02}
+  s.date = %q{2012-11-29}
   s.description = %q{Adds support for Haml, Mustache and Hamstache Templates in ActionViews for IronSharePoint}
   s.email = %q{kev.mees@gmail.com}
   s.files = ["README.md", "Rakefile", "lib/iron_templates/haml.rb", "lib/iron_templates/hamstache.rb", "lib/iron_templates/mustache.rb", "lib/iron_templates/version.rb", "lib/iron_templates.rb", "test/iron_templates/assets/_partial.haml", "test/iron_templates/assets/partial.hamstache", "test/iron_templates/assets/partial.mustache", "test/iron_templates/assets/test.haml", "test/iron_templates/assets/test.hamstache", "test/iron_templates/assets/test.mustache", "test/iron_templates/assets/with_hamstache_partial.hamstache", "test/iron_templates/assets/with_mustache_partial.hamstache", "test/iron_templates/assets/with_partial.haml", "test/iron_templates/assets/with_partial.mustache", "test/iron_templates/haml_test.rb", "test/iron_templates/hamstache_test.rb", "test/iron_templates/helper/test_view.rb", "test/iron_templates/mustache_test.rb", "test/test_helper.rb"]

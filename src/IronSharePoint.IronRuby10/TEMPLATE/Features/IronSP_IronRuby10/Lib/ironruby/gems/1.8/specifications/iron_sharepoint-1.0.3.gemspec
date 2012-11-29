@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{iron_sharepoint}
-  s.version = "1.0.2"
+  s.version = "1.0.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kevin Mees"]
-  s.date = %q{2012-11-21}
+  s.date = %q{2012-11-29}
   s.description = %q{Adds dynamic iron languages to SharePoint}
   s.email = %q{kev.mees@gmail.com}
   s.files = ["README.md", "Rakefile", "lib/iron_sharepoint/console/utils.rb", "lib/iron_sharepoint/iron_composite_control.rb", "lib/iron_sharepoint/iron_control.rb", "lib/iron_sharepoint/iron_view.rb", "lib/iron_sharepoint/main_http_handler.rb", "lib/iron_sharepoint/mixins/control_view.rb", "lib/iron_sharepoint/mixins/logging.rb", "lib/iron_sharepoint/mixins/parent_attributes.rb", "lib/iron_sharepoint/mixins/type_registration.rb", "lib/iron_sharepoint/object.rb", "lib/iron_sharepoint/sass_compiler.rb", "lib/iron_sharepoint/version.rb", "lib/iron_sharepoint.rb", "lib/log4r/outputter/iron_logs_outputter.rb", "lib/log4r/outputter/iron_runtime_outputter.rb"]

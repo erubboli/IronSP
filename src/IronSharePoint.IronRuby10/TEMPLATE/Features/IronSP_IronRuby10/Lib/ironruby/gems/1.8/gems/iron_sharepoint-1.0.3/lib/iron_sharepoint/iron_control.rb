@@ -16,10 +16,11 @@ module IronSharePoint
     def Render(writer)
       scope = Microsoft::SharePoint::Utilities::SPMonitoredScope.new "Render #{self.class.name}"
       begin
-        writer.Write(to_html)
+        html = to_html
+        writer.Write(html)
       rescue Exception => ex
         logger.error ex
-        writer.Write(ex.message)
+        writer.Write("<div class='iron-control-error'>Error in #{self.class.name}</div>")
       ensure
         scope.dispose
       end

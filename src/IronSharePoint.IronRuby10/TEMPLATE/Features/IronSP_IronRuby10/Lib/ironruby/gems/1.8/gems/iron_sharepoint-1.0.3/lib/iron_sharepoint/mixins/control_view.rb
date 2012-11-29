@@ -3,6 +3,7 @@ require 'lib/iron_sharepoint/iron_view'
 module IronSharePoint::Mixins
   module ControlView
     attr_writer :template, :view
+    DEFAULT_PATH_SET = ActionView::PathSet.new(["app/templates"]).load!
 
     module ClassMethods
       def with_template template
@@ -37,6 +38,10 @@ module IronSharePoint::Mixins
       @template || self.class.template
     end
 
+    def template_path
+      @template_path || IronSharePoint::Mixins::ControlView::DEFAULT_PATH_SET
+    end
+
     def render_context
       { }
     end
@@ -51,7 +56,7 @@ module IronSharePoint::Mixins
 
     def view
       @view ||= begin
-        @view = IronSharePoint::IronView.new ["app/templates/", "."]
+        @view = IronSharePoint::IronView.new template_path
         @view.parent = self
         @view.context = view_context
         @view
