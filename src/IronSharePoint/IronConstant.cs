@@ -33,7 +33,7 @@ namespace IronSharePoint
                     }
                     catch(ArgumentException)
                     {
-                        env = IronEnvironment.Development;
+                        env = IronEnvironment.Production;
                     }
                 }
 

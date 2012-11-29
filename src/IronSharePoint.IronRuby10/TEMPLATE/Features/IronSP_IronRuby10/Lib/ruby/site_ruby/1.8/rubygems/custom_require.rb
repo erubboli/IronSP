@@ -28,7 +28,6 @@ module Kernel
   # that file has already been loaded is preserved.
 
   def require(path) # :doc:
-	scope = Microsoft::SharePoint::Utilities::SPMonitoredScope.new "Require File #{path}"
     gem_original_require path
   rescue LoadError => load_error
     if load_error.message =~ /#{Regexp.escape path}\z/ and
@@ -38,8 +37,6 @@ module Kernel
     else
       raise load_error
     end
-  ensure
-	scope.dispose
   end
 
   private :require

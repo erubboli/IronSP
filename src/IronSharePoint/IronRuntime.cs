@@ -121,7 +121,7 @@ namespace IronSharePoint
                             new[] {".rb"});
                         setup.LanguageSetups.Add(languageSetup);
                         setup.HostType = typeof (IronHive);
-                        setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Development;
+                        setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Debug;
 
                         _scriptRuntime = new ScriptRuntime(setup);
                         (_scriptRuntime.Host as IronHive).Id = _hiveId;
@@ -146,28 +146,10 @@ namespace IronSharePoint
                             ScriptScope scope = rubyEngine.CreateScope();
                             scope.SetVariable("iron_runtime", this);
                             scope.SetVariable("rails_root", Path.Combine(IronHive.FeatureFolderPath, IronConstant.IronSpRoot));
-                            scope.SetVariable("rails_env", IronConstant.IronEnv.ToString().ToLower());
+                            scope.SetVariable("rails_env", IronConstant.IronEnv == IronEnvironment.Debug ? "Development" : IronConstant.IronEnv.ToString().ToLower());
                             rubyEngine.Execute("$RUNTIME = iron_runtime; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
 
-//                            rubyEngine.Execute(
-//                                @"
-//Dir.chdir RAILS_ROOT
-//
-//require 'rubygems'
-//require 'iron_sharepoint'
-//require 'iron_templates'
-//
-//begin
-//    require 'application'
-//rescue Exception => ex
-//    IRON_DEFAULT_LOGGER.error ex
-//end");
-
-                            Engines[".rb"] = new IronEngine(this, rubyEngine);
-
-                            SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
-
-                            IronConsole.Execute(
+                            rubyEngine.Execute(
                                 @"
 Dir.chdir RAILS_ROOT
 
@@ -177,15 +159,15 @@ require 'iron_templates'
 
 begin
     require 'application'
-    IronControl.new.view.view_paths
-    ActionController::Base
 rescue Exception => ex
     IRON_DEFAULT_LOGGER.error ex
-ensure
-    $RUNTIME.is_initialized = true;
-end",
-                                ".rb");
-                            
+end");
+
+                            Engines[".rb"] = new IronEngine(this, rubyEngine);
+
+                            SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
+
+                            IsInitialized = true;
                         }
                     }
                 }
@@ -211,6 +193,7 @@ end",
                     throw new InvalidOperationException(
                         String.Format("There is no IronHive mapping for the site with id {0}", targetSite.ID));
                 }
+
                 IronRuntime runtime;
                 if (!LivingRuntimes.ContainsKey(hiveId))
                 {
@@ -229,15 +212,6 @@ end",
                 }
 
                 runtime = LivingRuntimes[hiveId];
-                if (!runtime.IsInitialized)
-                {
-                    if (HttpContext.Current != null)
-                    {
-                        HttpContext.Current.Response.StatusCode = 200;
-                        HttpContext.Current.Response.Write("I'm alive ! Just loading some stuff...");
-                        HttpContext.Current.Response.End();
-                    }
-                }
 
                 return runtime;
             }
