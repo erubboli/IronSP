@@ -39,7 +39,7 @@ namespace IronSharePoint
             {
                 files =  base.GetFiles(path, searchPattern);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 files = _ironHive.GetFiles(path, searchPattern);
             }
@@ -53,38 +53,16 @@ namespace IronSharePoint
             {
                dirs = base.GetDirectories(path, searchPattern);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 dirs = _ironHive.GetDirectories(path, searchPattern);
             }
             return dirs;
         }
 
-        public override string GetDirectoryName(string path)
-        {
-            return base.GetDirectoryName(path);
-        }
-
-        public override bool IsAbsolutePath(string path)
-        {
-            return base.IsAbsolutePath(path);
-        }
-
         public override bool DirectoryExists(string path)
         {
             return base.DirectoryExists(path) || _ironHive.ContainsDirectory(path);
-        }
-
-        public override string CurrentDirectory
-        {
-            get
-            {
-                return base.CurrentDirectory;
-            }
-            set
-            {
-                base.CurrentDirectory = value;
-            }
         }
 
         public override bool FileExists(string file)
@@ -98,28 +76,25 @@ namespace IronSharePoint
          
             return fileExists;
         }
-       
+
         public override System.IO.Stream OpenOutputFileStream(string path)
         {
-            using (new SPMonitoredScope(string.Format("OpenOutputFileStream - {0}", path)))
+            Stream fileStream = null;
+            if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
             {
-                Stream fileStream = null;
-                if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
-                {
-                    fileStream = base.OpenOutputFileStream(path);
-                }
-                else
-                {
-                    var spFile = _ironHive.LoadFile(path);
-
-                    if (spFile != null)
-                    {
-                        fileStream = spFile.OpenBinaryStream();
-                    }
-                }
-
-                return fileStream;
+                fileStream = base.OpenOutputFileStream(path);
             }
+            else
+            {
+                var spFile = _ironHive.LoadFile(path);
+
+                if (spFile != null)
+                {
+                    fileStream = spFile.OpenBinaryStream();
+                }
+            }
+
+            return fileStream;
         }
 
         public override string GetFullPath(string file)
@@ -133,48 +108,42 @@ namespace IronSharePoint
 
         public override Stream OpenInputFileStream(string path)
         {
-            using (new SPMonitoredScope(string.Format("OpenInputFileStream - {0}", path)))
+            Stream fileStream = null;
+            if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
             {
-                Stream fileStream = null;
-                if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
-                {
-                    fileStream = base.OpenInputFileStream(path);
-                }
-                else
-                {
-                    var spFile = _ironHive.LoadFile(path);
-
-                    if (spFile != null)
-                    {
-                        fileStream = spFile.OpenBinaryStream();
-                    }
-                }
-
-                return fileStream;
+                fileStream = base.OpenInputFileStream(path);
             }
+            else
+            {
+                var spFile = _ironHive.LoadFile(path);
+
+                if (spFile != null)
+                {
+                    fileStream = spFile.OpenBinaryStream();
+                }
+            }
+
+            return fileStream;
         }
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share)
         {
-            using (new SPMonitoredScope(string.Format("OpenInputFileStream - {0}", path)))
+            Stream fileStream = null;
+            if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
             {
-                Stream fileStream = null;
-                if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
-                {
-                    fileStream = base.OpenInputFileStream(path, mode, access, share);
-                }
-                else
-                {
-                    var spFile = _ironHive.LoadFile(path);
-
-                    if (spFile != null)
-                    {
-                        fileStream = spFile.OpenBinaryStream();
-                    }
-                }
-
-                return fileStream;
+                fileStream = base.OpenInputFileStream(path, mode, access, share);
             }
+            else
+            {
+                var spFile = _ironHive.LoadFile(path);
+
+                if (spFile != null)
+                {
+                    fileStream = spFile.OpenBinaryStream();
+                }
+            }
+
+            return fileStream;
         }
     }
 }
