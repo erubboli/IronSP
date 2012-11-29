@@ -146,7 +146,7 @@ namespace IronSharePoint
                             ScriptScope scope = rubyEngine.CreateScope();
                             scope.SetVariable("iron_runtime", this);
                             scope.SetVariable("rails_root", Path.Combine(IronHive.FeatureFolderPath, IronConstant.IronSpRoot));
-                            scope.SetVariable("rails_env", IronConstant.IronEnv == IronEnvironment.Debug ? "Development" : IronConstant.IronEnv.ToString().ToLower());
+                            scope.SetVariable("rails_env", IronConstant.IronEnv == IronEnvironment.Debug ? "development" : IronConstant.IronEnv.ToString().ToLower());
                             rubyEngine.Execute("$RUNTIME = iron_runtime; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
 
                             rubyEngine.Execute(
@@ -224,7 +224,7 @@ end");
             if (!Engines.TryGetValue(extension, out ironEngine))
             {
                 string error = String.Format("Error occured while getting engine for extension {0}", extension);
-                var ex = new ArgumentException(error, "extension ");
+                var ex = new ArgumentException(error, "extension");
                 LogError(error, ex);
                 throw ex;
             }

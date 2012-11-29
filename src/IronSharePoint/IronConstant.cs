@@ -22,7 +22,7 @@ namespace IronSharePoint
         {
             get
             {
-                var env = IronEnvironment.Development;
+                var env = IronEnvironment.Production;
 
                 var environmentVariable = System.Environment.GetEnvironmentVariable("IRONSP_ENV");
                 if (!String.IsNullOrEmpty(environmentVariable))
