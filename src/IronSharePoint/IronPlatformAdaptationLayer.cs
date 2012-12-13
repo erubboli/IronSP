@@ -94,7 +94,7 @@ namespace IronSharePoint
                 }
             }
 
-            return fileStream;
+            return ConvertToUtf8(fileStream);
         }
 
         public override string GetFullPath(string file)
@@ -143,7 +143,18 @@ namespace IronSharePoint
                 }
             }
 
-            return fileStream;
+            return ConvertToUtf8(fileStream);
+        }
+
+        private Stream ConvertToUtf8(Stream stream)
+        {
+            return stream;
+            //using (var br = new BinaryReader(stream))
+            //{
+            //    var bytes = br.ReadBytes((int) stream.Length);
+            //    bytes = Encoding.Convert(Encoding.Default, Encoding.UTF8, bytes);
+            //    return new MemoryStream(bytes);
+            //}
         }
     }
 }

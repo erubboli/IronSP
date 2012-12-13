@@ -39,7 +39,15 @@ namespace IronSharePoint
                 var extension = HttpContext.Current.Request["ext"];
                 var expression = HttpContext.Current.Request["expression"];
 
-                response = ironRuntime.IronConsole.Execute(expression, extension);
+                if (expression == "_ = (kill);_.inspect")
+                {
+                    ironRuntime.Dispose();
+                    response.Output = "Runtime disposed.";
+                }
+                else
+                {
+                    response = ironRuntime.IronConsole.Execute(expression, extension);
+                }
             }
             catch (Exception ex)
             {

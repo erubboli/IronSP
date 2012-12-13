@@ -55,6 +55,7 @@ module ActionView
 
         def html_safe_translation_keys(keys, translations)
           keys.zip(translations).map do |key, translation|
+		    
             if key =~ /(\b|_|\.)html$/ && translation.respond_to?(:html_safe)
               translation.html_safe
             else

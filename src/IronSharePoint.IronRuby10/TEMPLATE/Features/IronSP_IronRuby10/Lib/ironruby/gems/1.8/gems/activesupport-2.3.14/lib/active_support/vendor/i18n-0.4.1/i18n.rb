@@ -149,7 +149,13 @@ module I18n
       key     = args.shift
       locale  = options && options.delete(:locale) || config.locale
       raises  = options && options.delete(:raise)
-      config.backend.translate(locale, key, options || {})
+      translations = config.backend.translate(locale, key, options || {})
+	  translations.map do |translation|
+		  bytes = System::Text::Encoding.Default.get_bytes translation
+		  bytes = System::Text::Encoding.convert(System::Text::Encoding.Default, System::Text::Encoding.UTF8, bytes)
+		  translation = System::Text::Encoding.UTF8.get_string bytes
+		  translation
+	  end
     rescue I18n::ArgumentError => exception
       raise exception if raises
       handle_exception(exception, locale, key, options)
