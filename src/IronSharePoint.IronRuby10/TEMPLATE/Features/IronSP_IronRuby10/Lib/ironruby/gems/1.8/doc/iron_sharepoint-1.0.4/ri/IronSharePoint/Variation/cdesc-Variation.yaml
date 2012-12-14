@@ -1,0 +1,30 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: 
+- !ruby/object:RI::Attribute 
+  comment: 
+  name: default
+  rw: W
+- !ruby/object:RI::Attribute 
+  comment: 
+  name: default
+  rw: W
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: current
+- !ruby/object:RI::MethodSummary 
+  name: current
+- !ruby/object:RI::MethodSummary 
+  name: default
+- !ruby/object:RI::MethodSummary 
+  name: default
+- !ruby/object:RI::MethodSummary 
+  name: for_web
+- !ruby/object:RI::MethodSummary 
+  name: for_web
+comment: 
+constants: []
+full_name: IronSharePoint::Variation
+includes: []
+instance_methods: []
+name: Variation
+superclass: 

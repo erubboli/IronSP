@@ -1,0 +1,22 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: 
+- !ruby/object:RI::Attribute 
+  comment: 
+  name: parent
+  rw: RW
+- !ruby/object:RI::Attribute 
+  comment: 
+  name: parent
+  rw: RW
+class_methods: []
+comment: 
+constants: []
+full_name: IronSharePoint::IronView
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: context=
+- !ruby/object:RI::MethodSummary 
+  name: context=
+name: IronView
+superclass: ActionView::Base

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>current (IronSharePoint::Variation)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/iron_sharepoint/variation.rb, line 6</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">current</span>
+        <span class="ruby-identifier">sp_context</span> = <span class="ruby-constant">Microsoft</span><span class="ruby-operator">::</span><span class="ruby-constant">SharePoint</span><span class="ruby-operator">::</span><span class="ruby-constant">SPContext</span>.<span class="ruby-identifier">current</span>
+        <span class="ruby-identifier">http_context</span> = <span class="ruby-constant">System</span><span class="ruby-operator">::</span><span class="ruby-constant">Web</span><span class="ruby-operator">::</span><span class="ruby-constant">HttpContext</span>.<span class="ruby-identifier">current</span>
+
+        <span class="ruby-identifier">variation</span> = <span class="ruby-identifier">http_context</span>.<span class="ruby-identifier">items</span>[<span class="ruby-value str">&quot;IronSP_Variation&quot;</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">http_context</span>.<span class="ruby-identifier">nil?</span>
+
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">variation</span>.<span class="ruby-identifier">nil?</span>
+          <span class="ruby-identifier">variation</span> = <span class="ruby-identifier">for_web</span>(<span class="ruby-identifier">sp_context</span>.<span class="ruby-identifier">web</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">sp_context</span>.<span class="ruby-identifier">nil?</span>
+          <span class="ruby-identifier">http_context</span>.<span class="ruby-identifier">items</span>[<span class="ruby-value str">&quot;IronSP_Variation&quot;</span>] = <span class="ruby-identifier">variation</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">http_context</span>.<span class="ruby-identifier">nil?</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-identifier">variation</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">default</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

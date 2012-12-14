@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>for_web (IronSharePoint::Variation)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/iron_sharepoint/variation.rb, line 20</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">for_web</span> <span class="ruby-identifier">web</span>
+        <span class="ruby-identifier">disposables</span> = []
+        <span class="ruby-identifier">disposables</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Microsoft</span><span class="ruby-operator">::</span><span class="ruby-constant">SharePoint</span><span class="ruby-operator">::</span><span class="ruby-constant">Utilities</span><span class="ruby-operator">::</span><span class="ruby-constant">SPMonitoredScope</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;Retrieving Variation&quot;</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">web</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">String</span>
+          <span class="ruby-identifier">site</span> = <span class="ruby-constant">SPSite</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">web</span>
+          <span class="ruby-identifier">web</span> = <span class="ruby-identifier">site</span>.<span class="ruby-identifier">open_web</span>
+          <span class="ruby-identifier">disposables</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">site</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">web</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-identifier">pweb</span> = <span class="ruby-constant">Microsoft</span><span class="ruby-operator">::</span><span class="ruby-constant">SharePoint</span><span class="ruby-operator">::</span><span class="ruby-constant">Publishing</span><span class="ruby-operator">::</span><span class="ruby-constant">PublishingWeb</span>.<span class="ruby-constant">GetPublishingWeb</span>(<span class="ruby-identifier">web</span>)
+        <span class="ruby-identifier">variation</span> = (<span class="ruby-identifier">pweb</span>.<span class="ruby-identifier">label</span>.<span class="ruby-identifier">try</span> <span class="ruby-identifier">:title</span>)
+
+        <span class="ruby-identifier">disposables</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">dispose</span>}
+
+        <span class="ruby-identifier">variation</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">default</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

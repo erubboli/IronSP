@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>template_path (IronSharePoint::Mixins::ControlView)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/iron_sharepoint/mixins/control_view.rb, line 42</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">template_path</span>
+      <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@template_path</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@template_path</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ActionView</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">cache_template_loading?</span>
+        <span class="ruby-ivar">@@cached_template_path</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">ActionView</span><span class="ruby-operator">::</span><span class="ruby-constant">PathSet</span>.<span class="ruby-identifier">new</span> [<span class="ruby-constant">ActionView</span><span class="ruby-operator">::</span><span class="ruby-constant">Template</span><span class="ruby-operator">::</span><span class="ruby-constant">EagerPath</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">DEFAULT_TEMPLATE_PATH</span>)]
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-ivar">@@reloadable_template_path</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">ActionView</span><span class="ruby-operator">::</span><span class="ruby-constant">PathSet</span>.<span class="ruby-identifier">new</span> [<span class="ruby-constant">ActionView</span><span class="ruby-operator">::</span><span class="ruby-constant">ReloadableTemplate</span><span class="ruby-operator">::</span><span class="ruby-constant">ReloadablePath</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">DEFAULT_TEMPLATE_PATH</span>)]
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

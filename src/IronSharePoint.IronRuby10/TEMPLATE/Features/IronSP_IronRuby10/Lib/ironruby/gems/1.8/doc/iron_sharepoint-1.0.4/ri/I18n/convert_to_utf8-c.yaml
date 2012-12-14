@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: I18n::convert_to_utf8
+is_singleton: true
+name: convert_to_utf8
+params: (translation)
+visibility: public

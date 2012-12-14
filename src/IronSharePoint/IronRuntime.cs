@@ -163,10 +163,9 @@ rescue Exception => ex
     IRON_DEFAULT_LOGGER.error ex
 end");
 
-                            Engines[".rb"] = new IronEngine(this, rubyEngine);
-
                             SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
 
+                            Engines[".rb"] = new IronEngine(this, rubyEngine);
                             IsInitialized = true;
                         }
                     }
