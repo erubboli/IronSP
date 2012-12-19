@@ -134,6 +134,8 @@ namespace IronSharePoint
                         {
                             string ironRubyRoot = Path.Combine(IronHive.FeatureFolderPath, "IronSP_IronRuby10\\");
                             ScriptEngine rubyEngine = _scriptRuntime.GetEngineByFileExtension(".rb");
+                            var ironRubyEngine = new IronEngine(this, rubyEngine);
+                            Engines[".rb"] = ironRubyEngine;
 
                             rubyEngine.SetSearchPaths(new List<String>
                                                           {
@@ -145,27 +147,35 @@ namespace IronSharePoint
 
                             ScriptScope scope = rubyEngine.CreateScope();
                             scope.SetVariable("iron_runtime", this);
+                            scope.SetVariable("ruby_engine", ironRubyEngine);
                             scope.SetVariable("rails_root", Path.Combine(IronHive.FeatureFolderPath, IronConstant.IronSpRoot));
                             scope.SetVariable("rails_env", IronConstant.IronEnv == IronEnvironment.Debug ? "development" : IronConstant.IronEnv.ToString().ToLower());
-                            rubyEngine.Execute("$RUNTIME = iron_runtime; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
+                            rubyEngine.Execute("$RUNTIME = iron_runtime; $RUBY_ENGINE = ruby_engine; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
 
                             rubyEngine.Execute(
                                 @"
 Dir.chdir RAILS_ROOT
 
+load_assembly 'Microsoft.SharePoint.Publishing, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'
 require 'rubygems'
 require 'iron_sharepoint'
 require 'iron_templates'
 
 begin
     require 'application'
+
+    load_control = IronSharePoint::IronControl.new
+    def load_control.view_context; {:loaded => 'ActionView loaded !'};end
+    IRON_DEFAULT_LOGGER.info(load_control.view.render :inline => '= loaded', :type => :haml)
+
 rescue Exception => ex
     IRON_DEFAULT_LOGGER.error ex
+ensure
+    $RUBY_ENGINE.is_initialized = true
 end");
 
                             SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
 
-                            Engines[".rb"] = new IronEngine(this, rubyEngine);
                             IsInitialized = true;
                         }
                     }
@@ -198,19 +208,22 @@ end");
                 {
                     lock (_sync)
                     {
-                        if (!LivingRuntimes.ContainsKey(hiveId))
+                        if (!LivingRuntimes.TryGetValue(hiveId, out runtime))
                         {
                             using (new SPMonitoredScope("Creating IronRuntime"))
                             {
                                 runtime = new IronRuntime(hiveId);
                                 LivingRuntimes[hiveId] = runtime;
-                                runtime.Initialize();
                             }
                         }
                     }
+                    runtime.Initialize();
                 }
 
                 runtime = LivingRuntimes[hiveId];
+
+                if (!runtime.IsInitialized) { ShowUnavailable(); }
+                
 
                 return runtime;
             }
@@ -227,8 +240,22 @@ end");
                 LogError(error, ex);
                 throw ex;
             }
+            else
+            {
+                if (!ironEngine.IsInitialized)
+                {
+                    ShowUnavailable();
+                }
+            }
 
             return ironEngine;
+        }
+
+        private static void ShowUnavailable()
+        {
+            HttpContext.Current.Response.StatusCode = 503;
+            HttpContext.Current.Response.Write("IronSP currently initializing !");
+            HttpContext.Current.Response.End();
         }
 
         public void RegisterDynamicType(string name, object type)

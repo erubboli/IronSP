@@ -14,6 +14,7 @@ namespace IronSharePoint
             ScriptEngine = scriptEngine;
         }
 
+        public bool IsInitialized { get; set; }
         public IronRuntime IronRuntime { get; private set; }
         public ScriptEngine ScriptEngine { get; private set; }
 

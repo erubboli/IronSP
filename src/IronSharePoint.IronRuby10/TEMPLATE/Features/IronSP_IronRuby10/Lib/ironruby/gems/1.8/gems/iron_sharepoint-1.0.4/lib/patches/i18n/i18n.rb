@@ -33,6 +33,7 @@ module I18n
         translation.each do |k,v|
           converted[k] = convert_to_utf8 v
         end
+		converted
       end
     end
   end
