@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.SharePoint.Administration;
+using Microsoft.SharePoint;
 
 namespace IronSharePoint
 {
@@ -38,14 +39,24 @@ namespace IronSharePoint
 
         public IronJob() : base(){} 
         
-        public IronJob(string jobName, SPWebApplication webApplication, SPServer server, SPJobLockType lockType) : base(jobName, webApplication, SPServer.Local, lockType) 
+        public IronJob(string jobName, SPWebApplication webApplication, SPServer server, SPJobLockType lockType, Guid hiveId) : base(jobName, webApplication, SPServer.Local, lockType) 
         {
-            this.Title = jobName; 
+            this.Title = jobName;
+            this.HiveId = hiveId;
+            this.Script = String.Empty;
         } 
         
         public override void Execute(Guid targetInstanceId) 
         { 
-            
+            using(SPSite site = new SPSite(HiveId))
+            {
+                var runtime = IronRuntime.GetDefaultIronRuntime(site);
+               
+                if (String.IsNullOrEmpty(Script))
+                {
+                    runtime.IronConsole.Execute(Script, ".rb", true);
+                }
+            }
         } 
     }
 }
