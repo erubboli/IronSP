@@ -133,6 +133,8 @@ namespace IronSharePoint
                         using (new SPMonitoredScope("Creating IronEngine(s)"))
                         {
                             string ironRubyRoot = Path.Combine(IronHive.FeatureFolderPath, "IronSP_IronRuby10\\");
+                            SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
+
                             ScriptEngine rubyEngine = _scriptRuntime.GetEngineByFileExtension(".rb");
                             var ironRubyEngine = new IronEngine(this, rubyEngine);
                             Engines[".rb"] = ironRubyEngine;
@@ -152,8 +154,7 @@ namespace IronSharePoint
                             scope.SetVariable("rails_env", IronConstant.IronEnv == IronEnvironment.Debug ? "development" : IronConstant.IronEnv.ToString().ToLower());
                             rubyEngine.Execute("$RUNTIME = iron_runtime; $RUBY_ENGINE = ruby_engine; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
 
-                            rubyEngine.Execute(
-                                @"
+                            IronConsole.Execute(@"
 Dir.chdir RAILS_ROOT
 
 load_assembly 'Microsoft.SharePoint.Publishing, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'
@@ -172,9 +173,7 @@ rescue Exception => ex
     IRON_DEFAULT_LOGGER.error ex
 ensure
     $RUBY_ENGINE.is_initialized = true
-end");
-
-                            SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
+end", ".rb", false);
 
                             IsInitialized = true;
                         }
@@ -214,22 +213,25 @@ end");
                             {
                                 runtime = new IronRuntime(hiveId);
                                 LivingRuntimes[hiveId] = runtime;
+                                runtime.Initialize();
                             }
                         }
                     }
-                    runtime.Initialize();
                 }
 
                 runtime = LivingRuntimes[hiveId];
 
                 if (!runtime.IsInitialized) { ShowUnavailable(); }
-                
-
                 return runtime;
             }
         }
 
         public IronEngine GetEngineByExtension(string extension)
+        {
+            return GetEngineByExtension(extension, true);
+        }
+
+        public IronEngine GetEngineByExtension(string extension, bool initialized)
         {
             IronEngine ironEngine = null;
 
@@ -242,7 +244,7 @@ end");
             }
             else
             {
-                if (!ironEngine.IsInitialized)
+                if (initialized && !ironEngine.IsInitialized)
                 {
                     ShowUnavailable();
                 }

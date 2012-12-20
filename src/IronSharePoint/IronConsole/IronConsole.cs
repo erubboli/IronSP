@@ -77,9 +77,14 @@ namespace IronSharePoint.IronConsole
 
         public IronConsoleResult Execute(string expression, string extension)
         {
+            return Execute(expression, extension, true);
+        }
+
+        public IronConsoleResult Execute(string expression, string extension, bool wait)
+        {
             var task = new IronConsoleTask(Runtime, expression, extension);
             _queue.Enqueue(task);
-            task.WaitFor(5000);
+            if (wait) task.WaitFor(5000);
 
             return task.IronConsoleResult;
         }
