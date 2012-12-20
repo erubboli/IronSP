@@ -8,6 +8,55 @@ namespace IronSharePoint.EventReceivers
 {
     public class IronItemEventReceiver: SPItemEventReceiver
     {
+        public static void Register(SPContentType ct, SPEventReceiverType eventType, SPEventReceiverSynchronization synchronization, int sequenceNumber, string className)
+        {
+            Register(ct, eventType, synchronization, sequenceNumber, className, true);
+        }
+
+        public static void Register(SPContentType ct, SPEventReceiverType eventType, SPEventReceiverSynchronization synchronization, int sequenceNumber, string className, bool updateChildren)
+        {
+            if (!IsRegistered(ct, eventType, className))
+            {
+                ct.ParentWeb.AllowUnsafeUpdates = true;
+                var assemblyName = typeof(IronItemEventReceiver).Assembly.FullName;
+                var typeName = typeof(IronItemEventReceiver).FullName;
+
+                var receiver = ct.EventReceivers.Add();
+                receiver.Type = eventType;
+                receiver.Assembly = assemblyName;
+                receiver.Synchronization = synchronization;
+                receiver.Class = typeName;
+                receiver.Name = className;
+                receiver.Data = className;
+                receiver.SequenceNumber = sequenceNumber;
+
+                receiver.Update();
+                ct.Update(updateChildren);
+
+                ct.ParentWeb.AllowUnsafeUpdates = false;
+            }
+        }
+
+        public static void Unregister(SPContentType ct, SPEventReceiverType eventType, string className)
+        {
+            Unregister(ct, eventType, className, true);
+        }
+
+        public static void Unregister(SPContentType ct, SPEventReceiverType eventType, string className, bool updateChildren)
+        {
+            var receiver = ct.EventReceivers.OfType<SPEventReceiverDefinition>().FirstOrDefault(e => e.Class == className && (e.Type & eventType) == eventType);
+            if (receiver != null)
+            {
+                receiver.Delete();
+                ct.Update(updateChildren);
+            }
+        }
+
+        public static bool IsRegistered(SPContentType ct, SPEventReceiverType eventType, string className)
+        {
+            return ct.EventReceivers.OfType<SPEventReceiverDefinition>().Any(e => e.Class == className && (e.Type & eventType) == eventType);
+        }
+
         public static void Register(SPList list, SPEventReceiverType eventType, SPEventReceiverSynchronization synchronization, int sequenceNumber, string className)
         {
 
@@ -37,10 +86,8 @@ namespace IronSharePoint.EventReceivers
 
         public static void Unregister(SPList list, SPEventReceiverType eventType, string className)
         {
-            var typeName = typeof(IronItemEventReceiver).FullName;
-
-            var receiver = list.EventReceivers.OfType<SPEventReceiverDefinition>().Where(e => e.Class == className && (e.Type & eventType)==eventType).FirstOrDefault();
-            receiver.Delete();
+            var receiver = list.EventReceivers.OfType<SPEventReceiverDefinition>().FirstOrDefault(e => e.Class == className && (e.Type & eventType)==eventType);
+            if (receiver != null) receiver.Delete();
         }
 
         public static bool IsRegistered(SPList list, SPEventReceiverType eventType, string className)
