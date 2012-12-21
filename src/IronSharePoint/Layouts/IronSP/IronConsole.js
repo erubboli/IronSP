@@ -22,17 +22,21 @@ IronConsole = (function() {
   }
 
   IronConsole.prototype.execute = function(expression) {
-    var wrapped,
+    var url_params, wrapped,
       _this = this;
     this.addToHistory(expression);
     wrapped = this.wrapExpression(expression);
+    url_params = location.search.substring(1);
+    if (url_params) {
+      url_params = "&" + url_params;
+    }
     return $.ajax({
       type: 'POST',
       dataType: 'text',
       data: {
         expression: wrapped
       },
-      url: this.serviceUrl,
+      url: this.serviceUrl + url_params,
       success: function(json) {
         var cb, result, _i, _j, _len, _len1, _ref, _ref1, _results, _results1;
         result = $.parseJSON(json);

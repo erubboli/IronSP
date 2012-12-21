@@ -8,11 +8,13 @@ class IronConsole
   execute: (expression) ->
     @addToHistory expression
     wrapped = @wrapExpression(expression)
+    url_params = location.search.substring(1)
+    url_params = "&" + url_params if url_params
     $.ajax
-      type: 'POST',
-      dataType: 'text',
-      data: { expression: wrapped },
-      url: @serviceUrl,
+      type: 'POST'
+      dataType: 'text'
+      data: { expression: wrapped }
+      url: @serviceUrl + url_params
       success: (json) =>
         result = $.parseJSON(json)
         unless result["Error"]?

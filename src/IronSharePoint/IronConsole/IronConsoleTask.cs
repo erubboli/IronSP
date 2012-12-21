@@ -48,8 +48,11 @@ namespace IronSharePoint.IronConsole
                 IronConsoleResult.Error = ex.Message;
                 IronConsoleResult.StackTrace = ex.StackTrace;
 
-                var eo = _engine.ScriptEngine.GetService<ExceptionOperations>();
-                IronConsoleResult.StackTrace = eo.FormatException(ex);
+                if (_engine != null)
+                {
+                    var eo = _engine.ScriptEngine.GetService<ExceptionOperations>();
+                    IronConsoleResult.StackTrace = eo.FormatException(ex);
+                }
             }
             finally
             {

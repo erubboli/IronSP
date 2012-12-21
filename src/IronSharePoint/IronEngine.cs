@@ -15,14 +15,11 @@ namespace IronSharePoint
         {
             IronRuntime = ironRuntime;
             ScriptEngine = scriptEngine;
-            ServerTaskQueue = new Dictionary<Guid, string>();
         }
 
         public bool IsInitialized { get; set; }
         public IronRuntime IronRuntime { get; private set; }
         public ScriptEngine ScriptEngine { get; private set; }
-
-        public Dictionary<Guid, String> ServerTaskQueue{ get; private set; }
 
         public string Language
         {
@@ -76,17 +73,6 @@ namespace IronSharePoint
 
             return obj;
         }
-
-        internal void ExecuteScheduledServerTasks()
-        {
-            SPSecurity.RunWithElevatedPrivileges(()=>{            
-                var localServer = SPServer.Local;
-                this.ServerTaskQueue.Where(x => x.Key == localServer.Id).ToList().ForEach(s => {
-                    ScriptEngine.Execute(s.Value);
-                });
-            });
-        }
-
 
         public object ExcecuteScriptFile(SPFile scriptFile)
         {
