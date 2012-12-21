@@ -50,8 +50,12 @@ namespace IronSharePoint.IronConsole
 
                 if (_engine != null)
                 {
-                    var eo = _engine.ScriptEngine.GetService<ExceptionOperations>();
-                    IronConsoleResult.StackTrace = eo.FormatException(ex);
+                    try
+                    {
+                        var eo = _engine.ScriptEngine.GetService<ExceptionOperations>();
+                        IronConsoleResult.StackTrace = eo.FormatException(ex);
+                    }
+                    catch { }
                 }
             }
             finally
