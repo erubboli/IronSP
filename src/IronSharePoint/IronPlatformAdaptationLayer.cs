@@ -34,30 +34,30 @@ namespace IronSharePoint
         }
         public override string[] GetFiles(string path, string searchPattern)
         {
-            string[] files;
-            try
+            var dirs = new List<String>();
+            if (base.DirectoryExists(path))
             {
-                files =  base.GetFiles(path, searchPattern);
+                dirs.AddRange(base.GetFiles(path, searchPattern));
             }
-            catch (Exception)
+            if (_ironHive.ContainsDirectory(path))
             {
-                files = _ironHive.GetFiles(path, searchPattern);
+                dirs.AddRange(_ironHive.GetFiles(path, searchPattern));
             }
-            return files;
+            return dirs.ToArray();
         }
 
         public override string[] GetDirectories(string path, string searchPattern)
         {
-            string[] dirs;
-            try
+            var dirs = new List<String>();
+            if (base.DirectoryExists(path))
             {
-               dirs = base.GetDirectories(path, searchPattern);
+                dirs.AddRange(base.GetDirectories(path, searchPattern));
             }
-            catch (Exception)
+            if (_ironHive.ContainsDirectory(path))
             {
-                dirs = _ironHive.GetDirectories(path, searchPattern);
+                dirs.AddRange(_ironHive.GetDirectories(path, searchPattern));
             }
-            return dirs;
+            return dirs.ToArray();
         }
 
         public override bool DirectoryExists(string path)
@@ -94,7 +94,7 @@ namespace IronSharePoint
                 }
             }
 
-            return ConvertToUtf8(fileStream);
+            return fileStream;
         }
 
         public override string GetFullPath(string file)
@@ -143,18 +143,7 @@ namespace IronSharePoint
                 }
             }
 
-            return ConvertToUtf8(fileStream);
-        }
-
-        private Stream ConvertToUtf8(Stream stream)
-        {
-            return stream;
-            //using (var br = new BinaryReader(stream))
-            //{
-            //    var bytes = br.ReadBytes((int) stream.Length);
-            //    bytes = Encoding.Convert(Encoding.Default, Encoding.UTF8, bytes);
-            //    return new MemoryStream(bytes);
-            //}
+            return fileStream;
         }
     }
 }

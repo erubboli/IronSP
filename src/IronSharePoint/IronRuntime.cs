@@ -144,13 +144,14 @@ namespace IronSharePoint
                                                               Path.Combine(ironRubyRoot, @"Lib\IronRuby"),
                                                               Path.Combine(ironRubyRoot, @"Lib\ruby\site_ruby\1.8"),
                                                               Path.Combine(ironRubyRoot, @"Lib\ruby\1.8"),
-                                                              IronConstant.IronHiveRoot
+                                                              IronConstant.IronHiveRoot,
+                                                              IronHive.CurrentDir
                                                           });
 
                             ScriptScope scope = rubyEngine.CreateScope();
                             scope.SetVariable("iron_runtime", this);
                             scope.SetVariable("ruby_engine", ironRubyEngine);
-                            scope.SetVariable("rails_root", Path.Combine(IronHive.FeatureFolderPath, IronConstant.IronSpRoot));
+                            scope.SetVariable("rails_root", IronHive.CurrentDir);
                             scope.SetVariable("rails_env", IronConstant.IronEnv == IronEnvironment.Debug ? "development" : IronConstant.IronEnv.ToString().ToLower());
                             rubyEngine.Execute("$RUNTIME = iron_runtime; $RUBY_ENGINE = ruby_engine; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
 

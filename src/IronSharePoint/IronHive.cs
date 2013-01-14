@@ -121,7 +121,7 @@ namespace IronSharePoint
 
         public string CurrentDir
         {
-            get { return Directory.GetCurrentDirectory() + "\\"; }
+            get { return Path.Combine(FeatureFolderPath, IronConstant.IronSpRoot); }
         }
 
         public override PlatformAdaptationLayer PlatformAdaptationLayer
@@ -217,6 +217,8 @@ namespace IronSharePoint
 
         public bool ContainsDirectory(string path)
         {
+            if (path == ".") return true;
+
             path = Normalize(path);
 
             return !Files.Contains(path) && Files.Any(x => x.StartsWith(path));
@@ -269,12 +271,12 @@ namespace IronSharePoint
             {
                 file = file.Replace(IronConstant.IronHiveListPath + "/", string.Empty);
             }
-            else
+            else if (file.StartsWith("."))
             {
                 string fullPath;
                 try
                 {
-                    file = Path.GetFullPath(file).Replace(CurrentDir, string.Empty);
+                    file = Path.GetFullPath(file).Replace(CurrentDir + "\\", string.Empty);
                 }
                 catch
                 {
@@ -296,7 +298,8 @@ namespace IronSharePoint
         {
             path = Normalize(path);
 
-            var regexPattern = string.Format("({0}/{1})/", path, searchPattern.Replace("*", "[^/]+"));
+            var regexPath = path == string.Empty ? "" : path + "/";
+            var regexPattern = string.Format("({0}{1})/", regexPath, searchPattern.Replace("*", "[^/]+"));
             var regex = new Regex(regexPattern);
             return Files.Select(file =>
                                     {
@@ -312,7 +315,8 @@ namespace IronSharePoint
         {
             path = Normalize(path);
 
-            var regexPattern = string.Format("{0}/{1}", path, searchPattern.Replace("*", ".+"));
+            var regexPath = path == string.Empty ? "" : path + "/";
+            var regexPattern = string.Format("{0}{1}", regexPath, searchPattern.Replace("*", "[^/]+$"));
             var regex = new Regex(regexPattern);
             return Files.Select(file =>
             {
