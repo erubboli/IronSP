@@ -159,10 +159,10 @@ Dir.chdir RAILS_ROOT
 
 load_assembly 'Microsoft.SharePoint.Publishing, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'
 require 'rubygems'
-require 'iron_sharepoint'
-require 'iron_templates'
 
 begin
+    require 'iron_sharepoint'
+    require 'iron_templates'
     require 'application'
 
     load_control = IronSharePoint::IronControl.new
@@ -258,7 +258,6 @@ end", ".rb", false);
         private static void ShowUnavailable()
         {
             HttpContext.Current.Response.StatusCode = 503;
-            HttpContext.Current.Response.Write("IronSP currently initializing !");
             HttpContext.Current.Response.End();
         }
 

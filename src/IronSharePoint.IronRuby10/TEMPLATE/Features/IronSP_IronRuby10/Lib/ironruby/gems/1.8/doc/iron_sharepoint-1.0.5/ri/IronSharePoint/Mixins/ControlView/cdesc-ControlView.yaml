@@ -1,0 +1,66 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: 
+- !ruby/object:RI::Attribute 
+  comment: 
+  name: template
+  rw: W
+- !ruby/object:RI::Attribute 
+  comment: 
+  name: template
+  rw: W
+- !ruby/object:RI::Attribute 
+  comment: 
+  name: view
+  rw: W
+- !ruby/object:RI::Attribute 
+  comment: 
+  name: view
+  rw: W
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: included
+- !ruby/object:RI::MethodSummary 
+  name: included
+comment: 
+constants: 
+- !ruby/object:RI::Constant 
+  comment: 
+  name: DEFAULT_TEMPLATE_PATH
+  value: "\"app/templates\""
+- !ruby/object:RI::Constant 
+  comment: 
+  name: DEFAULT_TEMPLATE_PATH
+  value: "\"app/templates\""
+full_name: IronSharePoint::Mixins::ControlView
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: error_template
+- !ruby/object:RI::MethodSummary 
+  name: error_template
+- !ruby/object:RI::MethodSummary 
+  name: render_context
+- !ruby/object:RI::MethodSummary 
+  name: render_context
+- !ruby/object:RI::MethodSummary 
+  name: template
+- !ruby/object:RI::MethodSummary 
+  name: template
+- !ruby/object:RI::MethodSummary 
+  name: template_path
+- !ruby/object:RI::MethodSummary 
+  name: template_path
+- !ruby/object:RI::MethodSummary 
+  name: to_html
+- !ruby/object:RI::MethodSummary 
+  name: to_html
+- !ruby/object:RI::MethodSummary 
+  name: view
+- !ruby/object:RI::MethodSummary 
+  name: view
+- !ruby/object:RI::MethodSummary 
+  name: view_context
+- !ruby/object:RI::MethodSummary 
+  name: view_context
+name: ControlView
+superclass: 
