@@ -13,17 +13,15 @@ module IronSharePoint
       child.send :include, Mixins::TypeRegistration
     end
 
+    alias_method :render_base, :Render
     def Render(writer)
-      scope = Microsoft::SharePoint::Utilities::SPMonitoredScope.new "Render #{self.class.name}"
-      begin
-        html = to_html
-        writer.Write(html)
-      rescue Exception => ex
-        logger.error ex
-        writer.Write("<div class='iron-control-error'>Error in #{self.class.name}</div>")
-      ensure
-        scope.dispose
-      end
+      logger.error self.render_exception unless self.render_exception.nil?
+      render_base writer
+    end
+
+    def ToHtml sp_context
+      @sp_context = sp_context
+      render_template
     end
   end
 end

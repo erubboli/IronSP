@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Web;
 using IronSharePoint.Administration;
 using IronSharePoint.Diagnostics;
@@ -71,6 +73,8 @@ namespace IronSharePoint
         public Dictionary<string, Object> DynamicFunctionRegistry { get; private set; }
         public string HttpHandlerClass { get; set; }
         public bool IsDisposed { get; private set; }
+        public bool IsInitialized { get; set; }
+        public bool IsInitializing { get; set; }
 
         public Guid Id
         {
@@ -101,13 +105,13 @@ namespace IronSharePoint
 
         private void Initialize()
         {
-            if (!_isInitialized)
+            if (!IsInitialized && !IsInitializing)
             {
                 lock (_sync)
                 {
-                    if (!_isInitialized)
+                    if (!IsInitialized && !IsInitializing)
                     {
-                        _isInitialized = true;
+                        IsInitializing = true;
 
                         var setup = new ScriptRuntimeSetup();
                         var languageSetup = new LanguageSetup(
@@ -132,7 +136,6 @@ namespace IronSharePoint
                             SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
 
                             ScriptEngine rubyEngine = _scriptRuntime.GetEngineByFileExtension(".rb");
-                            var ironRubyEngine = new IronEngine(this, rubyEngine);
                             rubyEngine.SetSearchPaths(new List<String>
                                                           {
                                                               Path.Combine(ironRubyRoot, @"Lib\IronRuby"),
@@ -141,13 +144,16 @@ namespace IronSharePoint
                                                               IronHive.CurrentDir
                                                           });
 
+                            var ironRubyEngine = new IronEngine(this, rubyEngine);
+                            Engines[".rb"] = ironRubyEngine;
+
                             ScriptScope scope = rubyEngine.CreateScope();
                             scope.SetVariable("iron_runtime", this);
                             scope.SetVariable("ruby_engine", ironRubyEngine);
                             scope.SetVariable("rails_root", IronHive.CurrentDir);
                             scope.SetVariable("rails_env", IronConstant.IronEnv == IronEnvironment.Debug ? "development" : IronConstant.IronEnv.ToString().ToLower());
                             rubyEngine.Execute("$RUNTIME = iron_runtime; $RUBY_ENGINE = ruby_engine; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
-                            rubyEngine.Execute(@"
+                            IronConsole.Execute(@"
 Dir.chdir RAILS_ROOT
 
 require 'rubygems'
@@ -164,8 +170,11 @@ begin
     require 'application'
 rescue Exception => ex
     IRON_DEFAULT_LOGGER.error ex
-end");
-                            Engines[".rb"] = ironRubyEngine;
+ensure
+    $RUBY_ENGINE.is_initialized = true
+end", ".rb", false);
+                            IsInitializing = false;
+                            IsInitialized = true;
                         }
                     }
                 }
@@ -202,15 +211,17 @@ end");
                             using (new SPMonitoredScope("Creating IronRuntime"))
                             {
                                 runtime = new IronRuntime(hiveId);
-                                runtime.Initialize();
                                 LivingRuntimes[hiveId] = runtime;
+                                runtime.Initialize();
                             }
                         }
                     }
                 }
-                else
+                runtime = LivingRuntimes[hiveId];
+
+                if (!runtime.IsInitialized)
                 {
-                    runtime = LivingRuntimes[hiveId];
+                    ShowUnavailable();
                 }
 
                 return runtime;
@@ -232,6 +243,11 @@ end");
                 var ex = new ArgumentException(error, "extension");
                 LogError(error, ex);
                 throw ex;
+            }
+
+            if (initialized && !ironEngine.IsInitialized)
+            {
+                ShowUnavailable();
             }
 
             return ironEngine;
@@ -280,6 +296,13 @@ end");
         {
             IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Core],
                                                     TraceSeverity.Verbose, String.Format("{0}.", msg));
+        }
+
+        static void ShowUnavailable()
+        {
+            HttpContext.Current.Response.StatusCode = 503;
+            HttpContext.Current.Response.WriteFile(SPUtility.GetGenericSetupPath(@"TEMPLATE\LAYOUTS\IronSP\503.html"));
+            HttpContext.Current.Response.End();
         }
     }
 }

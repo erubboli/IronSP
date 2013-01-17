@@ -13,16 +13,17 @@ module IronSharePoint
       child.send :include, Mixins::TypeRegistration
     end
 
+    def ToHtml
+      render_template
+    end
+
     def CreateChildControls
-      scope = Microsoft::SharePoint::Utilities::SPMonitoredScope.new "CreateChildControls #{self.class.name}"
       unless self.page.nil?
-        ctrl = self.page.parse_control(to_html)
+        ctrl = self.page.parse_control(self.ToHtml)
         self.controls.add(ctrl)
       end
     rescue Exception => ex
       logger.error ex
-    ensure
-      scope.dispose
     end
   end
 end

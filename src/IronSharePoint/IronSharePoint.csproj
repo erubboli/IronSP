@@ -22,7 +22,7 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <ActiveDeploymentConfiguration>Default</ActiveDeploymentConfiguration>
+    <ActiveDeploymentConfiguration>Upgrade Solution %28CKSDev%29</ActiveDeploymentConfiguration>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -235,6 +235,7 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\object.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\action_view\reloadable_template.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\string.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\i18n\backend\base.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\i18n\i18n.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\sass_compiler.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\variation.rb" />
@@ -277,6 +278,7 @@
     <Content Include="ContentTypes\IronScript\Elements.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Layouts\IronSP\503.html" />
     <Content Include="Layouts\IronSP\ace\ace-uncompressed.js" />
     <Content Include="Layouts\IronSP\ace\ace.js" />
     <Content Include="Layouts\IronSP\ace\cockpit-uncompressed.js" />

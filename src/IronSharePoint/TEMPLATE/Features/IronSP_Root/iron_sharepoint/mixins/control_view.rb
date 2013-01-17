@@ -57,7 +57,7 @@ module IronSharePoint::Mixins
       end
     end
 
-    def to_html
+    def render_template
       view.render :file => template
     rescue Exception => ex
       logger.error ex if respond_to? :logger
