@@ -2,8 +2,9 @@ require 'rubygems'
 require 'log4r'
 require 'action_controller'
 require 'action_view'
-require 'lib/log4r/outputter/iron_logs_outputter'
-require 'lib/log4r/outputter/iron_memory_outputter'
+require 'active_support'
+require 'iron_sharepoint/ext/log4r/outputter/iron_logs_outputter'
+require 'iron_sharepoint/ext/log4r/outputter/iron_memory_outputter'
 
 formatter = Log4r::PatternFormatter.new(:pattern => "[%l] %d - %c@%t :: %M")
 
@@ -18,6 +19,11 @@ IRON_INTERNAL_LOGGER = internal_log
 IRON_DEFAULT_LOGGER = default_log
 
 base_dir = File.dirname(__FILE__)
-Dir["#{base_dir}/**/*.rb"].each do |file|
+Dir["#{base_dir}/iron_sharepoint/**/*.rb"].each do |file|
   require file
 end
+Dir["#{base_dir}/iron_templates/**/*.rb"].each do |file|
+  require file
+end
+
+ActiveSupport::Autoload.eager_autoload!

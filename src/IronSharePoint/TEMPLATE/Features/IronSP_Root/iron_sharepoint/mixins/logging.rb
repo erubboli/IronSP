@@ -1,5 +1,4 @@
 require 'log4r'
-require 'lib/log4r/outputter/iron_logs_outputter'
 
 include Log4r
 

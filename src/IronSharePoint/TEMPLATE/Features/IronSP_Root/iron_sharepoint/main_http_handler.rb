@@ -1,5 +1,5 @@
-require 'lib/iron_sharepoint/mixins/logging'
-require 'lib/iron_sharepoint/mixins/type_registration'
+require 'iron_sharepoint/mixins/logging'
+require 'iron_sharepoint/mixins/type_registration'
 
 module IronSharePoint::HttpHandlers
   def self.routes

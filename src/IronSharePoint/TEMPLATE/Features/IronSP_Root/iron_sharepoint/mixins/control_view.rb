@@ -1,4 +1,4 @@
-require 'lib/iron_sharepoint/iron_view'
+require 'iron_sharepoint/iron_view'
 
 module IronSharePoint::Mixins
   module ControlView

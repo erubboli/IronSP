@@ -1,7 +1,7 @@
-require 'lib/iron_sharepoint/mixins/logging'
-require 'lib/iron_sharepoint/mixins/type_registration'
-require 'lib/iron_sharepoint/mixins/control_view'
-require 'lib/iron_sharepoint/mixins/parent_attributes'
+require 'iron_sharepoint/mixins/logging'
+require 'iron_sharepoint/mixins/type_registration'
+require 'iron_sharepoint/mixins/control_view'
+require 'iron_sharepoint/mixins/parent_attributes'
 
 module IronSharePoint
   class IronCompositeControl

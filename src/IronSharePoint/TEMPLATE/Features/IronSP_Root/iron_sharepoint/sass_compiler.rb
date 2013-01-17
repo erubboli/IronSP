@@ -1,5 +1,5 @@
 require 'sass'
-require 'lib/iron_sharepoint/mixins/logging'
+require 'iron_sharepoint/mixins/logging'
 
 module IronSharePoint
   module SassCompiler
