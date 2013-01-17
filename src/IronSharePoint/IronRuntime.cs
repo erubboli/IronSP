@@ -62,12 +62,6 @@ namespace IronSharePoint
             }
         }
 
-        public bool IsInitialized
-        {
-            get { return _isInitialized; }
-            set { _isInitialized = value; }
-        }
-
         public IronHive IronHive
         {
             get { return (IronHive) ScriptRuntime.Host; }
@@ -113,6 +107,8 @@ namespace IronSharePoint
                 {
                     if (!_isInitialized)
                     {
+                        _isInitialized = true;
+
                         var setup = new ScriptRuntimeSetup();
                         var languageSetup = new LanguageSetup(
                             "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.1, Culture=neutral, PublicKeyToken=baeaf26a6e0611a7",
@@ -137,14 +133,11 @@ namespace IronSharePoint
 
                             ScriptEngine rubyEngine = _scriptRuntime.GetEngineByFileExtension(".rb");
                             var ironRubyEngine = new IronEngine(this, rubyEngine);
-                            Engines[".rb"] = ironRubyEngine;
-
                             rubyEngine.SetSearchPaths(new List<String>
                                                           {
                                                               Path.Combine(ironRubyRoot, @"Lib\IronRuby"),
                                                               Path.Combine(ironRubyRoot, @"Lib\ruby\site_ruby\1.8"),
                                                               Path.Combine(ironRubyRoot, @"Lib\ruby\1.8"),
-                                                              IronConstant.IronHiveRoot,
                                                               IronHive.CurrentDir
                                                           });
 
@@ -154,29 +147,25 @@ namespace IronSharePoint
                             scope.SetVariable("rails_root", IronHive.CurrentDir);
                             scope.SetVariable("rails_env", IronConstant.IronEnv == IronEnvironment.Debug ? "development" : IronConstant.IronEnv.ToString().ToLower());
                             rubyEngine.Execute("$RUNTIME = iron_runtime; $RUBY_ENGINE = ruby_engine; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
-
-                            IronConsole.Execute(@"
+                            rubyEngine.Execute(@"
 Dir.chdir RAILS_ROOT
 
-load_assembly 'Microsoft.SharePoint.Publishing, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'
 require 'rubygems'
 
+def Kernel.autoload obj, file
+    require file
+rescue
+    nil
+end
+
 begin
-    require 'iron_sharepoint'
-    require 'iron_templates'
+    load_assembly 'Microsoft.SharePoint.Publishing, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'
+    require './iron_sharepoint'
     require 'application'
-
-    load_control = IronSharePoint::IronControl.new
-    def load_control.view_context; {:loaded => 'ActionView loaded !'};end
-    IRON_DEFAULT_LOGGER.info(load_control.view.render :inline => '= loaded', :type => :haml)
-
 rescue Exception => ex
     IRON_DEFAULT_LOGGER.error ex
-ensure
-    $RUBY_ENGINE.is_initialized = true
-end", ".rb", false);
-
-                            IsInitialized = true;
+end");
+                            Engines[".rb"] = ironRubyEngine;
                         }
                     }
                 }
@@ -213,16 +202,17 @@ end", ".rb", false);
                             using (new SPMonitoredScope("Creating IronRuntime"))
                             {
                                 runtime = new IronRuntime(hiveId);
-                                LivingRuntimes[hiveId] = runtime;
                                 runtime.Initialize();
+                                LivingRuntimes[hiveId] = runtime;
                             }
                         }
                     }
                 }
+                else
+                {
+                    runtime = LivingRuntimes[hiveId];
+                }
 
-                runtime = LivingRuntimes[hiveId];
-
-                if (!runtime.IsInitialized) { ShowUnavailable(); }
                 return runtime;
             }
         }
@@ -243,23 +233,8 @@ end", ".rb", false);
                 LogError(error, ex);
                 throw ex;
             }
-            else
-            {
-                if (initialized && !ironEngine.IsInitialized)
-                {
-                    ShowUnavailable();
-                }
-            }
- 
-           
 
             return ironEngine;
-        }
-
-        private static void ShowUnavailable()
-        {
-            HttpContext.Current.Response.StatusCode = 503;
-            HttpContext.Current.Response.End();
         }
 
         public void RegisterDynamicType(string name, object type)

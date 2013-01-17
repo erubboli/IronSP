@@ -46,13 +46,6 @@ namespace IronSharePoint
                 }
                 else if(expression == "_ = (sp_status);_.inspect")
                 {
-                    var output = new[]
-                                     {
-                                         string.Format("IronRuntime initialized: {0}", ironRuntime.IsInitialized),
-                                         string.Format("RubyEngine initialied: {0}",
-                                                       ironRuntime.GetEngineByExtension(".rb", false).IsInitialized)
-                                     };
-                    response.Output = String.Join("<br/>", output);
 
                 }
                 else

@@ -28,7 +28,7 @@ namespace IronSharePoint
                 /*
                  * HACK: if you just return 'app/foo/bar.rb', IronRuby removes the first two characters for whatever reason. Therefore, appending to random chars fixes this
                  */
-                return entries.Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x).ToArray();
+                return entries;//.Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x).ToArray();
             }
 
         }
@@ -39,9 +39,9 @@ namespace IronSharePoint
             {
                 dirs.AddRange(base.GetFiles(path, searchPattern));
             }
-            if (_ironHive.ContainsDirectory(path))
+            else if (_ironHive.ContainsDirectory(path))
             {
-                dirs.AddRange(_ironHive.GetFiles(path, searchPattern));
+                dirs.AddRange(_ironHive.GetFiles(path, searchPattern).Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x));
             }
             return dirs.ToArray();
         }
@@ -53,9 +53,9 @@ namespace IronSharePoint
             {
                 dirs.AddRange(base.GetDirectories(path, searchPattern));
             }
-            if (_ironHive.ContainsDirectory(path))
+            else if (_ironHive.ContainsDirectory(path))
             {
-                dirs.AddRange(_ironHive.GetDirectories(path, searchPattern));
+                dirs.AddRange(_ironHive.GetDirectories(path, searchPattern).Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x));
             }
             return dirs.ToArray();
         }

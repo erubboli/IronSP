@@ -30,7 +30,7 @@ namespace IronSharePoint
         {
             if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
             {
-                ScriptEngine.Execute("load '" + scriptName + "'", IronRuntime.ScriptRuntime.Globals);
+                ScriptEngine.Execute("require '" + scriptName + "'", IronRuntime.ScriptRuntime.Globals);
 
                 if (!IronRuntime.DynamicTypeRegistry.ContainsKey(className))
                 {
@@ -49,7 +49,7 @@ namespace IronSharePoint
 
             if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))
             {
-                ScriptEngine.Execute("load '" + scriptName + "'", IronRuntime.ScriptRuntime.Globals);
+                ScriptEngine.Execute("require '" + scriptName + "'", IronRuntime.ScriptRuntime.Globals);
 
                 if (!IronRuntime.DynamicFunctionRegistry.ContainsKey(functionName))
                 {

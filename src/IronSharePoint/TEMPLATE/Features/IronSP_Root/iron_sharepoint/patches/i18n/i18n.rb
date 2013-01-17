@@ -1,4 +1,4 @@
-require 'lib/iron_sharepoint/variation'
+require 'iron_sharepoint/variation'
 
 include IronSharePoint
 

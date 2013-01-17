@@ -1,8 +1,7 @@
-require 'rubygems'
-require 'log4r'
 require 'action_controller'
 require 'action_view'
 require 'active_support'
+require 'log4r'
 require 'iron_sharepoint/ext/log4r/outputter/iron_logs_outputter'
 require 'iron_sharepoint/ext/log4r/outputter/iron_memory_outputter'
 
@@ -18,12 +17,20 @@ internal_log.outputters << (Log4r::IronMemoryOutputter.new "iron_internal", $RUN
 IRON_INTERNAL_LOGGER = internal_log
 IRON_DEFAULT_LOGGER = default_log
 
-base_dir = File.dirname(__FILE__)
-Dir["#{base_dir}/iron_sharepoint/**/*.rb"].each do |file|
-  require file
-end
-Dir["#{base_dir}/iron_templates/**/*.rb"].each do |file|
-  require file
+Dir["iron_templates/**/*.rb"].each do |file|
+  begin
+    require file
+  rescue Exception => ex
+    IRON_DEFAULT_LOGGER.error ex
+  end
 end
 
-ActiveSupport::Autoload.eager_autoload!
+Dir["iron_sharepoint/**/*.rb"].each do |file|
+  begin
+    require file
+  rescue Exception => ex
+    IRON_DEFAULT_LOGGER.error ex
+  end
+end
+
+$: << IronSharePoint::IronConstant.IronHiveRoot

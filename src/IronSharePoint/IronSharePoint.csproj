@@ -221,6 +221,7 @@
     </None>
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\console\utils.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\kernel.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_logs_outputter.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_memory_outputter.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_composite_control.rb" />
