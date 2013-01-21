@@ -1,0 +1,14 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Compile string to Temple expression
+- !ruby/struct:SM::Flow::P 
+  body: "@param [String] str Slim code @return [Array] Temple expression representing \
+  the code]]"
+full_name: Slim::Parser#call
+is_singleton: false
+name: call
+params: (str)
+visibility: public

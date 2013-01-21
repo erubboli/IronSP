@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::Mixins::ThreadOptions#thread_options
+is_singleton: false
+name: thread_options
+params: ()
+visibility: public

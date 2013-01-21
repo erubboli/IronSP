@@ -1,0 +1,11 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Interpret control blocks as sections or inverted sections
+full_name: Slim::LogicLess#on_slim_control
+is_singleton: false
+name: on_slim_control
+params: (name, content)
+visibility: public

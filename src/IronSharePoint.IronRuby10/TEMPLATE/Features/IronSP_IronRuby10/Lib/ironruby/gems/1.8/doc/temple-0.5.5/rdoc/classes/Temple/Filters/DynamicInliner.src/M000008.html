@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>on_multi (Temple::Filters::DynamicInliner)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/temple/filters/dynamic_inliner.rb, line 7</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">on_multi</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">exps</span>)
+        <span class="ruby-identifier">result</span> = [<span class="ruby-identifier">:multi</span>]
+        <span class="ruby-identifier">curr</span> = <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-identifier">prev</span> = []
+        <span class="ruby-identifier">state</span> = <span class="ruby-identifier">:looking</span>
+
+        <span class="ruby-identifier">exps</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">exp</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">type</span>, <span class="ruby-identifier">arg</span> = <span class="ruby-identifier">exp</span>
+
+          <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">type</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:newline</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">state</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:looking</span>
+              <span class="ruby-comment cmt"># We haven't found any static/dynamic, so let's just add it</span>
+              <span class="ruby-identifier">result</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">exp</span>
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-comment cmt"># We've found something, so let's make sure the generated</span>
+              <span class="ruby-comment cmt"># dynamic contains a newline by escaping a newline and</span>
+              <span class="ruby-comment cmt"># starting a new string:</span>
+              <span class="ruby-comment cmt">#</span>
+              <span class="ruby-comment cmt"># &quot;Hello &quot;               # &quot;#{@world}&quot;</span>
+              <span class="ruby-identifier">prev</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">exp</span>
+              <span class="ruby-identifier">curr</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\&quot;\\\n\&quot;&quot;</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:dynamic</span>, <span class="ruby-identifier">:static</span>
+            <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">state</span>
+            <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:looking</span>
+              <span class="ruby-comment cmt"># Found a single static/dynamic. We don't want to turn this</span>
+              <span class="ruby-comment cmt"># into a dynamic yet.  Instead we store it, and if we find</span>
+              <span class="ruby-comment cmt"># another one, we add both then.</span>
+              <span class="ruby-identifier">state</span> = <span class="ruby-identifier">:single</span>
+              <span class="ruby-identifier">prev</span> = [<span class="ruby-identifier">exp</span>]
+              <span class="ruby-identifier">curr</span> = [<span class="ruby-identifier">:dynamic</span>, <span class="ruby-value str">'&quot;'</span>]
+            <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:single</span>
+              <span class="ruby-comment cmt"># Yes! We found another one. Add the current dynamic to the result.</span>
+              <span class="ruby-identifier">state</span> = <span class="ruby-identifier">:several</span>
+              <span class="ruby-identifier">result</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">curr</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-identifier">curr</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:static</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">inspect</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>] <span class="ruby-operator">:</span> <span class="ruby-node">&quot;\#{#{arg}}&quot;</span>)
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">state</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">:looking</span>
+              <span class="ruby-comment cmt"># We need to add the closing quote.</span>
+              <span class="ruby-identifier">curr</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'&quot;'</span>
+              <span class="ruby-comment cmt"># If we found a single exp last time, let's add it.</span>
+              <span class="ruby-identifier">result</span>.<span class="ruby-identifier">concat</span>(<span class="ruby-identifier">prev</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">state</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:single</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-comment cmt"># Compile the current exp</span>
+            <span class="ruby-identifier">result</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">compile</span>(<span class="ruby-identifier">exp</span>)
+            <span class="ruby-comment cmt"># Now we're looking for more!</span>
+            <span class="ruby-identifier">state</span> = <span class="ruby-identifier">:looking</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">state</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">:looking</span>
+          <span class="ruby-comment cmt"># We need to add the closing quote.</span>
+          <span class="ruby-identifier">curr</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'&quot;'</span>
+          <span class="ruby-comment cmt"># If we found a single exp last time, let's add it.</span>
+          <span class="ruby-identifier">result</span>.<span class="ruby-identifier">concat</span>(<span class="ruby-identifier">prev</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">state</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:single</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-identifier">result</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">2</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">result</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">:</span> <span class="ruby-identifier">result</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

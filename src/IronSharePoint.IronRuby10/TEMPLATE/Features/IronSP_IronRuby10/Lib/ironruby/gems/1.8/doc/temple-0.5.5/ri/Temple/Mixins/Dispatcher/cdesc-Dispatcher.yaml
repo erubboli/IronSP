@@ -1,0 +1,64 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+- !ruby/struct:SM::Flow::P 
+  body: Implements a compatible call-method based on the including classe's methods.
+- !ruby/struct:SM::Flow::P 
+  body: It uses every method starting with &quot;on&quot; and uses the rest of the
+  method name as prefix of the expression it will receive. So, if a dispatcher has
+  a method named &quot;on_x&quot;, this method will be called with arg0,..,argN whenever
+  an expression like [:x, arg0,..,argN ] is encountered.
+- !ruby/struct:SM::Flow::P 
+  body: This works with longer prefixes, too. For example a method named &quot;on_y_z&quot;
+  will be called whenever an expression like [:y, :z, .. ] is found. Furthermore,
+  if additionally a method named &quot;on_y&quot; is present, it will be called when
+  an expression starts with :y but then does not contain with :z. This way a dispatcher
+  can implement namespaces.
+- !ruby/struct:SM::Flow::P 
+  body: "@note"
+- !ruby/struct:SM::Flow::VERB 
+  body: |
+     Processing does not reach into unknown
+     expression types by default.
+
+- !ruby/struct:SM::Flow::P 
+  body: "@example"
+- !ruby/struct:SM::Flow::VERB 
+  body: |
+      class MyAwesomeDispatch
+        include Temple::Mixins::Dispatcher
+        def on_awesome(thing) # keep awesome things
+          return [:awesome, thing]
+        end
+        def on_boring(thing) # make boring things awesome
+          return [:awesome, thing+&quot; with bacon&quot;]
+        end
+        def on(type,*args) # unknown stuff is boring too
+          return [:awesome, 'just bacon']
+        end
+      end
+      filter = MyAwesomeDispatch.new
+      # Boring things are converted:
+      filter.call([:boring, 'egg']) #=&gt; [:awesome, 'egg with bacon']
+      # Unknown things too:
+      filter.call([:foo]) #=&gt; [:awesome, 'just bacon']
+      # Known but not boring things won't be touched:
+      filter.call([:awesome, 'chuck norris']) #=&gt;[:awesome, 'chuck norris']
+
+constants: []
+full_name: Temple::Mixins::Dispatcher
+includes: 
+- !ruby/object:RI::IncludedModule 
+  name: CompiledDispatcher
+- !ruby/object:RI::IncludedModule 
+  name: CoreDispatcher
+- !ruby/object:RI::IncludedModule 
+  name: EscapeDispatcher
+- !ruby/object:RI::IncludedModule 
+  name: ControlFlowDispatcher
+instance_methods: []
+name: Dispatcher
+superclass: 

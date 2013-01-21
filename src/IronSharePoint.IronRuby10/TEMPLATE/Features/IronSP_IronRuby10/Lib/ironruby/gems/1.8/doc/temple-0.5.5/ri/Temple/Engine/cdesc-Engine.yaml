@@ -1,0 +1,60 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: 
+- !ruby/object:RI::Attribute 
+  comment: 
+  name: chain
+  rw: R
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: chain
+- !ruby/object:RI::MethodSummary 
+  name: new
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: An engine is simply a chain of compilers (that often includes a parser, some
+  filters and a generator).
+- !ruby/struct:SM::Flow::VERB 
+  body: |
+      class MyEngine &lt; Temple::Engine
+        # First run MyParser, passing the :strict option
+        use MyParser, :strict
+
+        # Then a custom filter
+        use MyFilter
+
+        # Then some general optimizations filters
+        filter :MultiFlattener
+        filter :StaticMerger
+        filter :DynamicInliner
+
+        # Finally the generator
+        generator :ArrayBuffer, :buffer
+      end
+
+      class SpecialEngine &lt; MyEngine
+        append MyCodeOptimizer
+        before :ArrayBuffer, Temple::Filters::Validator
+        replace :ArrayBuffer, Temple::Generators::RailsOutputBuffer
+      end
+
+      engine = MyEngine.new(:strict =&gt; &quot;For MyParser&quot;)
+      engine.call(something)
+
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+constants: []
+full_name: Temple::Engine
+includes: 
+- !ruby/object:RI::IncludedModule 
+  name: Mixins::Options
+- !ruby/object:RI::IncludedModule 
+  name: Mixins::EngineDSL
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: call
+- !ruby/object:RI::MethodSummary 
+  name: call_chain
+- !ruby/object:RI::MethodSummary 
+  name: chain_modified!
+name: Engine
+superclass: Object

@@ -1,0 +1,16 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Inlines several static/dynamic into a single dynamic.
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+constants: []
+full_name: Temple::Filters::DynamicInliner
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: on_multi
+name: DynamicInliner
+superclass: Filter

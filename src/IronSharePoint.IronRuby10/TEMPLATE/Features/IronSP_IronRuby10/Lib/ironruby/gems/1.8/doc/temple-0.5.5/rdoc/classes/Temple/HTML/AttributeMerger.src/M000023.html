@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>on_html_attrs (Temple::HTML::AttributeMerger)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/temple/html/attribute_merger.rb, line 8</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">on_html_attrs</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">attrs</span>)
+        <span class="ruby-identifier">names</span> = []
+        <span class="ruby-identifier">values</span> = {}
+
+        <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span> = <span class="ruby-identifier">attr</span>[<span class="ruby-value">2</span>].<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">attr</span>[<span class="ruby-value">3</span>]
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">values</span>[<span class="ruby-identifier">name</span>]
+            <span class="ruby-identifier">raise</span>(<span class="ruby-constant">FilterError</span>, <span class="ruby-node">&quot;Multiple #{name} attributes specified&quot;</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:attr_delimiter</span>][<span class="ruby-identifier">name</span>]
+            <span class="ruby-identifier">values</span>[<span class="ruby-identifier">name</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">value</span>
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-identifier">values</span>[<span class="ruby-identifier">name</span>] = [<span class="ruby-identifier">value</span>]
+            <span class="ruby-identifier">names</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">name</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-identifier">attrs</span> = <span class="ruby-identifier">names</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">value</span> = <span class="ruby-identifier">values</span>[<span class="ruby-identifier">name</span>]
+          <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">delimiter</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:attr_delimiter</span>][<span class="ruby-identifier">name</span>]) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>
+            <span class="ruby-identifier">exp</span> = [<span class="ruby-identifier">:multi</span>]
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">all?</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">contains_nonempty_static?</span>(<span class="ruby-identifier">v</span>) }
+              <span class="ruby-identifier">exp</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">first</span>
+              <span class="ruby-identifier">value</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>].<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">exp</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">:static</span>, <span class="ruby-identifier">delimiter</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">v</span> }
+              [<span class="ruby-identifier">:html</span>, <span class="ruby-identifier">:attr</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">exp</span>]
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">captures</span> = <span class="ruby-identifier">unique_name</span>
+              <span class="ruby-identifier">exp</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{captures} = []&quot;</span>]
+              <span class="ruby-identifier">value</span>.<span class="ruby-identifier">each_with_index</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">v</span>, <span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-identifier">exp</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">:capture</span>, <span class="ruby-node">&quot;#{captures}[#{i}]&quot;</span>, <span class="ruby-identifier">v</span>] }
+              <span class="ruby-identifier">exp</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">:dynamic</span>, <span class="ruby-node">&quot;#{captures}.reject(&amp;:empty?).join(#{delimiter.inspect})&quot;</span>]
+            <span class="ruby-keyword kw">end</span>
+            [<span class="ruby-identifier">:html</span>, <span class="ruby-identifier">:attr</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">exp</span>]
+          <span class="ruby-keyword kw">else</span>
+            [<span class="ruby-identifier">:html</span>, <span class="ruby-identifier">:attr</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">first</span>]
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+
+        [<span class="ruby-identifier">:html</span>, <span class="ruby-identifier">:attrs</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">attrs</span>]
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

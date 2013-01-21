@@ -1,0 +1,20 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: "@api private"
+constants: []
+full_name: Temple::Mixins::ControlFlowDispatcher
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: on_block
+- !ruby/object:RI::MethodSummary 
+  name: on_case
+- !ruby/object:RI::MethodSummary 
+  name: on_cond
+- !ruby/object:RI::MethodSummary 
+  name: on_if
+name: ControlFlowDispatcher
+superclass: 

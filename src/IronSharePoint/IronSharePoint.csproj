@@ -22,7 +22,7 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <ActiveDeploymentConfiguration>Upgrade Solution %28CKSDev%29</ActiveDeploymentConfiguration>
+    <ActiveDeploymentConfiguration>Default</ActiveDeploymentConfiguration>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -233,17 +233,14 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\parent_attributes.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\type_registration.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\object.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\action_view\reloadable_template.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\string.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\i18n\backend\base.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\i18n\i18n.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\rescues\template_error.haml" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\rescues\template_not_found.haml" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\sass_compiler.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\variation.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\version.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_templates\haml.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_templates\hamstache.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_templates\mustache.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_templates\version.rb" />
     <None Include="TEMPLATE\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{c49100b2-651a-4d69-8bbe-bc1ad369b13a}</SharePointProjectItemId>
     </None>

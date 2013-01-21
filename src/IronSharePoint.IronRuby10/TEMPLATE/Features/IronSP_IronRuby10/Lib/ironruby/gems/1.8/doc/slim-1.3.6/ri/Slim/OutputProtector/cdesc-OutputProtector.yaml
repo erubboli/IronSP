@@ -1,0 +1,20 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: "@api private"
+constants: []
+full_name: Slim::OutputProtector
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: call
+- !ruby/object:RI::MethodSummary 
+  name: on_slim_output
+- !ruby/object:RI::MethodSummary 
+  name: on_static
+- !ruby/object:RI::MethodSummary 
+  name: unprotect
+name: OutputProtector
+superclass: Filter

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>on_slim_attrvalue (Slim::CodeAttributes)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/slim/code_attributes.rb, line 49</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">on_slim_attrvalue</span>(<span class="ruby-identifier">escape</span>, <span class="ruby-identifier">code</span>)
+      <span class="ruby-comment cmt"># We perform attribute merging on Array values</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">delimiter</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:attr_delimiter</span>][<span class="ruby-ivar">@attr</span>]
+        <span class="ruby-identifier">tmp</span> = <span class="ruby-identifier">unique_name</span>
+        [<span class="ruby-identifier">:multi</span>,
+         [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{tmp} = #{code}&quot;</span>],
+         [<span class="ruby-identifier">:if</span>, <span class="ruby-node">&quot;Array === #{tmp}&quot;</span>,
+          [<span class="ruby-identifier">:multi</span>,
+           [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{tmp}.flatten!&quot;</span>],
+           [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{tmp}.map!(&amp;:to_s)&quot;</span>],
+           [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{tmp}.reject!(&amp;:empty?)&quot;</span>],
+           [<span class="ruby-identifier">:escape</span>, <span class="ruby-identifier">escape</span>, [<span class="ruby-identifier">:dynamic</span>, <span class="ruby-node">&quot;#{tmp}.join(#{delimiter.inspect})&quot;</span>]]],
+          [<span class="ruby-identifier">:escape</span>, <span class="ruby-identifier">escape</span>, [<span class="ruby-identifier">:dynamic</span>, <span class="ruby-identifier">tmp</span>]]]]
+      <span class="ruby-keyword kw">else</span>
+        [<span class="ruby-identifier">:escape</span>, <span class="ruby-identifier">escape</span>, [<span class="ruby-identifier">:dynamic</span>, <span class="ruby-identifier">code</span>]]
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,11 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Convert deprecated string shortcut to hash
+full_name: Slim::Parser#deprecated_shortcut
+is_singleton: false
+name: deprecated_shortcut
+params: (v)
+visibility: protected

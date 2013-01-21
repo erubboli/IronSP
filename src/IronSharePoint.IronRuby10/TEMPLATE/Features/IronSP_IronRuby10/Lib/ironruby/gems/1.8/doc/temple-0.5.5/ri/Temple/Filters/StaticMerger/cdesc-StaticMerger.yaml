@@ -1,0 +1,28 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: "Merges several statics into a single static. Example:"
+- !ruby/struct:SM::Flow::VERB 
+  body: |
+      [:multi,
+        [:static, &quot;Hello &quot;],
+        [:static, &quot;World!&quot;]]
+
+- !ruby/struct:SM::Flow::P 
+  body: "Compiles to:"
+- !ruby/struct:SM::Flow::VERB 
+  body: |
+      [:static, &quot;Hello World!&quot;]
+
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+constants: []
+full_name: Temple::Filters::StaticMerger
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: on_multi
+name: StaticMerger
+superclass: Filter

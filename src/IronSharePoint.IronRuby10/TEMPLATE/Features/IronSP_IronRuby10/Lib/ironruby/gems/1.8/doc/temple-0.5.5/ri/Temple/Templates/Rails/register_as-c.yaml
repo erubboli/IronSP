@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::Templates::Rails::register_as
+is_singleton: true
+name: register_as
+params: (*names)
+visibility: public

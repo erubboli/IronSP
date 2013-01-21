@@ -1,0 +1,14 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Exception raised if invalid temple expression is found
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+constants: []
+full_name: Temple::InvalidExpression
+includes: []
+instance_methods: []
+name: InvalidExpression
+superclass: RuntimeError

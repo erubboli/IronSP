@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>parse_ruby_code (Slim::Parser)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/slim/parser.rb, line 445</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse_ruby_code</span>(<span class="ruby-identifier">outer_delimiter</span>)
+      <span class="ruby-identifier">code</span>, <span class="ruby-identifier">count</span>, <span class="ruby-identifier">delimiter</span>, <span class="ruby-identifier">close_delimiter</span> = <span class="ruby-value str">''</span>, <span class="ruby-value">0</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-keyword kw">nil</span>
+
+      <span class="ruby-comment cmt"># Attribute ends with space or attribute delimiter</span>
+      <span class="ruby-identifier">end_regex</span> = <span class="ruby-node">/\A[\s#{Regexp.escape outer_delimiter.to_s}]/</span>
+
+      <span class="ruby-keyword kw">until</span> <span class="ruby-ivar">@line</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">||</span> (<span class="ruby-identifier">count</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@line</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">end_regex</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@line</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\A[,\\]\Z/</span>
+          <span class="ruby-identifier">code</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span>
+          <span class="ruby-identifier">expect_next_line</span>
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">count</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@line</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">delimiter</span>[<span class="ruby-value">0</span>]
+              <span class="ruby-identifier">count</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+            <span class="ruby-keyword kw">elsif</span> <span class="ruby-ivar">@line</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">close_delimiter</span>[<span class="ruby-value">0</span>]
+              <span class="ruby-identifier">count</span> <span class="ruby-operator">-=</span> <span class="ruby-value">1</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">elsif</span> <span class="ruby-ivar">@line</span> <span class="ruby-operator">=~</span> <span class="ruby-constant">DELIMITER_REGEX</span>
+            <span class="ruby-identifier">count</span> = <span class="ruby-value">1</span>
+            <span class="ruby-identifier">delimiter</span>, <span class="ruby-identifier">close_delimiter</span> = <span class="ruby-identifier">$&amp;</span>, <span class="ruby-constant">DELIMITERS</span>[<span class="ruby-identifier">$&amp;</span>]
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">code</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@line</span>.<span class="ruby-identifier">slice!</span>(<span class="ruby-value">0</span>)
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-identifier">syntax_error!</span>(<span class="ruby-node">&quot;Expected closing delimiter #{close_delimiter}&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">count</span> <span class="ruby-operator">!=</span> <span class="ruby-value">0</span>
+      <span class="ruby-identifier">code</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

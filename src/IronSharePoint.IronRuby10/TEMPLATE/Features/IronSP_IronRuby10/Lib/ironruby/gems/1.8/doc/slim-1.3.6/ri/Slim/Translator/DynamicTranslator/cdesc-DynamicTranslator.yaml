@@ -1,0 +1,16 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+constants: []
+full_name: Slim::Translator::DynamicTranslator
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: call
+- !ruby/object:RI::MethodSummary 
+  name: on_slim_output
+- !ruby/object:RI::MethodSummary 
+  name: on_static
+name: DynamicTranslator
+superclass: Filter

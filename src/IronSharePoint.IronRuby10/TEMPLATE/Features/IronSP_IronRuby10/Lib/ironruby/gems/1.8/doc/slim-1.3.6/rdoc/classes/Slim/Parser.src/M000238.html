@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>parse_comment_block (Slim::Parser)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/slim/parser.rb, line 268</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse_comment_block</span>
+      <span class="ruby-keyword kw">while</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@lines</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-ivar">@lines</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\A\s*\Z/</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">get_indent</span>(<span class="ruby-ivar">@lines</span>.<span class="ruby-identifier">first</span>) <span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@indents</span>.<span class="ruby-identifier">last</span>)
+        <span class="ruby-identifier">next_line</span>
+        <span class="ruby-ivar">@stacks</span>.<span class="ruby-identifier">last</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">:newline</span>]
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

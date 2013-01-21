@@ -1,5 +1,4 @@
-require 'action_controller'
-require 'action_view'
+require 'iron_sharepoint/ext/kernel'
 require 'active_support'
 require 'log4r'
 require 'iron_sharepoint/ext/log4r/outputter/iron_logs_outputter'
@@ -16,14 +15,6 @@ internal_log.outputters << (Log4r::IronMemoryOutputter.new "iron_internal", $RUN
 
 IRON_INTERNAL_LOGGER = internal_log
 IRON_DEFAULT_LOGGER = default_log
-
-Dir["iron_templates/**/*.rb"].each do |file|
-  begin
-    require file
-  rescue Exception => ex
-    IRON_DEFAULT_LOGGER.error ex
-  end
-end
 
 Dir["iron_sharepoint/**/*.rb"].each do |file|
   begin

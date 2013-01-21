@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::HTML::AttributeRemover#on_html_attr
+is_singleton: false
+name: on_html_attr
+params: (name, value)
+visibility: public

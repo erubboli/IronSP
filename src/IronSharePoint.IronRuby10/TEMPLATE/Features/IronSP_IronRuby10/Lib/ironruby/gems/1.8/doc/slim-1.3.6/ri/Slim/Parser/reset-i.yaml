@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Slim::Parser#reset
+is_singleton: false
+name: reset
+params: (lines = nil, stacks = nil)
+visibility: protected

@@ -1,0 +1,57 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: new
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+constants: 
+- !ruby/object:RI::Constant 
+  comment: 
+  name: XHTML_DOCTYPES
+  value: "{         '1.1'          => '<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\
+  \ \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">',         '5'            => '<!DOCTYPE \
+  html>',         'html'         => '<!DOCTYPE html>',         'strict'       => '<!DOCTYPE \
+  html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"\
+  >',         'frameset'     => '<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\"\
+  \ \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">',         'mobile'    \
+  \   => '<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.2//EN\" \"http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd\"\
+  >',         'basic'        => '<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML Basic 1.1//EN\"\
+  \ \"http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd\">',         'transitional' \
+  => '<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"\
+  >',       }.freeze"
+- !ruby/object:RI::Constant 
+  comment: 
+  name: HTML_DOCTYPES
+  value: "{         '5'            => '<!DOCTYPE html>',         'html'         => \
+  '<!DOCTYPE html>',         'strict'       => '<!DOCTYPE html PUBLIC \"-//W3C//DTD \
+  HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">',         'frameset' \
+  \    => '<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\"\
+  >',         'transitional' => '<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\
+  \ \"http://www.w3.org/TR/html4/loose.dtd\">',       }.freeze"
+- !ruby/object:RI::Constant 
+  comment: 
+  name: HTML
+  value: "[:html, :html4, :html5]"
+full_name: Temple::HTML::Fast
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: html?
+- !ruby/object:RI::MethodSummary 
+  name: on_html_attr
+- !ruby/object:RI::MethodSummary 
+  name: on_html_attrs
+- !ruby/object:RI::MethodSummary 
+  name: on_html_comment
+- !ruby/object:RI::MethodSummary 
+  name: on_html_condcomment
+- !ruby/object:RI::MethodSummary 
+  name: on_html_doctype
+- !ruby/object:RI::MethodSummary 
+  name: on_html_tag
+- !ruby/object:RI::MethodSummary 
+  name: xhtml?
+name: Fast
+superclass: Filter

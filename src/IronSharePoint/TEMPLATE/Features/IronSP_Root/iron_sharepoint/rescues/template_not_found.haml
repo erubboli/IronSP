@@ -1,0 +1,5 @@
+.ironsp-error{:style => "display: inline-block; color: red; font-size: 10px;line-height: 110%;text-align: left;"}
+  %p= "Template #{template} not found. Searched in:"
+  %ul
+    - self.class.template_paths.each do |path|
+      %li= path

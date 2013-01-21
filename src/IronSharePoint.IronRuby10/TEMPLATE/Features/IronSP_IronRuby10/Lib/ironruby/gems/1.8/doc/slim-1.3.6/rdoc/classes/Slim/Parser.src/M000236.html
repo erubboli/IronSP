@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>parse_line (Slim::Parser)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/slim/parser.rb, line 166</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse_line</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@line</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\A\s*\Z/</span>
+        <span class="ruby-ivar">@stacks</span>.<span class="ruby-identifier">last</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">:newline</span>]
+        <span class="ruby-keyword kw">return</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">indent</span> = <span class="ruby-identifier">get_indent</span>(<span class="ruby-ivar">@line</span>)
+
+      <span class="ruby-comment cmt"># Remove the indentation</span>
+      <span class="ruby-ivar">@line</span>.<span class="ruby-identifier">lstrip!</span>
+
+      <span class="ruby-comment cmt"># If there's more stacks than indents, it means that the previous</span>
+      <span class="ruby-comment cmt"># line is expecting this line to be indented.</span>
+      <span class="ruby-identifier">expecting_indentation</span> = <span class="ruby-ivar">@stacks</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@indents</span>.<span class="ruby-identifier">size</span>
+
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">indent</span> <span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@indents</span>.<span class="ruby-identifier">last</span>
+        <span class="ruby-comment cmt"># This line was actually indented, so we'll have to check if it was</span>
+        <span class="ruby-comment cmt"># supposed to be indented or not.</span>
+        <span class="ruby-identifier">syntax_error!</span>(<span class="ruby-value str">'Unexpected indentation'</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">expecting_indentation</span>
+
+        <span class="ruby-ivar">@indents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">indent</span>
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-comment cmt"># This line was *not* indented more than the line before,</span>
+        <span class="ruby-comment cmt"># so we'll just forget about the stack that the previous line pushed.</span>
+        <span class="ruby-ivar">@stacks</span>.<span class="ruby-identifier">pop</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">expecting_indentation</span>
+
+        <span class="ruby-comment cmt"># This line was deindented.</span>
+        <span class="ruby-comment cmt"># Now we're have to go through the all the indents and figure out</span>
+        <span class="ruby-comment cmt"># how many levels we've deindented.</span>
+        <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">indent</span> <span class="ruby-operator">&lt;</span> <span class="ruby-ivar">@indents</span>.<span class="ruby-identifier">last</span>
+          <span class="ruby-ivar">@indents</span>.<span class="ruby-identifier">pop</span>
+          <span class="ruby-ivar">@stacks</span>.<span class="ruby-identifier">pop</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-comment cmt"># This line's indentation happens lie &quot;between&quot; two other line's</span>
+        <span class="ruby-comment cmt"># indentation:</span>
+        <span class="ruby-comment cmt">#</span>
+        <span class="ruby-comment cmt">#   hello</span>
+        <span class="ruby-comment cmt">#       world</span>
+        <span class="ruby-comment cmt">#     this      # &lt;- This should not be possible!</span>
+        <span class="ruby-identifier">syntax_error!</span>(<span class="ruby-value str">'Malformed indentation'</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">indent</span> <span class="ruby-operator">!=</span> <span class="ruby-ivar">@indents</span>.<span class="ruby-identifier">last</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">parse_line_indicators</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

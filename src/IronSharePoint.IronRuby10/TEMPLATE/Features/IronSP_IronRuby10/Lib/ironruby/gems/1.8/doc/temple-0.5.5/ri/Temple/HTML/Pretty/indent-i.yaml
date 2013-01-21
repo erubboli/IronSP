@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::HTML::Pretty#indent
+is_singleton: false
+name: indent
+params: ()
+visibility: protected

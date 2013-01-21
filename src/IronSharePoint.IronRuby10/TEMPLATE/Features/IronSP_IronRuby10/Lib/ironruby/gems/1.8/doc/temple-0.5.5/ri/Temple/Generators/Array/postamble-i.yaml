@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::Generators::Array#postamble
+is_singleton: false
+name: postamble
+params: ()
+visibility: public

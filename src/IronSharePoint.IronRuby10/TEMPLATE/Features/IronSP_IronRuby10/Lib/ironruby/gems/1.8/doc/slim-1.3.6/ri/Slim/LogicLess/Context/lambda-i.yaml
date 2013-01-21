@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: ""
+comment: 
+full_name: Slim::LogicLess::Context#lambda
+is_singleton: false
+name: lambda
+params: (name) {|| ...}
+visibility: public

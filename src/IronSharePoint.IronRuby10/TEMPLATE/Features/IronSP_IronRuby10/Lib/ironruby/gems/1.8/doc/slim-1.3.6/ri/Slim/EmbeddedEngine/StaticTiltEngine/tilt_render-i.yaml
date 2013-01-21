@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Slim::EmbeddedEngine::StaticTiltEngine#tilt_render
+is_singleton: false
+name: tilt_render
+params: (tilt_engine, tilt_options, text)
+visibility: protected

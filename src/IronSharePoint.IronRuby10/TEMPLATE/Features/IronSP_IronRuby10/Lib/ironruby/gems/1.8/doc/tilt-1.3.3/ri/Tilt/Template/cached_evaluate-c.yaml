@@ -1,0 +1,11 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: "Redefine itself to use method compilation the next time:"
+full_name: Tilt::Template::cached_evaluate
+is_singleton: true
+name: cached_evaluate
+params: (scope, locals, &block)
+visibility: protected

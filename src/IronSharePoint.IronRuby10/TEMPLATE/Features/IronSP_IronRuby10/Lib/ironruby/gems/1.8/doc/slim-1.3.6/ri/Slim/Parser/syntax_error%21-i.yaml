@@ -1,0 +1,11 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Helper for raising exceptions
+full_name: Slim::Parser#syntax_error!
+is_singleton: false
+name: syntax_error!
+params: (message)
+visibility: protected

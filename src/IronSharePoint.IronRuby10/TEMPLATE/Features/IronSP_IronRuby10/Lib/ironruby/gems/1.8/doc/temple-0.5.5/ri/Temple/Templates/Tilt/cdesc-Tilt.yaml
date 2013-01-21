@@ -1,0 +1,20 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: default_mime_type
+- !ruby/object:RI::MethodSummary 
+  name: default_mime_type=
+- !ruby/object:RI::MethodSummary 
+  name: register_as
+comment: 
+constants: []
+full_name: Temple::Templates::Tilt
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: precompiled_template
+- !ruby/object:RI::MethodSummary 
+  name: prepare
+name: Tilt
+superclass: "::Tilt::Template"

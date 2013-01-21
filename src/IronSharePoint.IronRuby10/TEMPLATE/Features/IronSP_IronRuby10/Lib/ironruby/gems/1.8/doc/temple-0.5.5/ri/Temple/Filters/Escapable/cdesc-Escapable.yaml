@@ -1,0 +1,24 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: new
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Escape dynamic or static expressions. This filter must be used after Temple::HTML::*
+  and before the generators. It can be enclosed with Temple::Filters::DynamicInliner
+  filters to reduce calls to Temple::Utils#escape_html.
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+constants: []
+full_name: Temple::Filters::Escapable
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: on_dynamic
+- !ruby/object:RI::MethodSummary 
+  name: on_escape
+- !ruby/object:RI::MethodSummary 
+  name: on_static
+name: Escapable
+superclass: Filter

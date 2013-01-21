@@ -1,0 +1,16 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: new
+comment: 
+constants: []
+full_name: Temple::Mixins::GrammarDSL::Element
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: after_copy
+- !ruby/object:RI::MethodSummary 
+  name: match
+name: Element
+superclass: Or

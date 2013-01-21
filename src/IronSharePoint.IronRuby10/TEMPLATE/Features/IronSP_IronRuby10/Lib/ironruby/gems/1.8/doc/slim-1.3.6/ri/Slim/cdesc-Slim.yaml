@@ -1,0 +1,36 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+constants: 
+- !ruby/object:RI::Constant 
+  comment: 
+  - !ruby/struct:SM::Flow::P 
+    body: Tilt template implementation for Slim @api public
+  name: Template
+  value: Temple::Templates::Tilt(Slim::Engine, :register_as => :slim)
+- !ruby/object:RI::Constant 
+  comment: 
+  - !ruby/struct:SM::Flow::P 
+    body: Rails template implementation for Slim @api public
+  name: RailsTemplate
+  value: "Temple::Templates::Rails(Slim::Engine,                                  \
+  \            :register_as => :slim,                                              \
+  # Use rails-specific generator. This is necessary                               \
+  \               # to support block capturing and streaming.                      \
+  \                        :generator => Temple::Generators::RailsOutputBuffer,    \
+  \                                          # Disable the internal slim capturing. \
+  \                                             # Rails takes care of the capturing \
+  by itself.                                              :disable_capture => true, \
+  \                                             :streaming => Object.const_defined?(:Fiber))"
+- !ruby/object:RI::Constant 
+  comment: 
+  - !ruby/struct:SM::Flow::P 
+    body: Slim version string @api public
+  name: VERSION
+  value: "'1.3.6'"
+full_name: Slim
+includes: []
+instance_methods: []
+name: Slim
+superclass: 

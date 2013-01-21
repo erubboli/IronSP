@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::Templates::method_missing
+is_singleton: true
+name: method_missing
+params: (name, engine, options = {})
+visibility: public

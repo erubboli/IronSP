@@ -1,0 +1,20 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: i18n_key
+- !ruby/object:RI::MethodSummary 
+  name: i18n_text
+- !ruby/object:RI::MethodSummary 
+  name: new
+comment: 
+constants: []
+full_name: Slim::Translator
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: call
+- !ruby/object:RI::MethodSummary 
+  name: on_slim_text
+name: Translator
+superclass: Filter

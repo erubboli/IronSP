@@ -1,0 +1,31 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+constants: 
+- !ruby/object:RI::Constant 
+  comment: 
+  - !ruby/struct:SM::Flow::P 
+    body: Used by escape_html @api private
+  name: ESCAPE_HTML
+  value: "{         '&' => '&amp;',         '\"' => '&quot;',         '<' => '&lt;', \
+  \        '>' => '&gt;',       }.freeze"
+full_name: Temple::Utils
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: empty_exp?
+- !ruby/object:RI::MethodSummary 
+  name: escape_html
+- !ruby/object:RI::MethodSummary 
+  name: escape_html
+- !ruby/object:RI::MethodSummary 
+  name: escape_html
+- !ruby/object:RI::MethodSummary 
+  name: escape_html_safe
+- !ruby/object:RI::MethodSummary 
+  name: unique_name
+name: Utils
+superclass: 

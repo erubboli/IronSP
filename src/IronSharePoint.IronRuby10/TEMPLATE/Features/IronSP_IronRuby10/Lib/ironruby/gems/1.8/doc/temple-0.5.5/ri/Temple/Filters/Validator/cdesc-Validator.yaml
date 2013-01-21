@@ -1,0 +1,16 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Validates temple expression with given grammar
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+constants: []
+full_name: Temple::Filters::Validator
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: compile
+name: Validator
+superclass: Filter

@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::Mixins::DefaultOptions#disable_option_validator!
+is_singleton: false
+name: disable_option_validator!
+params: ()
+visibility: public

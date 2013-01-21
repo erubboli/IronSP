@@ -1,0 +1,27 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Implements a rails output buffer.
+- !ruby/struct:SM::Flow::VERB 
+  body: |
+      @output_buffer = ActionView::SafeBuffer
+      @output_buffer.safe_concat &quot;static&quot;
+      @output_buffer.safe_concat dynamic.to_s
+      @output_buffer
+
+- !ruby/struct:SM::Flow::P 
+  body: "@api public"
+constants: []
+full_name: Temple::Generators::RailsOutputBuffer
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: call
+- !ruby/object:RI::MethodSummary 
+  name: concat
+- !ruby/object:RI::MethodSummary 
+  name: preamble
+name: RailsOutputBuffer
+superclass: StringBuffer

@@ -13,15 +13,10 @@ module IronSharePoint
       child.send :include, Mixins::TypeRegistration
     end
 
-    alias_method :render_base, :Render
     def Render(writer)
-      logger.error self.render_exception unless self.render_exception.nil?
-      render_base writer
-    end
-
-    def ToHtml sp_context
-      @sp_context = sp_context
-      render_template
+      monitor "Render #{self.class.name}" do
+        writer.Write self.view.render
+      end
     end
   end
 end

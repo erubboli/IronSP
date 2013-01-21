@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>on_multi (Temple::ERB::Trimming)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/temple/erb/trimming.rb, line 12</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">on_multi</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">exps</span>)
+        <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:trim_mode</span>]
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'&gt;'</span>
+          <span class="ruby-identifier">i</span> = <span class="ruby-value">0</span>
+          <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">i</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">exps</span>.<span class="ruby-identifier">size</span>
+            <span class="ruby-identifier">exps</span>.<span class="ruby-identifier">delete_at</span>(<span class="ruby-identifier">i</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">code?</span>(<span class="ruby-identifier">exps</span>[<span class="ruby-identifier">i</span>]) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">exps</span>[<span class="ruby-identifier">i</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>] <span class="ruby-operator">==</span> [<span class="ruby-identifier">:static</span>, <span class="ruby-value str">&quot;\n&quot;</span>]
+            <span class="ruby-identifier">i</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'&lt;&gt;'</span>
+          <span class="ruby-identifier">i</span> = <span class="ruby-value">0</span>
+          <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">i</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">exps</span>.<span class="ruby-identifier">size</span>
+            <span class="ruby-identifier">exps</span>.<span class="ruby-identifier">delete_at</span>(<span class="ruby-identifier">i</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">code?</span>(<span class="ruby-identifier">exps</span>[<span class="ruby-identifier">i</span>]) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">exps</span>[<span class="ruby-identifier">i</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>] <span class="ruby-operator">==</span> [<span class="ruby-identifier">:static</span>, <span class="ruby-value str">&quot;\n&quot;</span>] <span class="ruby-operator">&amp;&amp;</span>
+                                     (<span class="ruby-operator">!</span><span class="ruby-identifier">exps</span>[<span class="ruby-identifier">i</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>] <span class="ruby-operator">||</span> (<span class="ruby-identifier">exps</span>[<span class="ruby-identifier">i</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>] <span class="ruby-operator">==</span> [<span class="ruby-identifier">:newline</span>]))
+            <span class="ruby-identifier">i</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+        [<span class="ruby-identifier">:multi</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">exps</span>]
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::Mixins::CoreDispatcher#on_multi
+is_singleton: false
+name: on_multi
+params: (*exps)
+visibility: public

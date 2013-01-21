@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: if !value || (value.respond_to?(:empty?) && value.empty?)
+comment: 
+full_name: Slim::LogicLess::Context#inverted_section
+is_singleton: false
+name: inverted_section
+params: (name) {|if !value || (value.respond_to?(:empty?) && value.empty?)| ...}
+visibility: public

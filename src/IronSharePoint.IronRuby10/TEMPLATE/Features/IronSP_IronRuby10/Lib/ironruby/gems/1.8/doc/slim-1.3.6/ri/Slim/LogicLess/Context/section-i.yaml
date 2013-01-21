@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: ""
+comment: 
+full_name: Slim::LogicLess::Context#section
+is_singleton: false
+name: section
+params: (name) {|| ...}
+visibility: public

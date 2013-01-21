@@ -1,0 +1,11 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Compile shortcut regular expression
+full_name: Slim::Parser#shortcut_regex
+is_singleton: false
+name: shortcut_regex
+params: (shortcut)
+visibility: protected

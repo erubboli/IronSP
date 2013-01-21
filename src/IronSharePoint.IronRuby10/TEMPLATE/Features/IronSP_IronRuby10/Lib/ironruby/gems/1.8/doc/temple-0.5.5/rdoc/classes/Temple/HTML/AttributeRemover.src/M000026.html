@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>on_html_attr (Temple::HTML::AttributeRemover)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/temple/html/attribute_remover.rb, line 18</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">on_html_attr</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span>)
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">super</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:remove_empty_attrs</span>].<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>)
+
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">empty_exp?</span>(<span class="ruby-identifier">value</span>)
+          <span class="ruby-identifier">value</span>
+        <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">contains_nonempty_static?</span>(<span class="ruby-identifier">value</span>)
+          [<span class="ruby-identifier">:html</span>, <span class="ruby-identifier">:attr</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span>]
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">tmp</span> = <span class="ruby-identifier">unique_name</span>
+          [<span class="ruby-identifier">:multi</span>,
+           [<span class="ruby-identifier">:capture</span>, <span class="ruby-identifier">tmp</span>, <span class="ruby-identifier">compile</span>(<span class="ruby-identifier">value</span>)],
+           [<span class="ruby-identifier">:if</span>, <span class="ruby-node">&quot;!#{tmp}.empty?&quot;</span>,
+            [<span class="ruby-identifier">:html</span>, <span class="ruby-identifier">:attr</span>, <span class="ruby-identifier">name</span>, [<span class="ruby-identifier">:dynamic</span>, <span class="ruby-identifier">tmp</span>]]]]
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

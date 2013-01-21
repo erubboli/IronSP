@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::Templates::Tilt::default_mime_type=
+is_singleton: true
+name: default_mime_type=
+params: (mime_type)
+visibility: public

@@ -1,0 +1,16 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: ERB engine (uses the Temple ERB implementation)
+constants: []
+full_name: Slim::EmbeddedEngine::ERBEngine
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: erb_parser
+- !ruby/object:RI::MethodSummary 
+  name: on_slim_embedded
+name: ERBEngine
+superclass: Engine

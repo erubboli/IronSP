@@ -1,0 +1,25 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: []
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Base class for Temple filters used in Slim
+- !ruby/struct:SM::Flow::P 
+  body: This base filter passes everything through and allows to override only some
+  methods without affecting the rest of the expression.
+- !ruby/struct:SM::Flow::P 
+  body: "@api private"
+constants: []
+full_name: Slim::Filter
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: on_slim_control
+- !ruby/object:RI::MethodSummary 
+  name: on_slim_embedded
+- !ruby/object:RI::MethodSummary 
+  name: on_slim_output
+- !ruby/object:RI::MethodSummary 
+  name: on_slim_text
+name: Filter
+superclass: Temple::HTML::Filter

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>splat_attributes (Slim::SplatAttributes)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/slim/splat_attributes.rb, line 58</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">splat_attributes</span>(<span class="ruby-identifier">attrs</span>)
+      <span class="ruby-ivar">@splat_used</span> = <span class="ruby-keyword kw">true</span>
+
+      <span class="ruby-identifier">hash</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span>, <span class="ruby-identifier">tmp</span> = <span class="ruby-identifier">unique_name</span>, <span class="ruby-identifier">unique_name</span>, <span class="ruby-identifier">unique_name</span>, <span class="ruby-identifier">unique_name</span>
+
+      <span class="ruby-identifier">merger</span> = [<span class="ruby-identifier">:multi</span>, [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{hash} = {}&quot;</span>]]
+      <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">merger</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">:html</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">attr</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">:attr</span>
+          [<span class="ruby-identifier">:multi</span>,
+           [<span class="ruby-identifier">:capture</span>, <span class="ruby-identifier">tmp</span>, <span class="ruby-identifier">compile</span>(<span class="ruby-identifier">attr</span>[<span class="ruby-value">3</span>])],
+           [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;(#{hash}[#{attr[2].inspect}] ||= []) &lt;&lt; #{tmp}&quot;</span>]]
+        <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">attr</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">:slim</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">:attr</span>
+            [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;(#{hash}[#{attr[2].inspect}] ||= []) &lt;&lt; (#{attr[4]})&quot;</span>]
+          <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">attr</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">:splat</span>
+            [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;(#{attr[2]}).each {|#{name},#{value}| (#{hash}[#{name}.to_s] ||= []) &lt;&lt; (#{value}) }&quot;</span>]
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-identifier">attr</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">attr</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">merger</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">:block</span>, <span class="ruby-node">&quot;#{hash}.keys.each do |#{name}|&quot;</span>,
+                 [<span class="ruby-identifier">:multi</span>,
+                  [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{value} = #{hash}[#{name}]&quot;</span>],
+                  [<span class="ruby-identifier">:if</span>, <span class="ruby-node">&quot;#{@attr_delimiter}[#{name}]&quot;</span>,
+                   [<span class="ruby-identifier">:multi</span>,
+                    [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{value}.flatten!&quot;</span>],
+                    [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{value}.map!(&amp;:to_s)&quot;</span>],
+                    [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{value}.reject!(&amp;:empty?)&quot;</span>],
+                    [<span class="ruby-identifier">:if</span>, <span class="ruby-node">&quot;#{value}.empty?&quot;</span>,
+                     [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{hash}.delete(#{name})&quot;</span>],
+                     [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{hash}[#{name}] = #{value}.join(#{@attr_delimiter}[#{name}].to_s)&quot;</span>]]],
+                   [<span class="ruby-identifier">:multi</span>,
+                    [<span class="ruby-identifier">:if</span>, <span class="ruby-node">&quot;#{value}.size &gt; 1&quot;</span>,
+                     [<span class="ruby-identifier">:code</span>, <span class="ruby-node">%{raise(&quot;Multiple #\{#{name}\} attributes specified&quot;)}</span>]],
+                    [<span class="ruby-identifier">:case</span>, <span class="ruby-node">&quot;#{value}.first&quot;</span>,
+                     [<span class="ruby-value str">'true'</span>, [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{hash}[#{name}] = #{name}&quot;</span>]],
+                     [<span class="ruby-value str">'false, nil'</span>, [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{hash}.delete(#{name})&quot;</span>]],
+                     [<span class="ruby-identifier">:else</span>, [<span class="ruby-identifier">:code</span>, <span class="ruby-node">&quot;#{hash}[#{name}] = #{value}.first&quot;</span>]]]]]]]
+
+      <span class="ruby-identifier">attr</span> = [<span class="ruby-identifier">:multi</span>,
+              [<span class="ruby-identifier">:static</span>, <span class="ruby-value str">' '</span>],
+              [<span class="ruby-identifier">:dynamic</span>, <span class="ruby-identifier">name</span>],
+              [<span class="ruby-identifier">:static</span>, <span class="ruby-node">&quot;=#{options[:attr_wrapper]}&quot;</span>],
+              [<span class="ruby-identifier">:escape</span>, <span class="ruby-keyword kw">true</span>, [<span class="ruby-identifier">:dynamic</span>, <span class="ruby-identifier">value</span>]],
+              [<span class="ruby-identifier">:static</span>, <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:attr_wrapper</span>]]]
+      <span class="ruby-identifier">enumerator</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:sort_attrs</span>] <span class="ruby-operator">?</span> <span class="ruby-node">&quot;#{hash}.sort_by {|#{name},#{value}| #{name} }&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">hash</span>
+      <span class="ruby-identifier">formatter</span> = [<span class="ruby-identifier">:block</span>, <span class="ruby-node">&quot;#{enumerator}.each do |#{name},#{value}|&quot;</span>, <span class="ruby-identifier">attr</span>]
+
+      <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">hash</span>, <span class="ruby-identifier">merger</span>, <span class="ruby-identifier">formatter</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

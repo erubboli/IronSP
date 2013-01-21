@@ -13,17 +13,17 @@ module IronSharePoint
       child.send :include, Mixins::TypeRegistration
     end
 
-    def ToHtml
-      render_template
-    end
-
     def CreateChildControls
-      unless self.page.nil?
-        ctrl = self.page.parse_control(self.ToHtml)
-        self.controls.add(ctrl)
+      monitor "Render #{self.class.name}" do
+        begin
+          unless self.page.nil?
+            ctrl = self.page.parse_control(self.ToHtml)
+            self.controls.add(ctrl)
+          end
+        rescue Exception => ex
+          logger.error ex
+        end
       end
-    rescue Exception => ex
-      logger.error ex
     end
   end
 end

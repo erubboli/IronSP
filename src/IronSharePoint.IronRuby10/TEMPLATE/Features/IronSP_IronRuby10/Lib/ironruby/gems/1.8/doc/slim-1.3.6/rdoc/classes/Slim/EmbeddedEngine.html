@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: Slim::EmbeddedEngine</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">Slim::EmbeddedEngine</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../files/lib/slim/embedded_engine_rb.html">
+                lib/slim/embedded_engine.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                <a href="Filter.html">
+                Filter
+               </a>
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+Temple filter which processes embedded engines @api private
+</p>
+
+    </div>
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000203">create</a>&nbsp;&nbsp;
+      <a href="#M000206">enabled?</a>&nbsp;&nbsp;
+      <a href="#M000204">new</a>&nbsp;&nbsp;
+      <a href="#M000207">normalize_engine_list</a>&nbsp;&nbsp;
+      <a href="#M000205">on_slim_embedded</a>&nbsp;&nbsp;
+      <a href="#M000202">register</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Class <a href="EmbeddedEngine/ERBEngine.html" class="link">Slim::EmbeddedEngine::ERBEngine</a><br />
+Class <a href="EmbeddedEngine/Engine.html" class="link">Slim::EmbeddedEngine::Engine</a><br />
+Class <a href="EmbeddedEngine/InterpolateTiltEngine.html" class="link">Slim::EmbeddedEngine::InterpolateTiltEngine</a><br />
+Class <a href="EmbeddedEngine/PrecompiledTiltEngine.html" class="link">Slim::EmbeddedEngine::PrecompiledTiltEngine</a><br />
+Class <a href="EmbeddedEngine/RubyEngine.html" class="link">Slim::EmbeddedEngine::RubyEngine</a><br />
+Class <a href="EmbeddedEngine/SassEngine.html" class="link">Slim::EmbeddedEngine::SassEngine</a><br />
+Class <a href="EmbeddedEngine/StaticTiltEngine.html" class="link">Slim::EmbeddedEngine::StaticTiltEngine</a><br />
+Class <a href="EmbeddedEngine/TagEngine.html" class="link">Slim::EmbeddedEngine::TagEngine</a><br />
+Class <a href="EmbeddedEngine/TiltEngine.html" class="link">Slim::EmbeddedEngine::TiltEngine</a><br />
+
+    </div>
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000203" class="method-detail">
+        <a name="M000203"></a>
+
+        <div class="method-heading">
+          <a href="EmbeddedEngine.src/M000203.html" target="Code" class="method-signature"
+            onclick="popupCode('EmbeddedEngine.src/M000203.html');return false;">
+          <span class="method-name">create</span><span class="method-args">(name, options)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000204" class="method-detail">
+        <a name="M000204"></a>
+
+        <div class="method-heading">
+          <a href="EmbeddedEngine.src/M000204.html" target="Code" class="method-signature"
+            onclick="popupCode('EmbeddedEngine.src/M000204.html');return false;">
+          <span class="method-name">new</span><span class="method-args">(opts = {})</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000202" class="method-detail">
+        <a name="M000202"></a>
+
+        <div class="method-heading">
+          <a href="EmbeddedEngine.src/M000202.html" target="Code" class="method-signature"
+            onclick="popupCode('EmbeddedEngine.src/M000202.html');return false;">
+          <span class="method-name">register</span><span class="method-args">(name, klass, *option_filter)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Register embedded engine
+</p>
+<p>
+@param [String] name Name of the engine @param [Class] klass <a
+href="EmbeddedEngine/Engine.html">Engine</a> class @param option_filter
+List of options to pass to engine.
+</p>
+<pre>
+                     Last argument can be default option hash.
+</pre>
+        </div>
+      </div>
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000206" class="method-detail">
+        <a name="M000206"></a>
+
+        <div class="method-heading">
+          <a href="EmbeddedEngine.src/M000206.html" target="Code" class="method-signature"
+            onclick="popupCode('EmbeddedEngine.src/M000206.html');return false;">
+          <span class="method-name">enabled?</span><span class="method-args">(name)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000205" class="method-detail">
+        <a name="M000205"></a>
+
+        <div class="method-heading">
+          <a href="EmbeddedEngine.src/M000205.html" target="Code" class="method-signature"
+            onclick="popupCode('EmbeddedEngine.src/M000205.html');return false;">
+          <span class="method-name">on_slim_embedded</span><span class="method-args">(name, body)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <h3 class="section-bar">Protected Instance methods</h3>
+
+      <div id="method-M000207" class="method-detail">
+        <a name="M000207"></a>
+
+        <div class="method-heading">
+          <a href="EmbeddedEngine.src/M000207.html" target="Code" class="method-signature"
+            onclick="popupCode('EmbeddedEngine.src/M000207.html');return false;">
+          <span class="method-name">normalize_engine_list</span><span class="method-args">(list)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

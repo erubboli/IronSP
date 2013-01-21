@@ -1,0 +1,22 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: new
+comment: 
+constants: []
+full_name: Temple::Mixins::GrammarDSL::Root
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: after_copy
+- !ruby/object:RI::MethodSummary 
+  name: copy_to
+- !ruby/object:RI::MethodSummary 
+  name: match
+- !ruby/object:RI::MethodSummary 
+  name: match?
+- !ruby/object:RI::MethodSummary 
+  name: validate!
+name: Root
+superclass: Or

@@ -1,0 +1,72 @@
+--- !ruby/object:RI::ClassDescription 
+attributes: []
+class_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: new
+comment: 
+- !ruby/struct:SM::Flow::P 
+  body: Parses Slim code and transforms it to a Temple expression @api private
+constants: 
+- !ruby/object:RI::Constant 
+  comment: 
+  name: DELIMITERS
+  value: "{       '(' => ')',       '[' => ']',       '{' => '}',     }.freeze"
+- !ruby/object:RI::Constant 
+  comment: 
+  name: DELIMITER_REGEX
+  value: /\A[#{Regexp.escape DELIMITERS.keys.join}]/
+- !ruby/object:RI::Constant 
+  comment: 
+  name: ATTR_NAME
+  value: "'\\A\\s*(\\w[:\\w-]*)'"
+- !ruby/object:RI::Constant 
+  comment: 
+  name: QUOTED_ATTR_REGEX
+  value: /#{ATTR_NAME}=(=?)("|')/
+- !ruby/object:RI::Constant 
+  comment: 
+  name: CODE_ATTR_REGEX
+  value: /#{ATTR_NAME}=(=?)/
+full_name: Slim::Parser
+includes: []
+instance_methods: 
+- !ruby/object:RI::MethodSummary 
+  name: call
+- !ruby/object:RI::MethodSummary 
+  name: deprecated_shortcut
+- !ruby/object:RI::MethodSummary 
+  name: expect_next_line
+- !ruby/object:RI::MethodSummary 
+  name: get_indent
+- !ruby/object:RI::MethodSummary 
+  name: next_line
+- !ruby/object:RI::MethodSummary 
+  name: parse_attributes
+- !ruby/object:RI::MethodSummary 
+  name: parse_broken_line
+- !ruby/object:RI::MethodSummary 
+  name: parse_comment_block
+- !ruby/object:RI::MethodSummary 
+  name: parse_line
+- !ruby/object:RI::MethodSummary 
+  name: parse_line_indicators
+- !ruby/object:RI::MethodSummary 
+  name: parse_quoted_attribute
+- !ruby/object:RI::MethodSummary 
+  name: parse_ruby_code
+- !ruby/object:RI::MethodSummary 
+  name: parse_tag
+- !ruby/object:RI::MethodSummary 
+  name: parse_text_block
+- !ruby/object:RI::MethodSummary 
+  name: remove_bom
+- !ruby/object:RI::MethodSummary 
+  name: reset
+- !ruby/object:RI::MethodSummary 
+  name: set_encoding
+- !ruby/object:RI::MethodSummary 
+  name: shortcut_regex
+- !ruby/object:RI::MethodSummary 
+  name: syntax_error!
+name: Parser
+superclass: Temple::Parser

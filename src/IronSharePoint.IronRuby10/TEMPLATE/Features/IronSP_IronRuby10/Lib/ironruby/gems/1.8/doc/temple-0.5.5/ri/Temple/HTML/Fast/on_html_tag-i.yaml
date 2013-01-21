@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::HTML::Fast#on_html_tag
+is_singleton: false
+name: on_html_tag
+params: (name, attrs, content = nil)
+visibility: public

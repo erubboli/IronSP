@@ -39,48 +39,18 @@ module IronSharePoint::Mixins
       @template || self.class.template
     end
 
-    def template_path
-      return @template_path unless @template_path.nil?
-      if ActionView::Base.cache_template_loading?
-        @@cached_template_path ||= ActionView::PathSet.new [ActionView::Template::EagerPath.new(DEFAULT_TEMPLATE_PATH)]
-      else
-        @@reloadable_template_path ||= ActionView::PathSet.new [ActionView::ReloadableTemplate::ReloadablePath.new(DEFAULT_TEMPLATE_PATH)]
-      end
-    end
-
     def view
-      @view ||= begin
-        @view = IronSharePoint::IronView.new template_path
-        @view.parent = self
-        @view.context = view_context
-        @view
-      end
+      @view ||= IronSharePoint::IronView.new({
+        :template => template,
+        :context => view_context,
+        :parent => self
+      })
     end
 
-    def render_template
-      view.render :file => template
-    rescue Exception => ex
-      logger.error ex if respond_to? :logger
-      if (SPContext.current && SPContext.current.web.current_user)
-        error_template ex
-      else
-        ""
-      end
-    end
+    private
 
-    def error_template ex
-      backtrace = ex.backtrace[0..2].map{|x| "<div>#{x}</div>"}
-      <<-HTML
-        <div class="ironsp-error" style="display: inline-block; color: red; font-size: 10px;line-height: 110%;text-align: left;">
-          <p>#{ex.message}</p>
-          #{backtrace}
-        </div>
-      HTML
-    end
-
-    def render_context
+    def view_context
       { }
     end
-    alias_method :view_context, :render_context
   end
 end

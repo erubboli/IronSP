@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Temple::Mixins::GrammarDSL::Rule::new
+is_singleton: true
+name: new
+params: (grammar)
+visibility: public

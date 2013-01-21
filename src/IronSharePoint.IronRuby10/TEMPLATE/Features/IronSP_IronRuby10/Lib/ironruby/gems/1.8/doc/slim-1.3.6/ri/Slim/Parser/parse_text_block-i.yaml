@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription 
+aliases: []
+block_params: 
+comment: 
+full_name: Slim::Parser#parse_text_block
+is_singleton: false
+name: parse_text_block
+params: (first_line = nil, text_indent = nil, in_tag = false)
+visibility: protected

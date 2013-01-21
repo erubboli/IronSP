@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>compile (Temple::Mixins::CompiledDispatcher::DispatchNode)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/temple/mixins/dispatcher.rb, line 84</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">compile</span>(<span class="ruby-identifier">level</span> = <span class="ruby-value">0</span>, <span class="ruby-identifier">call_parent</span> = <span class="ruby-keyword kw">nil</span>)
+          <span class="ruby-identifier">call_method</span> = <span class="ruby-identifier">method</span> <span class="ruby-value">? </span>(<span class="ruby-identifier">level</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span> <span class="ruby-operator">?</span> <span class="ruby-node">&quot;#{method}(*exp)&quot;</span> <span class="ruby-operator">:</span>
+                                  <span class="ruby-node">&quot;#{method}(*exp[#{level}..-1])&quot;</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">call_parent</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">empty?</span>
+            <span class="ruby-identifier">raise</span> <span class="ruby-value str">'Invalid dispatcher node'</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">method</span>
+            <span class="ruby-identifier">call_method</span>
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-identifier">code</span> = <span class="ruby-node">&quot;case(exp[#{level}])\n&quot;</span>
+            <span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">child</span><span class="ruby-operator">|</span>
+              <span class="ruby-identifier">code</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;when #{key.inspect}\n  &quot;</span> <span class="ruby-operator">&lt;&lt;</span>
+                <span class="ruby-identifier">child</span>.<span class="ruby-identifier">compile</span>(<span class="ruby-identifier">level</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">call_method</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">&quot;\n&quot;</span>, <span class="ruby-value str">&quot;\n  &quot;</span>) <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-identifier">code</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;else\n  &quot;</span> <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-identifier">call_method</span> <span class="ruby-operator">||</span> <span class="ruby-value str">'exp'</span>) <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\nend&quot;</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: Slim</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">Slim</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../files/lib/slim/logic_less/context_rb.html">
+                lib/slim/logic_less/context.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/logic_less/filter_rb.html">
+                lib/slim/logic_less/filter.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/code_attributes_rb.html">
+                lib/slim/code_attributes.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/command_rb.html">
+                lib/slim/command.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/control_structures_rb.html">
+                lib/slim/control_structures.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/embedded_engine_rb.html">
+                lib/slim/embedded_engine.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/end_inserter_rb.html">
+                lib/slim/end_inserter.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/engine_rb.html">
+                lib/slim/engine.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/filter_rb.html">
+                lib/slim/filter.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/grammar_rb.html">
+                lib/slim/grammar.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/interpolation_rb.html">
+                lib/slim/interpolation.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/parser_rb.html">
+                lib/slim/parser.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/splat_attributes_rb.html">
+                lib/slim/splat_attributes.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/template_rb.html">
+                lib/slim/template.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/translator_rb.html">
+                lib/slim/translator.rb
+                </a>
+        <br />
+                <a href="../files/lib/slim/version_rb.html">
+                lib/slim/version.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Module <a href="Slim/Grammar.html" class="link">Slim::Grammar</a><br />
+Class <a href="Slim/CodeAttributes.html" class="link">Slim::CodeAttributes</a><br />
+Class <a href="Slim/Command.html" class="link">Slim::Command</a><br />
+Class <a href="Slim/ControlStructures.html" class="link">Slim::ControlStructures</a><br />
+Class <a href="Slim/EmbeddedEngine.html" class="link">Slim::EmbeddedEngine</a><br />
+Class <a href="Slim/EndInserter.html" class="link">Slim::EndInserter</a><br />
+Class <a href="Slim/Engine.html" class="link">Slim::Engine</a><br />
+Class <a href="Slim/Filter.html" class="link">Slim::Filter</a><br />
+Class <a href="Slim/Interpolation.html" class="link">Slim::Interpolation</a><br />
+Class <a href="Slim/LogicLess.html" class="link">Slim::LogicLess</a><br />
+Class <a href="Slim/NewlineCollector.html" class="link">Slim::NewlineCollector</a><br />
+Class <a href="Slim/OutputProtector.html" class="link">Slim::OutputProtector</a><br />
+Class <a href="Slim/Parser.html" class="link">Slim::Parser</a><br />
+Class <a href="Slim/SplatAttributes.html" class="link">Slim::SplatAttributes</a><br />
+Class <a href="Slim/TextCollector.html" class="link">Slim::TextCollector</a><br />
+Class <a href="Slim/Translator.html" class="link">Slim::Translator</a><br />
+
+    </div>
+
+    <div id="constants-list">
+      <h3 class="section-bar">Constants</h3>
+
+      <div class="name-list">
+        <table summary="Constants">
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">Template</td>
+          <td>=</td>
+          <td class="context-item-value">Temple::Templates::Tilt(Slim::Engine, :register_as =&gt; :slim)</td>
+          <td width="3em">&nbsp;</td>
+          <td class="context-item-desc">
+Tilt template implementation for <a href="Slim.html">Slim</a> @api public
+
+</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">RailsTemplate</td>
+          <td>=</td>
+          <td class="context-item-value">Temple::Templates::Rails(Slim::Engine,                                              :register_as =&gt; :slim,                                              # Use rails-specific generator. This is necessary                                              # to support block capturing and streaming.                                              :generator =&gt; Temple::Generators::RailsOutputBuffer,                                              # Disable the internal slim capturing.                                              # Rails takes care of the capturing by itself.                                              :disable_capture =&gt; true,                                              :streaming =&gt; Object.const_defined?(:Fiber))</td>
+          <td width="3em">&nbsp;</td>
+          <td class="context-item-desc">
+Rails template implementation for <a href="Slim.html">Slim</a> @api public
+
+</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">VERSION</td>
+          <td>=</td>
+          <td class="context-item-value">'1.3.6'</td>
+          <td width="3em">&nbsp;</td>
+          <td class="context-item-desc">
+<a href="Slim.html">Slim</a> version string @api public
+
+</td>
+        </tr>
+        </table>
+      </div>
+    </div>
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
