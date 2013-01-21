@@ -17,7 +17,7 @@ module IronSharePoint
       monitor "Render #{self.class.name}" do
         begin
           unless self.page.nil?
-            ctrl = self.page.parse_control(self.ToHtml)
+            ctrl = self.page.parse_control(self.view.render)
             self.controls.add(ctrl)
           end
         rescue Exception => ex
