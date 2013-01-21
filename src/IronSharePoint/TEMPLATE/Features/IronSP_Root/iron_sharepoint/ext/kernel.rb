@@ -11,8 +11,4 @@ module Kernel
   def monitor name = "Unnamed", &blk
     using Microsoft::SharePoint::Utilities::SPMonitoredScope.new(name), &blk
   end
-
-  def self.autoload obj, file
-    require file
-  end
 end

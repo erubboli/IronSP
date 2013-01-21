@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: Slim::Parser#parse_ruby_code
-is_singleton: false
-name: parse_ruby_code
-params: (outer_delimiter)
-visibility: protected

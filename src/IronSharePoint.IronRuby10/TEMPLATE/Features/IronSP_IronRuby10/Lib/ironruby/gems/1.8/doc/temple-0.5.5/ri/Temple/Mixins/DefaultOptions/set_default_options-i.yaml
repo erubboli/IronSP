@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: Temple::Mixins::DefaultOptions#set_default_options
-is_singleton: false
-name: set_default_options
-params: (opts)
-visibility: public

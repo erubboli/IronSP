@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: Temple::Generator#call
-is_singleton: false
-name: call
-params: (exp)
-visibility: public

@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: Slim::Translator::StaticTranslator#on_static
-is_singleton: false
-name: on_static
-params: (text)
-visibility: public

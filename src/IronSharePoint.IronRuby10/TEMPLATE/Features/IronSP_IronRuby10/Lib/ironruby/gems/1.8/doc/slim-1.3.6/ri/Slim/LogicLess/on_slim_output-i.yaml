@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: Slim::LogicLess#on_slim_output
-is_singleton: false
-name: on_slim_output
-params: (escape, name, content)
-visibility: public

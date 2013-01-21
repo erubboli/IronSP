@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: IronSharePoint::Console::Utils#print_log
-is_singleton: false
-name: print_log
-params: (n = 10)
-visibility: public

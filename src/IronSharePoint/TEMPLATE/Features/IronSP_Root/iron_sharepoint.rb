@@ -1,4 +1,3 @@
-require 'iron_sharepoint/ext/kernel'
 require 'active_support'
 require 'log4r'
 require 'iron_sharepoint/ext/log4r/outputter/iron_logs_outputter'

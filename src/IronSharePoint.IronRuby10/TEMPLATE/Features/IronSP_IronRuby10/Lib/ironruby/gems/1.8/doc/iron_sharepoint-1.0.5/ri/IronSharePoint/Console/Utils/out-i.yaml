@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: IronSharePoint::Console::Utils#out
-is_singleton: false
-name: out
-params: (seperator = '\n', clear = true)
-visibility: public

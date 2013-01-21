@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: IronSharePoint::Variation::for_web
-is_singleton: true
-name: for_web
-params: (web)
-visibility: public

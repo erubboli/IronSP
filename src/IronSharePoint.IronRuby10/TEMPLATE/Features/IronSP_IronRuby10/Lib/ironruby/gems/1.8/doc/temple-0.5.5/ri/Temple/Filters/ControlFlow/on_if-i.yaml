@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: Temple::Filters::ControlFlow#on_if
-is_singleton: false
-name: on_if
-params: (condition, yes, no = nil)
-visibility: public

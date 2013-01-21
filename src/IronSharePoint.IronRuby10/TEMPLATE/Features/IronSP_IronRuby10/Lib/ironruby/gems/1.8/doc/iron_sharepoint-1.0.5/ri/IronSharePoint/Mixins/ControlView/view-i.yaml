@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: IronSharePoint::Mixins::ControlView#view
-is_singleton: false
-name: view
-params: ()
-visibility: public

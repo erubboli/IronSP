@@ -22,7 +22,7 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <ActiveDeploymentConfiguration>Default</ActiveDeploymentConfiguration>
+    <ActiveDeploymentConfiguration>Upgrade Solution %28CKSDev%29</ActiveDeploymentConfiguration>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -232,6 +232,7 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\logging.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\parent_attributes.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\type_registration.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\view_helpers.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\object.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\string.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\i18n\backend\base.rb" />
@@ -241,6 +242,14 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\sass_compiler.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\variation.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\version.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\view_helpers\date_helper.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\view_helpers\debug_helper.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\view_helpers\number_helper.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\view_helpers\raw_output_helper.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\view_helpers\sanitize_helper.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\view_helpers\tag_helper.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\view_helpers\text_helper.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\view_helpers\translation_helper.rb" />
     <None Include="TEMPLATE\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{c49100b2-651a-4d69-8bbe-bc1ad369b13a}</SharePointProjectItemId>
     </None>

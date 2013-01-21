@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: Temple::Engine#call_chain
-is_singleton: false
-name: call_chain
-params: ()
-visibility: protected

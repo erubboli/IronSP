@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: IronSharePoint::Mixins::ParentAttributes#has_attribute?
-is_singleton: false
-name: has_attribute?
-params: (attribute)
-visibility: public

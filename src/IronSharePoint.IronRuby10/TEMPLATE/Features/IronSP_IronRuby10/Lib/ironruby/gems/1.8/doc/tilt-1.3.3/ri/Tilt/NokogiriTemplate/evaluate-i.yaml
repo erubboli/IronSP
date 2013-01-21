@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: .gsub(/^<\?xml version=\"1\.0\"\?>\n?/, "") }
-comment: 
-full_name: Tilt::NokogiriTemplate#evaluate
-is_singleton: false
-name: evaluate
-params: (scope, locals, &block) {|.gsub(/^<\?xml version=\"1\.0\"\?>\n?/, "") }| ...}
-visibility: public

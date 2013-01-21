@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: 
-comment: 
-full_name: Slim::EmbeddedEngine::Engine#collect_newlines
-is_singleton: false
-name: collect_newlines
-params: (body)
-visibility: protected

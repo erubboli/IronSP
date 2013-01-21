@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription 
-aliases: []
-block_params: (k, self[k])
-comment: 
-full_name: Temple::ImmutableHash#each
-is_singleton: false
-name: each
-params: () {|k, self[k]| ...}
-visibility: public
