@@ -5,16 +5,25 @@ include IronSharePoint
 module I18n
   class << self
     def translate(*args)
-      options = args.pop if args.last.is_a?(Hash)
-      key     = args.shift
+      options  = args.last.is_a?(Hash) ? args.pop : {}
+      key      = args.shift
+      backend  = config.backend
       sp_locale = IronSharePoint::Variation.current.to_sym
-      locale  = (options && options.delete(:locale)) || sp_locale
-      raises  = options && options.delete(:raise)
-      config.backend.translate(locale, key, options || {})
-    rescue I18n::ArgumentError => exception
-      raise exception if raises
-      handle_exception(exception, locale, key, options)
+      locale   = options.delete(:locale) || sp_locale
+      handling = options.delete(:throw) && :throw || options.delete(:raise) && :raise # TODO deprecate :raise
+
+      raise I18n::ArgumentError if key.is_a?(String) && key.empty?
+
+      result = catch(:exception) do
+        if key.is_a?(Array)
+          key.map { |k| backend.translate(locale, k, options) }
+        else
+          backend.translate(locale, key, options)
+        end
+      end
+      result.is_a?(MissingTranslation) ? handle_exception(handling, result, locale, key, options) : result
     end
     alias :t :translate
   end
 end
+
