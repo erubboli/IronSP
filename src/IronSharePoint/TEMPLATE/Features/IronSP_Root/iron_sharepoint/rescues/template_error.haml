@@ -1,5 +1,5 @@
 .ironsp-error{:style => "display: inline-block; color: red; font-size: 10px;line-height: 110%;text-align: left;"}
-  %p= ex.message
+  %p&= message.to_s
   %ul
-    - ex.backtrace[0..2].each do |backtrace|
-      %li= backtrace
+    - backtrace[0..2].each do |backtrace|
+      %li&= backtrace

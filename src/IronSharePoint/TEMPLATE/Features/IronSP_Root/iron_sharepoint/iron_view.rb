@@ -38,12 +38,12 @@ module IronSharePoint
       unless compiled.nil?
         compiled.render self, @context
       else
-        compiled_template("template_not_found").render self
+        compiled_template("template_not_found.haml").render self
       end
     rescue Exception => ex
       logger.error ex if respond_to? :logger
       if (SPContext.current && SPContext.current.web.current_user)
-        compiled_template("template_error").render ex
+        compiled_template("template_error.haml").render :message => ex.message, :backtrace => ex.backtrace
       else
         ""
       end
@@ -63,7 +63,7 @@ module IronSharePoint
 
     def load_template template_name
       full_paths = self.class.template_paths.map do |template_path|
-        template.starts_with?(template_path) ? template_path : File.join(template_path, template_name)
+        template_name.starts_with?(template_path) ? template_name : File.join(template_path, template_name)
       end
       valid_path = full_paths.find do |full_path|
         File.exist? full_path
