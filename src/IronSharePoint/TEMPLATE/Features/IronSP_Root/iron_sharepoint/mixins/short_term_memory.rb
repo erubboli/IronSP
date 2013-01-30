@@ -39,51 +39,101 @@ module IronSharePoint::Mixins
       syms.each do |sym|
         (methods + private_methods + protected_methods).each do |m|
           if m.to_s =~ /^_unremembered_(#{sym.to_s.gsub(/\?\Z/, '\?')})/
-            cache_key = cache_key_for $1
-            invalidate cache_key
+            [true, false].each do |b|
+              cache_key = cache_key_for $1, b
+              invalidate cache_key
+            end
           end
         end
+      end
+    end
+
+    def cremember(*symbols)
+      symbols.each do |symbol|
+        original_method = :"_unremembered_#{symbol}"
+
+        instance_eval <<-EOS, __FILE__, __LINE__ + 1
+          if !methods.include?('#{original_method}')
+            alias #{original_method} #{symbol}
+
+            if method(:#{symbol}).arity == 0
+              def #{symbol}(reload = false)
+                cache_key = self.cache_key_for :#{symbol}, true
+                result = self.fetch cache_key
+                if reload || result.nil?
+                  result = #{original_method}
+                  self.store cache_key, result
+                end
+                return result
+              end
+            else
+              def #{symbol}(*args)
+                cache_key = self.cache_key_for :#{symbol}, true
+                args_length = method(:#{original_method}).arity
+                if args.length == args_length + 1 &&
+                  (args.last == true || args.last == :reload)
+                  reload = args.pop
+                end
+
+                result = self.fetch cache_key, args
+                if reload || result.nil?
+                  result = #{original_method}(*args)
+                  self.store cache_key, result, args
+                end
+                return result
+              end
+            end
+          end
+        EOS
       end
     end
 
     def remember(*symbols)
       symbols.each do |symbol|
         original_method = :"_unremembered_#{symbol}"
-        cache_key = cache_key_for symbol
 
         class_eval <<-EOS, __FILE__, __LINE__ + 1
-        if method_defined?(:#{original_method})
-          raise "Already remembered #{symbol}"
-        end
-        alias #{original_method} #{symbol}
+          if !method_defined?(:#{original_method})
+            alias #{original_method} #{symbol}
 
-        if instance_method(:#{symbol}).arity == 0
-          def #{symbol}(reload = false)
-            result = self.class.fetch '#{cache_key}'
-            if reload || result.nil?
-              result = #{original_method}
-              self.class.store '#{cache_key}', result
-            end
-            return result
-          end
-        else
-          def #{symbol}(*args)
-            args_length = method(:#{original_method}).arity
-            if args.length == args_length + 1 &&
-              (args.last == true || args.last == :reload)
-              reload = args.pop
-            end
+            if instance_method(:#{symbol}).arity == 0
+              def #{symbol}(reload = false)
+                cache_key = self.class.cache_key_for :#{symbol}, true
+                result = self.class.fetch cache_key
+                if reload || result.nil?
+                  result = #{original_method}
+                  self.class.store cache_key, result
+                end
+                return result
+              end
+            else
+              def #{symbol}(*args)
+                cache_key = self.class.cache_key_for :#{symbol}, true
+                args_length = method(:#{original_method}).arity
+                if args.length == args_length + 1 &&
+                  (args.last == true || args.last == :reload)
+                  reload = args.pop
+                end
 
-            result = self.class.fetch '#{cache_key}', args
-            if reload || result.nil?
-              result = #{original_method}(*args)
-              self.class.store '#{cache_key}', result, args
+                result = self.class.fetch cache_key, args
+                if reload || result.nil?
+                  result = #{original_method}(*args)
+                  self.class.store cache_key, result, args
+                end
+                return result
+              end
             end
-            return result
           end
-        end
-              EOS
+        EOS
       end
+    end
+
+    def cache_key_for symbol, instance = false
+      variation = IronSharePoint::Variation.current
+      class_name = self.is_a?(Module) ? self.name : self.class.name
+      seperator = instance ? "#" : "."
+
+      "#{variation}_#{class_name}#{seperator}#{symbol}"
     end
 
     def store key, data, args = []
@@ -121,13 +171,6 @@ module IronSharePoint::Mixins
 
     def must_cache?
       !cache_settings.fetch(:anonymous_only, true) || SPContext.current.web.current_user.nil?
-    end
-
-    def cache_key_for symbol
-      variation = IronSharePoint::Variation.current
-      class_name = self.is_a?(Class) ? self.name : self.class.name
-
-      "#{variation}_#{class_name}##{symbol}"
     end
 
     def http_cache

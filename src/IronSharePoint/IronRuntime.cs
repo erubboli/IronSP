@@ -186,40 +186,53 @@ end", ".rb", false);
 
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
         {
-            using (new SPMonitoredScope("Retrieving IronRuntime"))
+            const string RuntimeKey = "IronSP_Runtime";
+            IronRuntime runtime = null;
+            if (HttpContext.Current != null && HttpContext.Current.Items.Contains(RuntimeKey))
             {
-                Guid hiveId = IronHiveRegistry.Local.GetHiveForSite(targetSite.ID);
-                if (hiveId == Guid.Empty)
-                {
-                    throw new InvalidOperationException(
-                        String.Format("There is no IronHive mapping for the site with id {0}", targetSite.ID));
-                }
+                runtime = HttpContext.Current.Items[RuntimeKey] as IronRuntime;
+            }
 
-                IronRuntime runtime;
-                if (!LivingRuntimes.ContainsKey(hiveId))
+            if (runtime == null)
+            {
+                using (new SPMonitoredScope("Retrieving IronRuntime"))
                 {
-                    lock (_sync)
+                    Guid hiveId = IronHiveRegistry.Local.GetHiveForSite(targetSite.ID);
+                    if (hiveId == Guid.Empty)
                     {
-                        if (!LivingRuntimes.TryGetValue(hiveId, out runtime))
+                        throw new InvalidOperationException(
+                            String.Format("There is no IronHive mapping for the site with id {0}", targetSite.ID));
+                    }
+
+                    if (!LivingRuntimes.ContainsKey(hiveId))
+                    {
+                        lock (_sync)
                         {
-                            using (new SPMonitoredScope("Creating IronRuntime"))
+                            if (!LivingRuntimes.TryGetValue(hiveId, out runtime))
                             {
-                                runtime = new IronRuntime(hiveId);
-                                LivingRuntimes[hiveId] = runtime;
-                                runtime.Initialize();
+                                using (new SPMonitoredScope("Creating IronRuntime"))
+                                {
+                                    runtime = new IronRuntime(hiveId);
+                                    LivingRuntimes[hiveId] = runtime;
+                                    runtime.Initialize();
+                                }
                             }
                         }
                     }
+                    runtime = LivingRuntimes[hiveId];
+                    if (HttpContext.Current != null)
+                    {
+                        HttpContext.Current.Items[RuntimeKey] = runtime;
+                    }
                 }
-                runtime = LivingRuntimes[hiveId];
-
-                if (!runtime.IsInitialized)
-                {
-                    ShowUnavailable();
-                }
-
-                return runtime;
             }
+
+            if (!runtime.IsInitialized)
+            {
+                ShowUnavailable();
+            }
+
+            return runtime;
         }
 
         public IronEngine GetEngineByExtension(string extension)

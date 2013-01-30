@@ -62,3 +62,6 @@ module IronSharePoint
     end
   end
 end
+
+include IronSharePoint::Console::Utils
+puts self

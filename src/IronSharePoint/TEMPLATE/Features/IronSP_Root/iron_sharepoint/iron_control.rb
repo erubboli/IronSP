@@ -17,6 +17,7 @@ module IronSharePoint
 
     def Render(writer)
       monitor "Render #{self.class.name}" do
+        self.view.context = view_context
         writer.Write self.view.render
       end
     end

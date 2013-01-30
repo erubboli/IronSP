@@ -42,7 +42,6 @@ module IronSharePoint::Mixins
     def view
       @view ||= IronSharePoint::IronView.new({
         :template => template,
-        :context => view_context,
         :parent => self
       })
     end

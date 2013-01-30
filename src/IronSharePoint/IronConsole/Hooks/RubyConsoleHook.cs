@@ -9,6 +9,7 @@ namespace IronSharePoint.IronConsole.Hooks
         public override void BeforeExecute(ScriptEngine scriptEngine, IronConsoleResult result)
         {
             base.BeforeExecute(scriptEngine, result);
+            /*
             scriptEngine.Execute(
                 @"
                     unless respond_to? :out
@@ -18,12 +19,13 @@ namespace IronSharePoint.IronConsole.Hooks
 #raise 'Could not load console utils'
                       end
                     end");
+            */
         }
 
         public override void AfterExecute(ScriptEngine scriptEngine, IronConsoleResult result)
         {
             base.AfterExecute(scriptEngine, result);
-            var consoleOut = scriptEngine.Execute(String.Format("out '{0}'", Environment.NewLine));
+            var consoleOut = scriptEngine.Execute(String.Format("out '{0}' if respond_to? :out", Environment.NewLine));
             result.Output = Convert.ToString(consoleOut);
             result.Result = result.Result ?? "nil";
         }

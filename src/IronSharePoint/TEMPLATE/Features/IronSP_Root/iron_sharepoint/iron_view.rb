@@ -43,7 +43,7 @@ module IronSharePoint
     rescue Exception => ex
       logger.error ex if respond_to? :logger
       if (SPContext.current && SPContext.current.web.current_user)
-        compiled_template("template_error.haml").render :message => ex.message, :backtrace => ex.backtrace
+        compiled_template("template_error.haml").render(self, {:message => ex.message, :backtrace => ex.backtrace})
       else
         ""
       end

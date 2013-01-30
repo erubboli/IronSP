@@ -231,6 +231,8 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\control_view.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\logging.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\parent_attributes.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\short_term_memory.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\sp_context_accessors.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\type_registration.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\view_helpers.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\object.rb" />

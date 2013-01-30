@@ -1,4 +1,5 @@
 require 'iron_sharepoint/patches/core/string'
+require 'i18n/backend/base'
 
 module I18n
   module Backend
