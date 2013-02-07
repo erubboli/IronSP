@@ -237,8 +237,10 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\view_helpers.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\object.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\string.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\haml.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\i18n\backend\base.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\i18n\i18n.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\log4r\logger.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\rescues\template_error.haml" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\rescues\template_not_found.haml" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\sass_compiler.rb" />
