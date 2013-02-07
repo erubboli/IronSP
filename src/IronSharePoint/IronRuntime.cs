@@ -10,6 +10,7 @@ using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint.Utilities;
+using System.Linq;
 
 namespace IronSharePoint
 {
@@ -25,6 +26,7 @@ namespace IronSharePoint
         private IronConsole.IronConsole _console;
         private bool _isInitialized;
         private ScriptRuntime _scriptRuntime;
+        private IList<Guid> _authenticatedSites;
 
         private IronRuntime(Guid hiveId)
         {
@@ -33,6 +35,7 @@ namespace IronSharePoint
             DynamicTypeRegistry = new Dictionary<string, Object>();
             DynamicFunctionRegistry = new Dictionary<string, Object>();
             Engines = new Dictionary<string, IronEngine>();
+            _authenticatedSites = new List<Guid>();
         }
 
         internal static Dictionary<Guid, IronRuntime> LivingRuntimes
@@ -187,52 +190,90 @@ end", ".rb", false);
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
         {
             const string RuntimeKey = "IronSP_Runtime";
-            IronRuntime runtime = null;
-            if (HttpContext.Current != null && HttpContext.Current.Items.Contains(RuntimeKey))
+            using (new SPMonitoredScope("Retrieving IronRuntime"))
             {
-                runtime = HttpContext.Current.Items[RuntimeKey] as IronRuntime;
-            }
+                var runtime = TryGetFromAuthenticated(targetSite);
+                runtime = TryGetFromHttpContext(RuntimeKey, runtime);
 
-            if (runtime == null)
-            {
-                using (new SPMonitoredScope("Retrieving IronRuntime"))
+                if (runtime == null)
                 {
-                    Guid hiveId = IronHiveRegistry.Local.GetHiveForSite(targetSite.ID);
-                    if (hiveId == Guid.Empty)
+                    using (new SPMonitoredScope("Checking IronHiveRegistry"))
                     {
-                        throw new InvalidOperationException(
-                            String.Format("There is no IronHive mapping for the site with id {0}", targetSite.ID));
-                    }
-
-                    if (!LivingRuntimes.ContainsKey(hiveId))
-                    {
-                        lock (_sync)
+                        Guid hiveId = IronHiveRegistry.Local.GetHiveForSite(targetSite.ID);
+                        if (hiveId == Guid.Empty)
                         {
-                            if (!LivingRuntimes.TryGetValue(hiveId, out runtime))
+                            throw new InvalidOperationException(
+                                String.Format("There is no IronHive mapping for the site with id {0}", targetSite.ID));
+                        }
+
+                        if (!LivingRuntimes.ContainsKey(hiveId))
+                        {
+                            lock (_sync)
                             {
-                                using (new SPMonitoredScope("Creating IronRuntime"))
+                                if (!LivingRuntimes.TryGetValue(hiveId, out runtime))
                                 {
-                                    runtime = new IronRuntime(hiveId);
-                                    LivingRuntimes[hiveId] = runtime;
-                                    runtime.Initialize();
+                                    using (new SPMonitoredScope("Creating IronRuntime"))
+                                    {
+                                        runtime = new IronRuntime(hiveId);
+                                        runtime.Authenticate(targetSite.ID);
+                                        LivingRuntimes[hiveId] = runtime;
+                                        runtime.Initialize();
+                                    }
                                 }
                             }
                         }
-                    }
-                    runtime = LivingRuntimes[hiveId];
-                    if (HttpContext.Current != null)
-                    {
-                        HttpContext.Current.Items[RuntimeKey] = runtime;
+
+                        runtime = LivingRuntimes[hiveId];
+                        if (HttpContext.Current != null)
+                        {
+                            HttpContext.Current.Items[RuntimeKey] = runtime;
+                        }
                     }
                 }
-            }
 
-            if (!runtime.IsInitialized)
+
+                if (!runtime.IsInitialized)
+                {
+                    ShowUnavailable();
+                }
+
+                return runtime;
+            }
+        }
+
+        private static IronRuntime TryGetFromHttpContext(string RuntimeKey, IronRuntime runtime)
+        {
+            if (HttpContext.Current != null)
             {
-                ShowUnavailable();
+                if (runtime != null)
+                {
+                    HttpContext.Current.Items[RuntimeKey] = runtime;
+                }
+                else if (HttpContext.Current.Items.Contains(RuntimeKey))
+                {
+                    runtime = HttpContext.Current.Items[RuntimeKey] as IronRuntime;
+                }
             }
-
             return runtime;
+        }
+
+        private static IronRuntime TryGetFromAuthenticated(SPSite targetSite)
+        {
+            IronRuntime runtime = LivingRuntimes.Values.FirstOrDefault(x => x.IsAuthenticated(targetSite.ID));
+            return runtime;
+        }
+
+        private void Authenticate(Guid targetSite)
+        {
+            if (!_authenticatedSites.Contains(targetSite))
+            {
+                _authenticatedSites.Add(targetSite);
+            }
+        }
+
+        private bool IsAuthenticated(Guid targetSite)
+        {
+            return _authenticatedSites.Contains(targetSite);
         }
 
         public IronEngine GetEngineByExtension(string extension)
