@@ -58,7 +58,7 @@ module IronSharePoint::Mixins
 
             if method(:#{symbol}).arity == 0
               def #{symbol}(reload = false)
-                cache_key = self.cache_key_for :#{symbol}, true
+                cache_key = self.cache_key_for :#{symbol}
                 result = self.fetch cache_key
                 if reload || result.nil?
                   result = #{original_method}
@@ -68,7 +68,7 @@ module IronSharePoint::Mixins
               end
             else
               def #{symbol}(*args)
-                cache_key = self.cache_key_for :#{symbol}, true
+                cache_key = self.cache_key_for :#{symbol}
                 args_length = method(:#{original_method}).arity
                 if args.length == args_length + 1 &&
                   (args.last == true || args.last == :reload)
@@ -98,7 +98,7 @@ module IronSharePoint::Mixins
 
             if instance_method(:#{symbol}).arity == 0
               def #{symbol}(reload = false)
-                cache_key = self.class.cache_key_for :#{symbol}, true
+                cache_key = self.class.cache_key_for :#{symbol}
                 result = self.class.fetch cache_key
                 if reload || result.nil?
                   result = #{original_method}
@@ -108,7 +108,7 @@ module IronSharePoint::Mixins
               end
             else
               def #{symbol}(*args)
-                cache_key = self.class.cache_key_for :#{symbol}, true
+                cache_key = self.class.cache_key_for :#{symbol}
                 args_length = method(:#{original_method}).arity
                 if args.length == args_length + 1 &&
                   (args.last == true || args.last == :reload)
@@ -128,15 +128,27 @@ module IronSharePoint::Mixins
       end
     end
 
-    def cache_key_for symbol, instance = false
-      variation = IronSharePoint::Variation.current
-      class_name = self.is_a?(Module) ? self.name : self.class.name
-      seperator = instance ? "#" : "."
+    def cache_key_for symbol
+      if symbol.is_a? Symbol
+        variation = IronSharePoint::Variation.current
+        if self.is_a? Module
+          class_name = self.name
+          seperator = (self.method_defined? symbol) ? "." : "#"
+        else
+          class_name = self.class.name
+          seperator = (self.respond_to? symbol) ? "." : "#"
+        end
 
-      "#{variation}_#{class_name}#{seperator}#{symbol}"
+        "#{variation}_#{class_name}#{seperator}#{symbol}"
+      else
+        symbol
+      end
     end
 
     def store key, data, args = []
+      return if data.nil?
+
+      key = cache_key_for key
       if http_cache
         hash = http_cache[key] || {}
         hash[args] = data
@@ -150,21 +162,39 @@ module IronSharePoint::Mixins
         http_context.items[key] = hash
         logger.debug "Remembered #{key} in HttpContext"
       end
+      key
     end
 
     def fetch key, args = []
+      key = cache_key_for key
       if http_cache
-        (http_cache[key] || {})[args]
+        if is_invalidated? key
+          http_cache.remove key
+          invalidated_keys.delete key
+          logger.debug "Cleared cache for #{key}"
+          nil
+        else
+          (http_cache[key] || {})[args]
+        end
       elsif http_context
         (http_context.items[key] || {})[args]
       end
     end
 
     def invalidate key
-      if http_cache
-        http_cache.remove key
-        logger.debug "Invalidated #{key} in HttpCache"
-      end
+      key = cache_key_for key
+      invalidated_keys.add key
+      logger.debug "Invalidated #{key} in HttpCache"
+      key
+    end
+
+    def invalidated_keys
+      @invalidated_keys ||= Set.new
+    end
+
+    def is_invalidated? key
+      key = cache_key_for key
+      invalidated_keys.include? key
     end
 
     protected
