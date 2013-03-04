@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="74423412-ff3e-4be5-a6bc-162a06ba57ff" solutionId="74423412-ff3e-4be5-a6bc-162a06ba57ff" resetWebServer="false" sharePointProductVersion="15.0" name="IronSharePoint.IronRuby" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <assemblies>
+    <customAssembly location="IronRuby.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\IronRuby.dll" />
+    <customAssembly location="IronRuby.Libraries.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\IronRuby.Libraries.dll" />
+    <customAssembly location="IronRuby.Libraries.Yaml.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\IronRuby.Libraries.Yaml.dll" />
+  </assemblies>
+  <features>
+    <featureReference itemId="66c62891-ee50-4239-adbd-6894482d7569" />
+  </features>
+  <projectItems>
+    <projectItemReference itemId="444520d2-2448-461c-b72c-849e2bd93ba7" />
+  </projectItems>
+</package>
