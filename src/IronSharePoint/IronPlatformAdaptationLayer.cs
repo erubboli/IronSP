@@ -30,34 +30,6 @@ namespace IronSharePoint
                  */
                 return entries;//.Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x).ToArray();
             }
-
-        }
-        public override string[] GetFiles(string path, string searchPattern)
-        {
-            var dirs = new List<String>();
-            if (base.DirectoryExists(path))
-            {
-                dirs.AddRange(base.GetFiles(path, searchPattern));
-            }
-            else if (_ironHive.ContainsDirectory(path))
-            {
-                dirs.AddRange(_ironHive.GetFiles(path, searchPattern).Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x));
-            }
-            return dirs.ToArray();
-        }
-
-        public override string[] GetDirectories(string path, string searchPattern)
-        {
-            var dirs = new List<String>();
-            if (base.DirectoryExists(path))
-            {
-                dirs.AddRange(base.GetDirectories(path, searchPattern));
-            }
-            else if (_ironHive.ContainsDirectory(path))
-            {
-                dirs.AddRange(_ironHive.GetDirectories(path, searchPattern).Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x));
-            }
-            return dirs.ToArray();
         }
 
         public override bool DirectoryExists(string path)
