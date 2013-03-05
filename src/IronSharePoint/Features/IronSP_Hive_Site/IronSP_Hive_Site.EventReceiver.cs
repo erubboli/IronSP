@@ -24,28 +24,28 @@ namespace IronSharePoint.Features.IronSP_Hive_Site
 
         public override void FeatureActivated(SPFeatureReceiverProperties properties)
         {
-            var site = properties.Feature.Parent as SPSite;
-            var web = site.RootWeb;
-            var list = web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronHiveListPath);
+            //var site = properties.Feature.Parent as SPSite;
+            //var web = site.RootWeb;
+            //var list = web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronHiveListPath);
             
-            string assembly = typeof(IronHiveEventReceiver).Assembly.FullName;
-            string type = typeof(IronHiveEventReceiver).FullName;
+            //string assembly = typeof(IronHiveEventReceiver).Assembly.FullName;
+            //string type = typeof(IronHiveEventReceiver).FullName;
 
-            list.EventReceivers.Add(SPEventReceiverType.ItemAdded, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemUpdated, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemDeleted, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemFileMoved, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemCheckedIn, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemAdding, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemUpdating, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemDeleting, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemFileMoving, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemCheckingIn, assembly, type);
-            list.EventReceivers.Add(SPEventReceiverType.ItemCheckingOut, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemAdded, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemUpdated, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemDeleted, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemFileMoved, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemCheckedIn, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemAdding, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemUpdating, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemDeleting, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemFileMoving, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemCheckingIn, assembly, type);
+            //list.EventReceivers.Add(SPEventReceiverType.ItemCheckingOut, assembly, type);
 
-            list.Update();
+            //list.Update();
 
-            AddTimerJobs(site.WebApplication);
+            //AddTimerJobs(site.WebApplication);
         }
 
 
