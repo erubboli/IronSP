@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Administration\IronHiveRegistry.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
+    <Compile Include="IIronHive.cs" />
     <Compile Include="IronConsole\Hooks\IIronConsoleHook.cs" />
     <Compile Include="IronConsole\Hooks\IronConsoleHookBase.cs" />
     <Compile Include="IronConsole\Hooks\RubyConsoleHook.cs" />
