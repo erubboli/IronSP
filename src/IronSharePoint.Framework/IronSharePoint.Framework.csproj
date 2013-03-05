@@ -98,6 +98,7 @@
     <Compile Include="Administration\IronHiveRegistry.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
     <Compile Include="Hives\OrderedHiveList.cs" />
+    <Compile Include="Hives\PhysicalHive.cs" />
     <Compile Include="IHive.cs" />
     <Compile Include="IronConsole\Hooks\IIronConsoleHook.cs" />
     <Compile Include="IronConsole\Hooks\IronConsoleHookBase.cs" />
