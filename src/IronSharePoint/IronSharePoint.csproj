@@ -92,6 +92,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Program Files\Common Files\microsoft shared\Web Server Extensions\15\ISAPI\Microsoft.SharePoint.Security.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -193,9 +197,6 @@
     </None>
     <None Include="Lists\IronLogs\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{8d33b9b0-7a01-4eb4-93be-57e5ae318020}</SharePointProjectItemId>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
     </None>
     <None Include="Package\Package.package">
       <PackageId>{aacb7026-8941-4faa-b4bb-04562e317e53}</PackageId>
