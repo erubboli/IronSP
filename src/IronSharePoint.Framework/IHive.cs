@@ -33,7 +33,7 @@ namespace IronSharePoint.Framework
         /// </summary>
         /// <param name="path"></param>
         /// <returns>A stream of the file with read permissions</returns>
-        Stream OpenOutputFileSteam(string path);
+        Stream OpenOutputFileStream(string path);
 
         /// <summary>
         /// Transforms a relative path of the virtual folder to a full path
