@@ -92,9 +92,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Program Files\Common Files\microsoft shared\Web Server Extensions\15\ISAPI\Microsoft.SharePoint.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\packages\Newtonsoft.Json.4.5.9\lib\net35\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -118,8 +115,6 @@
     <Compile Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.EventReceiver.cs">
       <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
     </Compile>
-    <Compile Include="IronJob.cs" />
-    <Compile Include="IronCompositeControl.cs" />
     <Compile Include="EventReceivers\IronScriptCompilerReceiver.cs" />
     <Compile Include="Features\IronSP_Farm\IronSP_Farm.EventReceiver.cs">
       <DependentUpon>IronSP_Farm.feature</DependentUpon>
@@ -127,14 +122,6 @@
     <Compile Include="Features\IronSP_WebApp\IronSP_WebApp.EventReceiver.cs">
       <DependentUpon>IronSP_WebApp.feature</DependentUpon>
     </Compile>
-    <Compile Include="IIronControl.cs" />
-    <Compile Include="IIronDataStore.cs" />
-    <Compile Include="IronConsole\Hooks\IIronConsoleHook.cs" />
-    <Compile Include="IronConsole\IronConsole.cs" />
-    <Compile Include="IronConsole\Hooks\IronConsoleHookBase.cs" />
-    <Compile Include="IronConsole\IronConsoleTask.cs" />
-    <Compile Include="IronConsole\IronConsoleWebPart.cs" />
-    <Compile Include="IronConsole\IronConsoleResult.cs" />
     <Compile Include="IronConsole\IronConsoleUserControl.ascx.cs">
       <DependentUpon>IronConsoleUserControl.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -142,31 +129,7 @@
     <Compile Include="IronConsole\IronConsoleUserControl.ascx.designer.cs">
       <DependentUpon>IronConsoleUserControl.ascx.cs</DependentUpon>
     </Compile>
-    <Compile Include="IronConsole\Hooks\RubyConsoleHook.cs" />
-    <Compile Include="IronConstant.cs" />
-    <Compile Include="IronContentTypeId.cs" />
-    <Compile Include="IronDebug.cs" />
-    <Compile Include="IronEnvironment.cs" />
-    <Compile Include="IronHttpHandler.cs" />
-    <Compile Include="IronLog\IronLogger.cs" />
-    <Compile Include="IronLog\IronLogWorkItemJobDefinition.cs" />
-    <Compile Include="IronLog\LogLevel.cs" />
-    <Compile Include="IronWrapperControl.cs" />
-    <Compile Include="Diagnostics\IronDiagnosticService.cs" />
-    <Compile Include="IronControl.cs" />
-    <Compile Include="IronEngine.cs" />
-    <Compile Include="IronExpressionBuilder.cs" />
-    <Compile Include="IronField.cs" />
-    <Compile Include="Administration\IronHiveRegistry.cs" />
-    <Compile Include="IronHelper.cs" />
-    <Compile Include="IronHive.cs" />
-    <Compile Include="IronHttpModule.cs" />
     <Compile Include="IronPart\IronPart.cs" />
-    <Compile Include="IronPlatformAdaptationLayer.cs" />
-    <Compile Include="IronRuntime.cs" />
-    <Compile Include="IronWrapperUserControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Layouts\IronSP\IronEditor.aspx.cs">
       <DependentUpon>IronEditor.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -178,8 +141,6 @@
       <DependentUpon>IronConsoleService.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\BlockingQueue.cs" />
-    <Compile Include="Util\IBlockingQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -386,6 +347,13 @@
     <Content Include="Lists\IronHive\Schema.xml" />
     <Content Include="Lists\IronHive\Upload.aspx" />
     <Content Include="Lists\IronLogs\Elements.xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\IronSharePoint.Framework\IronSharePoint.Framework.csproj">
+      <Project>{73e78e79-90f3-4859-9ddf-2e33a92b65a1}</Project>
+      <Name>IronSharePoint.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

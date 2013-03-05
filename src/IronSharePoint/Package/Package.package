@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="aacb7026-8941-4faa-b4bb-04562e317e53" solutionId="aacb7026-8941-4faa-b4bb-04562e317e53" resetWebServer="false" name="IronSharePoint" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
   <assemblies>
-    <customAssembly location="Newtonsoft.Json.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\packages\Newtonsoft.Json.4.5.9\lib\net35\Newtonsoft.Json.dll" />
     <customAssembly location="Microsoft.Dynamic.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\Microsoft.Dynamic.dll" />
     <customAssembly location="Microsoft.Scripting.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\Microsoft.Scripting.dll" />
     <customAssembly location="Microsoft.Scripting.Metadata.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\Microsoft.Scripting.Metadata.dll" />
+    <projectOutputAssembly location="IronSharePoint.Framework.dll" deploymentTarget="GlobalAssemblyCache" projectPath="..\IronSharePoint.Framework\IronSharePoint.Framework.csproj" />
+    <customAssembly location="Newtonsoft.Json.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\packages\Newtonsoft.Json.4.5.9\lib\net40\Newtonsoft.Json.dll" />
   </assemblies>
   <features>
     <featureReference itemId="02961df1-c0a7-44bf-8545-5a24466136f9" />
