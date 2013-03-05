@@ -118,7 +118,7 @@ namespace IronSharePoint
 
                         var setup = new ScriptRuntimeSetup();
                         var languageSetup = new LanguageSetup(
-                            "IronRuby.Runtime.RubyContext, IronRuby, Version=1.0.0.1, Culture=neutral, PublicKeyToken=baeaf26a6e0611a7",
+                            "IronRuby.Runtime.RubyContext, IronRuby, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1",
                             IronConstant.IronRubyLanguageName,
                             new[] {"IronRuby", "Ruby", "rb"},
                             new[] {".rb"});
@@ -135,15 +135,15 @@ namespace IronSharePoint
 
                         using (new SPMonitoredScope("Creating IronEngine(s)"))
                         {
-                            string ironRubyRoot = Path.Combine(IronHive.FeatureFolderPath, "IronSP_IronRuby10\\");
+                            string ironRubyRoot = Path.Combine(IronHive.FeatureFolderPath, "IronSP_IronRuby\\");
                             SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
 
                             ScriptEngine rubyEngine = _scriptRuntime.GetEngineByFileExtension(".rb");
                             rubyEngine.SetSearchPaths(new List<String>
                                                           {
-                                                              Path.Combine(ironRubyRoot, @"Lib\IronRuby"),
-                                                              Path.Combine(ironRubyRoot, @"Lib\ruby\site_ruby\1.8"),
-                                                              Path.Combine(ironRubyRoot, @"Lib\ruby\1.8"),
+                                                              Path.Combine(ironRubyRoot, @"ironruby"),
+                                                              Path.Combine(ironRubyRoot, @"ruby\site_ruby\1.9.1"),
+                                                              Path.Combine(ironRubyRoot, @"ruby\1.9.1"),
                                                               IronHive.CurrentDir
                                                           });
 
@@ -162,7 +162,7 @@ Dir.chdir RAILS_ROOT
 require 'rubygems'
 
 begin
-    load_assembly 'Microsoft.SharePoint.Publishing, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'
+    load_assembly 'Microsoft.SharePoint.Publishing, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'
     require './iron_sharepoint'
     require 'application'
 rescue Exception => ex
