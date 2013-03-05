@@ -8,7 +8,7 @@ namespace IronSharePoint
     public static class IronConstant
     {
         public const string IronHiveRoot = "IronHive://";
-        public const string IronHiveListPath = "_catalogs/IronHive";
+        public const string HiveLibraryPath = "_catalogs/IronHive";
         public const string IronLogsListPath = "Lists/IronLogs";
         public const string IronSiteFeatureId = "a1752f91-1403-40c1-a257-69eddf8976cf";
         public const string IronHiveSiteFeatureId = "354ee774-7d04-4ad6-91f9-1bc433a70bee";

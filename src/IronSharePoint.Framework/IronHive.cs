@@ -73,7 +73,7 @@ namespace IronSharePoint
         {
             get
             {
-                return Web.GetFolder(IronConstant.IronHiveListPath);
+                return Web.GetFolder(IronConstant.HiveLibraryPath);
             }
         }
 
@@ -168,7 +168,7 @@ namespace IronSharePoint
                             {
                                 var fileRef = item["FileRef"].ToString();
                                 var siteRelative = fileRef.Replace((Web.ServerRelativeUrl + "/"), String.Empty);
-                                var hiveRelative = siteRelative.Replace(IronConstant.IronHiveListPath + "/",
+                                var hiveRelative = siteRelative.Replace(IronConstant.HiveLibraryPath + "/",
                                                                         string.Empty);
 
                                 files.Add(hiveRelative);
@@ -267,9 +267,9 @@ namespace IronSharePoint
             {
                 file = file.Replace(IronConstant.IronHiveRoot, string.Empty);
             }
-            else if (file.StartsWith(IronConstant.IronHiveListPath + "/"))
+            else if (file.StartsWith(IronConstant.HiveLibraryPath + "/"))
             {
-                file = file.Replace(IronConstant.IronHiveListPath + "/", string.Empty);
+                file = file.Replace(IronConstant.HiveLibraryPath + "/", string.Empty);
             }
             else if (file.StartsWith("."))
             {
