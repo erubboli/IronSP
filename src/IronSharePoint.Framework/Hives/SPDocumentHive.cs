@@ -70,6 +70,26 @@ namespace IronSharePoint.Framework.Hives
             return string.Format("{0}/{1}/{2}", _webUrl, _hiveLibraryPath, path);
         }
 
+        public bool IsAbsolutePath(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string CombinePath(string path1, string path2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string[] GetFiles(string path, string searchPattern)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetDirectories(string path, string searchPattern)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Reset()
         {
             var allFilesQuery = new SPQuery();

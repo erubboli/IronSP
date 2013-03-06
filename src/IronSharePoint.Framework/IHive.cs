@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace IronSharePoint.Framework
 {
@@ -41,5 +42,36 @@ namespace IronSharePoint.Framework
         /// <param name="path"></param>
         /// <returns>The full path</returns>
         string GetFullPath(string path);
+
+        /// <summary>
+        /// Checks if a path is an absolute path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        bool IsAbsolutePath(string path);
+
+        /// <summary>
+        /// Combines <paramref name="path1"/> and <paramref name="path2"/> to a single path
+        /// </summary>
+        /// <param name="path1"></param>
+        /// <param name="path2"></param>
+        /// <returns></returns>
+        string CombinePath(string path1, string path2);
+
+        /// <summary>
+        /// Returns all files in <paramref name="path"/> matching the <paramref name="searchPattern"/>
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="searchPattern"></param>
+        /// <returns></returns>
+        string[] GetFiles(string path, string searchPattern);
+
+        /// <summary>
+        /// Returns all directories in <paramref name="path"/> matching the <paramref name="searchPattern"/>
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="searchPattern"></param>
+        /// <returns></returns>
+        IEnumerable<string> GetDirectories(string path, string searchPattern);
     }
 }

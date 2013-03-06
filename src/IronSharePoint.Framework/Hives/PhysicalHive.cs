@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 
@@ -57,6 +58,26 @@ namespace IronSharePoint.Framework.Hives
         public string GetFullPath(string path)
         {
             return Path.IsPathRooted(path) ? path : Path.Combine(Root, path);
+        }
+
+        public bool IsAbsolutePath(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string CombinePath(string path1, string path2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string[] GetFiles(string path, string searchPattern)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetDirectories(string path, string searchPattern)
+        {
+            throw new NotImplementedException();
         }
     }
 }

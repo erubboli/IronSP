@@ -69,6 +69,26 @@ namespace IronSharePoint.Framework.Hives
             return handler.GetFullPath(path);
         }
 
+        public bool IsAbsolutePath(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string CombinePath(string path1, string path2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string[] GetFiles(string path, string searchPattern)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetDirectories(string path, string searchPattern)
+        {
+            throw new NotImplementedException();
+        }
+
         IHive FindHandler(string path)
         {
             Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(path), "path cannot be null or blank");
