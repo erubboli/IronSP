@@ -201,9 +201,7 @@ namespace IronSharePoint.Framework.Test.Hive
         {
             Sut = new PhysicalHive(_assetsRoot);
 
-            Sut = new PhysicalHive(_assetsRoot);
-
-            Sut.GetFiles(".", "*.txt").Should().Contain("lorem.txt");
+            Sut.GetFiles(".", "*").Should().Contain("lorem.txt");
         }
 
         [Test]
@@ -211,7 +209,31 @@ namespace IronSharePoint.Framework.Test.Hive
         {
             Sut = new PhysicalHive(_assetsRoot);
 
-            Sut.GetFiles(".", "*.txt").Should().NotContain("bar");
+            Sut.GetFiles(".", "*").Should().NotContain("bar");
+        }
+
+        [Test]
+        public void GetDirectories_AbsolutePaths()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Sut.GetDirectories(".", "*", true).Should().Contain(Path.Combine(_assetsRoot, "foo"));
+        }
+
+        [Test]
+        public void GetDirectories_OnRoot_ContainsDirectory()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Sut.GetDirectories(".", "*").Should().Contain("foo");
+        }
+
+        [Test]
+        public void GetDirectories_OnRoot_DoesNotContainFile()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Sut.GetDirectories(".", "*").Should().NotContain("lorem.txt");
         }
     }
 }

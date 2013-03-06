@@ -57,7 +57,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Prepend_ArgumentNullException()
+        public void Prepend_WithNull_ThrowsArgumentNullException()
         {
             Sut = new OrderedHiveList();
 
@@ -76,7 +76,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof (ArgumentNullException))]
-        public void Append_ArgumentNullException()
+        public void Append_WithNull_ThrowsArgumentNullException()
         {
             Sut = new OrderedHiveList();
 
@@ -84,7 +84,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void FileExists_ReturnsFalse_NoHiveReturnsTrue()
+        public void FileExists_WhenNotInAnyHive_ReturnsFalse()
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
@@ -95,7 +95,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void FileExists_ReturnsTrue_AnyHiveReturnsTrue()
+        public void FileExists_WhenInAnyHive_ReturnsTrue()
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(true);
@@ -106,7 +106,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void DirectoryExists_ReturnsFalse_NoHiveReturnsTrue()
+        public void DirectoryExists_WhenNotInAnyHive_ReturnsFalse()
         {
             var path = "foo";
             _hiveMock1.Setup(x => x.DirectoryExists(path)).Returns(false);
@@ -117,7 +117,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void DirectoryExists_ReturnsTrue_AnyHiveReturnsTrue()
+        public void DirectoryExists_WhenInAnyHive_ReturnsTrue()
         {
             var path = "foo";
             _hiveMock1.Setup(x => x.DirectoryExists(path)).Returns(false);
@@ -129,7 +129,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof(FileNotFoundException))]
-        public void GetFullPath_FileNotFound()
+        public void GetFullPath_WhenPathNotInAnyHive_ThrowsFileNotFound()
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
@@ -140,7 +140,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public void GetFullPath_ArgumentException()
+        public void GetFullPath_WhenPathBlank_ThrowsArgumentException()
         {
             var path = "   ";
             Sut = new OrderedHiveList();
@@ -166,7 +166,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof(FileNotFoundException))]
-        public void OpenInputFileStream_FileNotFound()
+        public void OpenInputFileStream_WhenNotInAnyPath_ThrowsFileNotFound()
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
@@ -177,7 +177,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public void OpenInputFileStream_ArgumentException()
+        public void OpenInputFileStream_WhenPathIsBlank_ThrowsArgumentException()
         {
             var path = "   ";
             Sut = new OrderedHiveList();
@@ -204,7 +204,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof(FileNotFoundException))]
-        public void OpenOutputFileStream_FileNotFound()
+        public void OpenOutputFileStream_WhenNotInAnyPath_ThrowsFileNotFound()
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
@@ -215,7 +215,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public void OpenOutputFileStream_ArgumentException()
+        public void OpenOutputFileStream_WhenPathIsBlank_ThrowsArgumentException()
         {
             var path = "   ";
             Sut = new OrderedHiveList();
@@ -238,6 +238,55 @@ namespace IronSharePoint.Framework.Test.Hive
 
                 _hiveMock1.VerifyAll();
             }
+        }
+
+        [Test]
+        public void IsAbsolutePath_WhenAbsolutePathInAnyHive_ReturnsTrue()
+        {
+            var path = "c:\foo.txt";
+            _hiveMock1.Setup(x => x.IsAbsolutePath(path)).Returns(false);
+            _hiveMock2.Setup(x => x.IsAbsolutePath(path)).Returns(true);
+
+            Sut = new OrderedHiveList(Hive1, Hive2);
+
+            Sut.IsAbsolutePath(path).Should().BeTrue();
+        }
+
+        [Test]
+        public void IsAbsolutePath_WhenNoAbsolutePathInAnyHive_ReturnsFalse()
+        {
+            var path = "c:\foo.txt";
+            _hiveMock1.Setup(x => x.IsAbsolutePath(path)).Returns(false);
+            _hiveMock2.Setup(x => x.IsAbsolutePath(path)).Returns(false);
+
+            Sut = new OrderedHiveList(Hive1, Hive2);
+
+            Sut.IsAbsolutePath(path).Should().BeFalse();
+        }
+
+        [Test]
+        public void GetFiles_RetunsUnionOfAllHives()
+        {
+            _hiveMock1.Setup(x => x.GetFiles("","", false)).Returns(new[]{"file1", "file2"});
+            _hiveMock2.Setup(x => x.GetFiles("","", false)).Returns(new[]{"file2", "file3"});
+
+            Sut = new OrderedHiveList(Hive1, Hive2);
+
+            Sut.GetFiles("","").Should().BeEquivalentTo(new object[]{"file1", "file2", "file3"});
+        }
+
+        [Test]
+        public void GetFiles_PassesSearchArgumentsToHives()
+        {
+            _hiveMock1.Setup(x => x.GetFiles(".", "*", true)).Returns(new string[0]).Verifiable();
+
+            Sut = new OrderedHiveList(Hive1);
+
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+            Sut.GetFiles(".", "*", true).ToList();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+
+            _hiveMock1.VerifyAll();
         }
     }
 }

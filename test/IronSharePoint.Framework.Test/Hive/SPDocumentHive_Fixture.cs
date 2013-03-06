@@ -124,6 +124,18 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
+        public void CombinePath_ReturnsCombinedPath()
+        {
+            Sut.CombinePath("http://foo.com", "sites").Should().Be("http://foo.com/sites");
+        }
+
+        [Test]
+        public void CombinePath_TrimsRedundantSlashes()
+        {
+            Sut.CombinePath("http://foo.com/", "/sites").Should().Be("http://foo.com/sites");
+        }
+
+        [Test]
         public void OpenInputFileStream_WhenFileExists_ReturnsFilestream()
         {
             var web = FakeNextSPSite().RootWeb;
@@ -171,6 +183,48 @@ namespace IronSharePoint.Framework.Test.Hive
             Isolate.WhenCalled(() => spFile.Exists).WillReturn(false);
 
             Sut.OpenOutputFileStream("foo.txt");
+        }
+
+        [Test]
+        public void GetFiles_AbsolutePaths()
+        {
+            Sut.GetFiles("", "*", true).Should().Contain("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt");
+        }
+
+        [Test]
+        public void GetFiles_OnRoot_ContainsOnlyOneFile()
+        {
+            Sut.GetFiles("", "*.txt").Should().BeEquivalentTo(new object[]{"foo.txt"});
+        }
+
+        [Test]
+        public void GetFiles_OnSubdir_ContainsOnlyOneFile()
+        {
+            Sut.GetFiles("bar", "*.txt").Should().BeEquivalentTo(new object[] { "bar/baz.txt" });
+        }
+
+        [Test]
+        public void GetDirectories_AbsolutePaths()
+        {
+            Sut.GetDirectories(".", "*", true).Should().Contain("http://foo.com/sites/IronSP/_catalogs/IronHive/bar");
+        }
+
+        [Test]
+        public void GetDirectories_OnRoot_ContainsDirectory()
+        {
+            Sut.GetDirectories(".", "*").Should().Contain("bar");
+        }
+
+        [Test]
+        public void GetDirectories_OnRoot_DoesNotContainFile()
+        {
+            Sut.GetDirectories(".", "*").Should().NotContain("foo.txt");
+        }
+
+        [Test]
+        public void GeDirectories_OnSubdir_ContainsDirectory()
+        {
+            Sut.GetDirectories("bar", "*").Should().BeEquivalentTo(new object[] { "bar/baz" });
         }
 
 

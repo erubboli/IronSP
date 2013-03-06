@@ -14,7 +14,7 @@ namespace IronSharePoint.Framework.Hives
     /// </summary>
     public class OrderedHiveList : IHive, IEnumerable<IHive>
     {
-        private List<IHive> _hives; 
+        private readonly List<IHive> _hives; 
 
         public OrderedHiveList(params IHive[] hives)
         {
@@ -71,22 +71,30 @@ namespace IronSharePoint.Framework.Hives
 
         public bool IsAbsolutePath(string path)
         {
-            throw new NotImplementedException();
+            return _hives.Any(x => x.IsAbsolutePath(path));
         }
 
         public string CombinePath(string path1, string path2)
         {
-            throw new NotImplementedException();
+            Contract.Requires<ArgumentNullException>(path1 != null);
+            Contract.Requires<ArgumentNullException>(path2 != null); 
+
+            // TODO better way? Use hives but which to choose?
+            var delim = path1.Contains("/") || path2.Contains("/") ? '/' : '\\';
+            path1 = path1.TrimEnd(delim);
+            path2 = path2.TrimStart(delim);
+
+            return string.Format("{0}{1}{2}", path1, delim, path2);
         }
 
-        public string[] GetFiles(string path, string searchPattern)
+        public IEnumerable<string> GetFiles(string path, string searchPattern, bool absolutePaths = false)
         {
-            throw new NotImplementedException();
+            return _hives.SelectMany(x => x.GetFiles(path, searchPattern, absolutePaths)).Distinct();
         }
 
-        public IEnumerable<string> GetDirectories(string path, string searchPattern)
+        public IEnumerable<string> GetDirectories(string path, string searchPattern, bool absolutePaths = false)
         {
-            throw new NotImplementedException();
+            return _hives.SelectMany(x => x.GetDirectories(path, searchPattern, absolutePaths)).Distinct();
         }
 
         IHive FindHandler(string path)

@@ -97,14 +97,32 @@ namespace IronSharePoint.Framework.Hives
             return string.Format("{0}/{1}", path1, path2);
         }
 
-        public string[] GetFiles(string path, string searchPattern)
+        public IEnumerable<string> GetFiles(string path, string searchPattern, bool absolutePaths = false)
         {
-            throw new NotImplementedException();
+            searchPattern = searchPattern.Replace("*", "[^/]+").Replace(".", "\\.")+"$";
+            path = "^" + (path.Replace(".", "") + "/").TrimStart('/');
+            var regexPattern = string.Format("{0}{1}", path, searchPattern);
+            var regex = new Regex(regexPattern);
+            var files = CachedFiles.Select(file =>
+                {
+                    var match = regex.Match(file);
+                    return match.Success ? file : null;
+                }).Where(x => x != null).Distinct().ToArray();
+            return absolutePaths ? files.Select(GetFullPath) : files;
         }
 
-        public IEnumerable<string> GetDirectories(string path, string searchPattern)
+        public IEnumerable<string> GetDirectories(string path, string searchPattern, bool absolutePaths = false)
         {
-            throw new NotImplementedException();
+            searchPattern = searchPattern.Replace("*", "[^/]+") + "$";
+            path = "^" + (path.Replace(".", "") + "/").TrimStart('/');
+            var regexPattern = string.Format("{0}{1}", path, searchPattern);
+            var regex = new Regex(regexPattern);
+            var dirs = CachedDirs.Select(dir =>
+            {
+                var match = regex.Match(dir);
+                return match.Success ? dir : null;
+            }).Where(x => x != null).Distinct().ToArray();
+            return absolutePaths ? dirs.Select(GetFullPath) : dirs;
         }
 
         public void Reset()
