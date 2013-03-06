@@ -58,37 +58,73 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void FileExists_ReturnsTrue_FileDoesExist()
+        public void FileExists_WhenFileExists_ReturnsTrue()
         {
             Sut.FileExists("foo.txt").Should().BeTrue();
         }
 
         [Test]
-        public void FileExists_ReturnsFalse_FileDoesntExist()
+        public void FileExists_WhenFileIsMissing_ReturnsFalse()
         {
             Sut.FileExists("i_do_not.exist").Should().BeFalse();
         }
 
         [Test]
-        public void DirectoryExists_ReturnsTrue_DirectoryDoesExist()
+        public void FileExists_WithExistingAbsoluteFile_ReturnsTrue()
+        {
+            Sut.FileExists("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt").Should().BeTrue();
+        }
+
+        [Test]
+        public void DirectoryExists_WithExistingDirectory_ReturnsTrue()
         {
             Sut.DirectoryExists("bar").Should().BeTrue();
         }
 
         [Test]
-        public void DirectoryExists_ReturnsFalse_FileDoesntExist()
+        public void DirectoryExists_WithMissingDirectory_ReturnsFalse()
         {
             Sut.DirectoryExists("i_do_not_exist").Should().BeFalse();
         }
 
         [Test]
-        public void GetFullPath()
+        public void DirectoryExists_WithExistingAbsoluteDirectory_ReturnsTrue()
+        {
+            Sut.DirectoryExists("http://foo.com/sites/IronSP/_catalogs/IronHive/bar").Should().BeTrue();
+        }
+
+        [Test]
+        public void GetFullPath_WithPartialPath_ReturnsFullPath()
         {
             Sut.GetFullPath("bar/baz.txt").Should().Be("http://foo.com/sites/IronSP/_catalogs/IronHive/bar/baz.txt");
         }
 
         [Test]
-        public void OpenInputFileStream_ReturnsFilestream_FileExists()
+        public void GetFullPath_WithAbsolutePath_ReturnsFullPath()
+        {
+            Sut.GetFullPath("http://foo.com/sites/IronSP/_catalogs/IronHive/bar/baz.txt").Should().Be("http://foo.com/sites/IronSP/_catalogs/IronHive/bar/baz.txt");
+        }
+
+        [Test]
+        public void IsAbsolutePath_WithPartialPath_ReturnsFalse()
+        {
+            Sut.IsAbsolutePath("bar/baz.txt").Should().BeFalse();
+        }
+
+        [Test]
+        public void IsAbsolutePath_WithAbsolutePath_ReturnsTrue()
+        {
+            Sut.IsAbsolutePath("http://foo.com/sites/IronSP/_catalogs/IronHive/bar/baz.txt").Should().BeTrue();
+        }
+
+        [Test]
+        public void IsAbsolutePath_WithAbsolutePathOnOtherDomain_ReturnsTrue()
+        {
+            Sut.IsAbsolutePath("http://bar.com/sites/IronSP/_catalogs/IronHive/bar/baz.txt").Should().BeTrue();
+        }
+
+        [Test]
+        public void OpenInputFileStream_WhenFileExists_ReturnsFilestream()
         {
             var web = FakeNextSPSite().RootWeb;
             var spFile = Isolate.Fake.Instance<SPFile>();
@@ -102,7 +138,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof(FileNotFoundException))]
-        public void OpenInputFileStream_FileNotFoundException()
+        public void OpenInputFileStream_WhenFileIsMissing_ThrowsFileNotFoundException()
         {
             var web = FakeNextSPSite().RootWeb;
             var spFile = Isolate.Fake.Instance<SPFile>();
@@ -113,7 +149,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void OpenOutputFileStream_ReturnsFilestream_FileExists()
+        public void OpenOutputFileStream_WhenFileExists_ReturnsFilestream()
         {
             var web = FakeNextSPSite().RootWeb;
             var spFile = Isolate.Fake.Instance<SPFile>();
@@ -127,7 +163,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
         [Test]
         [ExpectedException(typeof(FileNotFoundException))]
-        public void OpenOutputFileStream_FileNotFoundException()
+        public void OpenOutputFileStream_WhenFileIsMissing_ThrowsFileNotFoundException()
         {
             var web = FakeNextSPSite().RootWeb;
             var spFile = Isolate.Fake.Instance<SPFile>();

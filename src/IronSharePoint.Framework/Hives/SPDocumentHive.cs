@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,7 @@ namespace IronSharePoint.Framework.Hives
         private Guid _siteId;
         private string _hiveLibraryPath;
         private string _webUrl;
+        private string _hiveLibraryUrl;
 
         private string[] _cachedFiles;
         private string[] _cachedDirs;
@@ -41,11 +43,15 @@ namespace IronSharePoint.Framework.Hives
 
         public bool FileExists(string path)
         {
+            path = IsAbsolutePath(path) ? GetPartialPath(path) : path;
+
             return _cachedFiles.Contains(path);
         }
 
         public bool DirectoryExists(string path)
         {
+            path = IsAbsolutePath(path) ? GetPartialPath(path) : path;
+
             return _cachedDirs.Contains(path);
         }
 
@@ -67,17 +73,28 @@ namespace IronSharePoint.Framework.Hives
 
         public string GetFullPath(string path)
         {
-            return string.Format("{0}/{1}/{2}", _webUrl, _hiveLibraryPath, path);
+            return IsAbsolutePath(path) ? path : CombinePath(_hiveLibraryUrl, path);
         }
 
         public bool IsAbsolutePath(string path)
         {
-            throw new NotImplementedException();
+            Contract.Requires<ArgumentNullException>(path != null);
+
+            Uri uri;
+            Uri.TryCreate(path, UriKind.Absolute, out uri);
+            return uri != null && 
+                (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
         }
 
         public string CombinePath(string path1, string path2)
         {
-            throw new NotImplementedException();
+            Contract.Requires<ArgumentNullException>(path1 != null);
+            Contract.Requires<ArgumentNullException>(path2 != null);
+
+            path1 = path1.TrimEnd('/');
+            path2 = path2.TrimStart('/');
+
+            return string.Format("{0}/{1}", path1, path2);
         }
 
         public string[] GetFiles(string path, string searchPattern)
@@ -103,6 +120,7 @@ namespace IronSharePoint.Framework.Hives
             OpenLibrary(lib =>
                 {
                     _webUrl = lib.ParentWebUrl;
+                    _hiveLibraryUrl = CombinePath(_webUrl, _hiveLibraryPath);
 
                      var allItems = lib.GetItems(allFilesQuery);
                      foreach (SPListItem item in allItems)
@@ -123,7 +141,6 @@ namespace IronSharePoint.Framework.Hives
                 .ToArray();
 // ReSharper restore PossibleNullReferenceException
         }
-
 
         private T OpenLibrary<T>(Func<SPDocumentLibrary, T> func)
         {
@@ -169,6 +186,13 @@ namespace IronSharePoint.Framework.Hives
             var web = site.RootWeb;
             var folder = web.GetFolder(_hiveLibraryPath);
             return folder.DocumentLibrary;
+        }
+
+        private string GetPartialPath(string path)
+        {
+            Contract.Requires<ArgumentNullException>(path != null);
+
+            return path.Replace(_hiveLibraryUrl, "").TrimStart('/');
         }
     }
 }
