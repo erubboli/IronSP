@@ -13,22 +13,22 @@ namespace IronSharePoint.Framework.Test.Hive
 
         private string _assetsRoot;
 
-        [SetUp]
-        public void SetUp()
+        [TestFixtureSetUp]
+        public void TestFixtureSetUp()
         {
             _assetsRoot = Path.Combine(Directory.GetCurrentDirectory(), "_assets");
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public void Ctor_ArgumentException()
+        public void Ctor_WhenDirectoryIsMissing_ThrowArgumentException()
         {
             Sut = new PhysicalHive(@"c:\i_do_not_exist");
         }
         
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Ctor_ArgumentNullException()
+        public void Ctor_WithNull_ThrowsArgumentNullException()
         {
             Sut = new PhysicalHive(null);
         }
@@ -42,7 +42,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void FileExists_ReturnsFalse_FileDoesntExist()
+        public void FileExists_WhenFileIsMissing_ReturnsFalse()
         {
             Sut = new PhysicalHive(_assetsRoot);
 
@@ -50,7 +50,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void FileExists_ReturnsTrue_FileDoesExist()
+        public void FileExists_WhenFileExists_ReturnsTrue()
         {
             Sut = new PhysicalHive(_assetsRoot);
 
@@ -58,7 +58,15 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void DirectoryExists_ReturnsFalse_FileDoesntExist()
+        public void FileExists_WithExistingAbsolutePath_ReturnsTrue()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Sut.FileExists(Path.Combine(_assetsRoot, "lorem.txt")).Should().BeTrue();
+        }
+
+        [Test]
+        public void DirectoryExists_WhenDirectoryIsMissing_ReturnsFalse()
         {
             Sut = new PhysicalHive(_assetsRoot);
 
@@ -66,7 +74,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void DirectoryExists_ReturnsTrue_FileDoesExist()
+        public void DirectoryExists_WhenDirectoryIsMissing_ReturnsTrue()
         {
             Sut = new PhysicalHive(_assetsRoot);
 
@@ -74,7 +82,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void GetFullPath_CombinesRootAndPartialPath()
+        public void GetFullPath_WithPartialPath_ReturnsFullPath()
         {
             Sut = new PhysicalHive(_assetsRoot);
             var partial = "lorem.txt";
@@ -84,7 +92,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void GetFullPath_ReturnsPath_Rooted()
+        public void GetFullPath_WithFullPath_ReturnsFullPath()
         {
             Sut = new PhysicalHive(_assetsRoot);
             var expected = @"c:\foo.txt";
@@ -93,7 +101,25 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void OpenInputFileStream_OpensFile()
+        public void IsAbsolutePath_WithAbsolutePath_ReturnsTrue()
+        {
+            Sut.IsAbsolutePath(Path.Combine(_assetsRoot, "lorem.txt")).Should().BeTrue();
+        }
+
+        [Test]
+        public void IsAbsolutePath_WithPartialPath_ReturnsFalse()
+        {
+            Sut.IsAbsolutePath("lorem.txt").Should().BeFalse();
+        }
+
+        [Test]
+        public void IsAbsolutePath_WithAbsolutePathOnOtherRoot_ReturnsTrue()
+        {
+            Sut.IsAbsolutePath(@"c:\whatever\foo.txt").Should().BeTrue();
+        }
+
+        [Test]
+        public void OpenInputFileStream_OpensCorrectFile()
         {
             Sut = new PhysicalHive(_assetsRoot);
             var expected = File.ReadAllBytes(Path.Combine(_assetsRoot, "lorem.txt")).Length;
@@ -105,7 +131,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void OpenInputFileStream_CanWrite()
+        public void OpenInputFileStream_CanWriteToStream()
         {
             Sut = new PhysicalHive(_assetsRoot);
 
@@ -116,7 +142,19 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void OpenOutputFileStream_OpensFile()
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void OpenInputFileStream_WhenFileIsMissing_ThrowsFileNotFoundException()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            using (Sut.OpenInputFileStream("i_do_not.exist"))
+            {
+                // do nothing
+            }
+        }
+
+        [Test]
+        public void OpenOutputFileStream_OpensCorrectFile()
         {
             Sut = new PhysicalHive(_assetsRoot);
             var expected = File.ReadAllBytes(Path.Combine(_assetsRoot, "lorem.txt")).Length;
@@ -128,7 +166,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void OpenOutputFileStream_CanWrite()
+        public void OpenOutputFileStream_CanReadFromStream()
         {
             Sut = new PhysicalHive(_assetsRoot);
 
@@ -136,6 +174,44 @@ namespace IronSharePoint.Framework.Test.Hive
             {
                 stream.CanRead.Should().BeTrue();
             }
+        }
+
+        [Test]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void OpenOutputFileStream_WhenFileIsMissing_ThrowsFileNotFoundException()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            using (Sut.OpenOutputFileStream("i_do_not.exist"))
+            {
+               // do nothing
+            }
+        }
+
+        [Test]
+        public void GetFiles_AbsolutePaths()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Sut.GetFiles(".", "*", true).Should().Contain(Path.Combine(_assetsRoot, "lorem.txt"));
+        }
+
+        [Test]
+        public void GetFiles_OnRoot_ContainsFile()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Sut.GetFiles(".", "*.txt").Should().Contain("lorem.txt");
+        }
+
+        [Test]
+        public void GetFiles_OnRoot_DoesNotContainDirectory()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Sut.GetFiles(".", "*.txt").Should().NotContain("bar");
         }
     }
 }

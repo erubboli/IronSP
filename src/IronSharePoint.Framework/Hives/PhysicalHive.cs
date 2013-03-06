@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 
 namespace IronSharePoint.Framework.Hives
 {
@@ -43,41 +44,55 @@ namespace IronSharePoint.Framework.Hives
 
         public Stream OpenInputFileStream(string path)
         {
-            var fullPath = GetFullPath(path);
+            path = GetFullPath(path);
 
-            return File.OpenWrite(fullPath);
+            if(!File.Exists(path)) throw new FileNotFoundException("", path);
+            return File.OpenWrite(path);
         }
 
         public Stream OpenOutputFileStream(string path)
         {
-            var fullPath = GetFullPath(path);
+            path = GetFullPath(path);
 
-            return File.OpenRead(fullPath);
+            return File.OpenRead(path);
         }
 
         public string GetFullPath(string path)
         {
-            return Path.IsPathRooted(path) ? path : Path.Combine(Root, path);
+            return IsAbsolutePath(path) ? path : Path.Combine(Root, path);
         }
 
         public bool IsAbsolutePath(string path)
         {
-            throw new NotImplementedException();
+            return Path.IsPathRooted(path);
         }
 
         public string CombinePath(string path1, string path2)
         {
-            throw new NotImplementedException();
+            return Path.Combine(path1, path2);
         }
 
-        public string[] GetFiles(string path, string searchPattern)
+        public IEnumerable<string> GetFiles(string path, string searchPattern, bool absolutePaths = false)
         {
-            throw new NotImplementedException();
+            path = GetFullPath(path);
+
+            var files = Directory.GetFiles(path, searchPattern).Select(Path.GetFullPath);
+            return absolutePaths ? files : files.Select(GetPartialPath);
         }
 
-        public IEnumerable<string> GetDirectories(string path, string searchPattern)
+        public IEnumerable<string> GetDirectories(string path, string searchPattern, bool absolutePaths = false)
         {
-            throw new NotImplementedException();
+            path = GetFullPath(path);
+
+            var directories = Directory.GetDirectories(path, searchPattern).Select(Path.GetFullPath);
+            return absolutePaths ? directories : directories.Select(GetPartialPath);
+        }
+
+        private string GetPartialPath(string path)
+        {
+            Contract.Requires<ArgumentNullException>(path != null);
+
+            return path.Replace(Root, "").TrimStart('\\');
         }
     }
 }

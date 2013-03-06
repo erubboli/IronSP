@@ -59,19 +59,23 @@ namespace IronSharePoint.Framework
         string CombinePath(string path1, string path2);
 
         /// <summary>
-        /// Returns all files in <paramref name="path"/> matching the <paramref name="searchPattern"/>
+        /// Returns all partial paths for files in <paramref name="path"/> matching the <paramref name="searchPattern"/>.
+        /// Returns absolute paths when <paramref name="absolutePaths"/> is TRUE
         /// </summary>
         /// <param name="path"></param>
         /// <param name="searchPattern"></param>
+        /// <param name="absolutePaths"></param>
         /// <returns></returns>
-        string[] GetFiles(string path, string searchPattern);
+        IEnumerable<string> GetFiles(string path, string searchPattern, bool absolutePaths = false);
 
         /// <summary>
-        /// Returns all directories in <paramref name="path"/> matching the <paramref name="searchPattern"/>
+        /// Returns all partial paths for directories in <paramref name="path"/> matching the <paramref name="searchPattern"/>.
+        /// Returns absolute paths when <paramref name="absolutePaths"/> is TRUE
         /// </summary>
         /// <param name="path"></param>
         /// <param name="searchPattern"></param>
+        /// <param name="absolutePaths"></param>
         /// <returns></returns>
-        IEnumerable<string> GetDirectories(string path, string searchPattern);
+        IEnumerable<string> GetDirectories(string path, string searchPattern, bool absolutePaths = false);
     }
 }
