@@ -64,7 +64,7 @@ namespace IronSharePoint.Framework.Hives
         public string GetFullPath(string path)
         {
             var handler = FindHandler(path);
-            if (handler == null) throw new FileNotFoundException("", path);
+            if (handler == null) return Path.GetFullPath(path);
 
             return handler.GetFullPath(path);
         }
