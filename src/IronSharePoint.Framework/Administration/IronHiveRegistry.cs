@@ -1,265 +1,216 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint;
-using System.Collections.ObjectModel;
 using System.Security;
 
-namespace IronSharePoint.Administration
+namespace IronSharePoint.Framework.Administration
 {
-    public class IronHiveRegistry: SPPersistedObject
+    [Guid("BAC9FD8C-27B1-4D15-9D10-8A3901F455DB")]
+    public class IronHiveRegistry : SPPersistedObject
     {
-       private static readonly Guid _objectId = new Guid("{7AC6F8BC-7977-4F04-AE74-CCA2232AC135}"); 
+        private static readonly Guid ObjectId = new Guid("{BAC9FD8C-27B1-4D15-9D10-8A3901F455DB}");
 
-       [Persisted]
-       private Dictionary<Guid, String> _hiveMappings = new Dictionary<Guid, String>();
+        /// <summary>
+        /// Maps a target id (SPSite, SPWebApplication, ...) to a list of hives
+        /// </summary>
+        [Persisted] private readonly Dictionary<Guid, MappedHives> _mappedHives = new Dictionary<Guid, MappedHives>();
 
-       [Persisted]
-       private List<Guid> _trustedHives = new List<Guid>();
+        /// <summary>
+        /// The list of trusted hives
+        /// </summary>
+        [Persisted] private readonly List<HiveDescription> _trustedHives = new List<HiveDescription>();
 
-       public ReadOnlyCollection<Guid> TrustedHives
-       {
-           get { return new ReadOnlyCollection<Guid>(_trustedHives); }
-       }
+        public IEnumerable<HiveDescription> TrustedHives
+        {
+            get { return _trustedHives.AsEnumerable(); }
+        }
 
-       public ReadOnlyCollection<HiveMapping> HiveMappings
-       {
-           get {
+        /*The default constructor must be specified for serialization.*/
 
-               var list = new List<HiveMapping>();
+        public IronHiveRegistry()
+        {
+        }
 
-               foreach (var entry in _hiveMappings)
-               {
-                   list.Add(new HiveMapping(entry.Value));
-               }
+        public IronHiveRegistry(string name, SPPersistedObject parent, Guid id)
+            : base(name, parent, id)
+        {
+        }
 
-               return new ReadOnlyCollection<HiveMapping>(list);     
-           }
-       }
-
-       /*The default constructor must be specified for serialization.*/
-       public IronHiveRegistry()
-       {
-       }
-
-       public IronHiveRegistry(string name, SPPersistedObject parent, Guid id)
-          : base(name, parent, id)
-       {
-       }
-
-       public static IronHiveRegistry Local
-       {
-           get
-           {            
-               var registry = SPFarm.Local.GetObject(_objectId) as IronHiveRegistry;
-               if (registry == null)
-               {
-                   registry = new IronHiveRegistry("IronSharePoint.Administration.IronHiveRegistry", SPFarm.Local, _objectId);
-               }
-
-               return registry;
-           }
-       }
-
-        public Guid GetHiveForSite(Guid targetSiteId)
-        {           
-            var hiveSiteId = Guid.Empty; 
-
-            if (_hiveMappings.Count==0)
+        public static IronHiveRegistry Local
+        {
+            get
             {
-                return hiveSiteId;
-            }
+                var registry = SPFarm.Local.GetObject(ObjectId) as IronHiveRegistry ??
+                               new IronHiveRegistry("IronSharePoint.Administration.IronHiveRegistry", SPFarm.Local,
+                                                    ObjectId);
 
+                return registry;
+            }
+        }
+
+        /// <summary>
+        /// Maps all <paramref name="hives"/> to the given <paramref name="target"/>. If a mapping already exist for the
+        /// given <paramref name="target"/> the <paramref name="hives"/> are appended, otherwise a new mapping is created.
+        /// All <paramref name="hives"/> must be trusted.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="hives"></param>
+        /// <exception cref="SecurityException"></exception>
+        public void AddHiveMapping(object target, params HiveDescription[] hives)
+        {
+            var targetId = GetTargetId(target);
+
+            MappedHives mappedHives;
+            if (!_mappedHives.TryGetValue(targetId, out mappedHives))
+            {
+                mappedHives = new MappedHives(this);
+                _mappedHives[targetId] = mappedHives;
+            }
+            foreach (var hiveId in hives)
+            {
+                EnsureTrustedHive(hiveId);
+                mappedHives.Add(hiveId);
+            }
+        }
+
+        /// <summary>
+        /// Returns all mapped hives for the <paramref name="site"/>
+        /// </summary>
+        /// <param name="site"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public IList<HiveDescription> GetMappedHivesForSite(SPSite site)
+        {
+            return GetMappedHivesForSite(site.ID);
+        }
+
+        /// <summary>
+        /// Returns all mapped hives for the SPSite with the given <paramref name="siteId"/>
+        /// </summary>
+        /// <param name="siteId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public IList<HiveDescription> GetMappedHivesForSite(Guid siteId)
+        {
+            var mappings = new MappedHives(this);
             SPSecurity.RunWithElevatedPrivileges(() =>
-            {
-
-                using (SPSite site = new SPSite(targetSiteId))
                 {
-                    // target site is mapped to a hive site
-                    if (_hiveMappings.ContainsKey(targetSiteId))
+                    using (var site = new SPSite(siteId))
                     {
-                        hiveSiteId = new HiveMapping(_hiveMappings[targetSiteId]).HiveSiteId;
-                    }
-                    else
-                    {
-                        // if not, check the subscription id
-                        if (site.SiteSubscription != null && _hiveMappings.ContainsKey(site.SiteSubscription.Id))
+
+                        var hasMapping = _mappedHives.TryGetValue(site.ID, out mappings) ||
+                                         _mappedHives.TryGetValue(site.SiteSubscription.Id, out mappings) ||
+                                         _mappedHives.TryGetValue(site.WebApplication.Id, out mappings) ||
+                                         _mappedHives.TryGetValue(SPFarm.Local.Id, out mappings);
+
+                        if (!hasMapping)
                         {
-                            hiveSiteId = new HiveMapping(_hiveMappings[site.SiteSubscription.Id.Id]).HiveSiteId;
-                        }
-                        else
-                        {
-                            //check for web app mapping
-                            var webAppId = site.WebApplication.Id;
-                            if (_hiveMappings.ContainsKey(webAppId))
-                            {
-                                hiveSiteId = new HiveMapping(_hiveMappings[webAppId]).HiveSiteId;
-                            }
-                            else
-                            {
-                                //check for farm mapping
-                                var farmId = SPFarm.Local.Id;
-                                if (_hiveMappings.ContainsKey(farmId))
-                                {
-                                    hiveSiteId = new HiveMapping(_hiveMappings[farmId]).HiveSiteId;
-                                }
-                            }
+                            throw new ArgumentException("No hive mappings found for SPSite", "siteId");
                         }
                     }
-                }
-            });
+                });
 
-            EnsureTrustedHive(hiveSiteId);
-
-            return hiveSiteId;
-            
+            return mappings;
         }
 
-        public void AddHiveMapping(SPSite hiveSite, object targetObject)
-        {          
-            if (targetObject is SPSite)
-            {
-                var targetSite = targetObject as SPSite;
-                var hiveMapping = new HiveMapping()
-                {
-                    HiveSiteId = hiveSite.ID,
-                    TargetObjectId = targetSite.ID,
-                    TargetObjectType = targetSite.GetType().Name
-                };
-
-                _hiveMappings.Add(hiveMapping.TargetObjectId, hiveMapping.ToString());
-                AddTrustedHive(hiveSite.ID);
-
-                return;
-            }
-
-
-            if (targetObject is SPSiteSubscription)
-            {
-                var siteSubscription = targetObject as SPSiteSubscription;
-                var hiveMapping = new HiveMapping()
-                {
-                    HiveSiteId = hiveSite.ID,
-                    TargetObjectId = siteSubscription.Id.Id,
-                    TargetObjectType = siteSubscription.GetType().Name
-                };
-
-                _hiveMappings.Add(hiveMapping.TargetObjectId, hiveMapping.ToString());
-                AddTrustedHive(hiveSite.ID);
-
-                return;
-            }
-
-
-            if (targetObject is SPWebApplication)
-            {
-                var webApp = targetObject as SPWebApplication;
-
-                var hiveMapping = new HiveMapping()
-                {
-                    HiveSiteId = hiveSite.ID,
-                    TargetObjectId = webApp.Id,
-                    TargetObjectType = webApp.GetType().Name
-                };
-
-                _hiveMappings.Add(hiveMapping.TargetObjectId, hiveMapping.ToString());
-                AddTrustedHive(hiveSite.ID);
-
-                return;
-            }
-
-            
-            if (targetObject is SPFarm)
-            {
-                var farm = targetObject as SPFarm;
-                var hiveMapping = new HiveMapping()
-                {
-                    HiveSiteId = hiveSite.ID,
-                    TargetObjectId = farm.Id,
-                    TargetObjectType = farm.GetType().Name
-                };
-
-                _hiveMappings.Add(hiveMapping.TargetObjectId, hiveMapping.ToString());
-                AddTrustedHive(hiveSite.ID);
-
-                return;
-            }
-
-            throw new NotSupportedException("Only mappings for objects of type SPSite, SPSiteSubscription, SPWebApplication and SPFarm allowed!");  
-        }
-
-        public void AddTrustedHive(Guid id)
+        private static Guid GetTargetId(object target)
         {
-            if (!TrustedHives.Contains(id))
-            {              
-                _trustedHives.Add(id);
+            Guid targetId;
+
+            if (target is SPSite)
+                targetId = (target as SPSite).ID;
+            else if (target is SPSiteSubscription)
+                targetId = (target as SPSiteSubscription).Id;
+            else if (target is SPWebApplication)
+                targetId = (target as SPWebApplication).Id;
+            else if (target is SPFarm)
+                targetId = (target as SPFarm).Id;
+            else
+                throw new NotSupportedException(
+                    "Only mappings for objects of type SPSite, SPSiteSubscription, SPWebApplication and SPFarm allowed!");
+            return targetId;
+        }
+
+        /// <summary>
+        /// Adds the <paramref name="hive"/> to the list of trusted hives
+        /// </summary>
+        /// <param name="hive"></param>
+        public void AddTrustedHive(HiveDescription hive)
+        {
+            if (!TrustedHives.Contains(hive))
+            {
+                _trustedHives.Add(hive);
             }
         }
 
-        public void DeleteTrustedHive(Guid id)
+        /// <summary>
+        /// Removes the <paramref name="hive"/> from the list of trusted hives
+        /// </summary>
+        /// <param name="hive"></param>
+        public void RemoveTrustedHive(HiveDescription hive)
         {
-            if (TrustedHives.Contains(id))
+            if (TrustedHives.Contains(hive))
             {
-                _trustedHives.Remove(id);
+                _trustedHives.Remove(hive);
             }
         }
 
-        public void DeleteHiveMapping(Guid targetId)
+        /// <summary>
+        /// Removes the hive with the given <paramref name="id"/> from the list of trusted hives
+        /// </summary>
+        /// <param name="id"></param>
+        public void RemoveTrustedHive(object id)
         {
-            _hiveMappings.Remove(targetId);
+            var hive = TrustedHives.FirstOrDefault(x => x.Id == id);
+            RemoveTrustedHive(hive);
         }
 
-        public void EnsureTrustedHive(Guid hiveSiteId)
+        /// <summary>
+        /// Ensures that the hive with the given <paramref name="id"/> is a trusted hive
+        /// </summary>
+        /// <param name="id"></param>
+        /// <exception cref="SecurityException"></exception>
+        public void EnsureTrustedHive(object id)
         {
-            if (!_trustedHives.Contains(hiveSiteId))
-            {
-                throw new SecurityException(String.Format("Site {0} is not a trusted IronHive site", hiveSiteId));
-            }
+            var hive = TrustedHives.FirstOrDefault(x => x.Id == id);
+            EnsureTrustedHive(hive);
         }
 
-        [Serializable]
-        public class HiveMapping
+        /// <summary>
+        /// Ensures that the <paramref name="hive"/> is a trusted hive
+        /// </summary>
+        /// <param name="hive"></param>
+        /// <exception cref="SecurityException"></exception>
+        public void EnsureTrustedHive(HiveDescription hive)
         {
-            public Guid HiveSiteId { get; set; }
-            public Guid TargetObjectId { get; set; }
-            public string TargetObjectType { get; set; }
-
-            public override string ToString()
+            if (hive == null || !TrustedHives.Contains(hive))
             {
-                return HiveSiteId.ToString() + ";" + TargetObjectId.ToString() + ";" + TargetObjectType.ToString();
-            }
-
-            public HiveMapping() { }
-
-            public HiveMapping(string str)
-            {
-                var arr = str.Split(';');
-                HiveSiteId = new Guid(arr[0]);
-                TargetObjectId = new Guid(arr[1]);
-                TargetObjectType = arr[2];
+                throw new SecurityException(String.Format("Hive '{0}' is not a trusted hive", hive));
             }
         }
 
         public override void Update(bool ensure)
         {
             SPSecurity.RunWithElevatedPrivileges(() =>
-            {
-                foreach (var hiveId in _trustedHives)
                 {
-                    using (SPSite hiveSite = new SPSite(hiveId))
+                    foreach (var hive in _trustedHives.Where(x => x.HiveType == typeof(SPDocumentLibrary)))
                     {
-                        if (hiveSite.Features[new Guid(IronConstant.IronHiveSiteFeatureId)] == null)
+                        using (var hiveSite = new SPSite((Guid) hive.Id))
                         {
-                            hiveSite.Features.Add(new Guid(IronConstant.IronHiveSiteFeatureId));
+                            if (hiveSite.Features[new Guid(IronConstant.IronHiveSiteFeatureId)] == null)
+                            {
+                                hiveSite.Features.Add(new Guid(IronConstant.IronHiveSiteFeatureId));
+                            }
                         }
                     }
-                }
 
-            });
+                });
 
             base.Update(ensure);
         }
+
     }
 }
