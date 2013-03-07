@@ -128,14 +128,13 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        [ExpectedException(typeof(FileNotFoundException))]
-        public void GetFullPath_WhenPathNotInAnyHive_ThrowsFileNotFound()
+        public void GetFullPath_WhenPathNotInAnyHive_DefaultsToSystemMethod()
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
             Sut = new OrderedHiveList(Hive1);
 
-            Sut.GetFullPath(path);
+            Sut.GetFullPath(path).Should().Be(Path.GetFullPath(path));
         }
 
         [Test]
@@ -283,7 +282,7 @@ namespace IronSharePoint.Framework.Test.Hive
             Sut = new OrderedHiveList(Hive1);
 
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-            Sut.GetFiles(".", "*", true).ToList();
+            Sut.GetFiles(".", "*", true).ToList(); // evaluate the enumerable
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             _hiveMock1.VerifyAll();
