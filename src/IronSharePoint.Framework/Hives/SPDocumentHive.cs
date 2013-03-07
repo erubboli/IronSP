@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using IronSharePoint.Framework.Util;
 using Microsoft.SharePoint;
 
 namespace IronSharePoint.Framework.Hives
@@ -16,8 +17,8 @@ namespace IronSharePoint.Framework.Hives
     /// </summary>
     public class SPDocumentHive : IHive
     {
-        private Guid _siteId;
-        private string _hiveLibraryPath;
+        private readonly Guid _siteId;
+        private readonly string _hiveLibraryPath;
         private string _webUrl;
         private string _hiveLibraryUrl;
 
@@ -32,9 +33,14 @@ namespace IronSharePoint.Framework.Hives
         public IEnumerable<string> CachedDirs
         {
             get { return _cachedDirs.AsEnumerable(); }
-        } 
+        }
 
-        public SPDocumentHive(Guid siteId, string hiveLibraryPath = IronConstant.HiveLibraryPath)
+        public SPDocumentHive(Guid siteId)
+            : this(siteId, IronConstant.HiveLibraryPath)
+        {
+        }
+
+        public SPDocumentHive(Guid siteId, string hiveLibraryPath)
         {
             _siteId = siteId;
             _hiveLibraryPath = hiveLibraryPath;
@@ -144,8 +150,8 @@ namespace IronSharePoint.Framework.Hives
                      foreach (SPListItem item in allItems)
                      {
                          var fileRef = item["FileRef"].ToString();
-                         var siteRelative = fileRef.Replace(lib.ParentWeb.ServerRelativeUrl, string.Empty).TrimStart('/');
-                         var hiveRelative = siteRelative.Replace(_hiveLibraryPath,string.Empty).TrimStart('/');
+                         var siteRelative = fileRef.ReplaceFirst(lib.ParentWeb.ServerRelativeUrl, string.Empty).TrimStart('/');
+                         var hiveRelative = siteRelative.ReplaceFirst(_hiveLibraryPath,string.Empty).TrimStart('/');
 
                          allFiles.Add(hiveRelative);
                      }
