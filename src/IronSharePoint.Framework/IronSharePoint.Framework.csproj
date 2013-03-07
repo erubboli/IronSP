@@ -103,16 +103,15 @@
     <Compile Include="Hives\PhysicalHive.cs" />
     <Compile Include="Hives\SPDocumentHive.cs" />
     <Compile Include="IHive.cs" />
+    <Compile Include="IIronControl.cs" />
+    <Compile Include="IIronDataStore.cs" />
+    <Compile Include="IronCompositeControl.cs" />
     <Compile Include="IronConsole\Hooks\IIronConsoleHook.cs" />
     <Compile Include="IronConsole\Hooks\IronConsoleHookBase.cs" />
     <Compile Include="IronConsole\Hooks\RubyConsoleHook.cs" />
     <Compile Include="IronConsole\IronConsole.cs" />
     <Compile Include="IronConsole\IronConsoleResult.cs" />
     <Compile Include="IronConsole\IronConsoleTask.cs" />
-    <Compile Include="IronConsole\IronConsoleWebPart.cs" />
-    <Compile Include="IIronControl.cs" />
-    <Compile Include="IIronDataStore.cs" />
-    <Compile Include="IronCompositeControl.cs" />
     <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeId.cs" />
     <Compile Include="IronControl.cs" />
@@ -142,11 +141,13 @@
     <Compile Include="Util\BlockingQueue.cs" />
     <Compile Include="Util\EnumerableExtensions.cs" />
     <Compile Include="Util\IBlockingQueue.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="key.snk" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
