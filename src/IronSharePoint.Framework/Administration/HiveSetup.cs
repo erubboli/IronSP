@@ -1,8 +1,7 @@
 ﻿using System;
-using Microsoft.Scripting;
 using Microsoft.SharePoint.Administration;
 
-namespace IronSharePoint.Framework.Administration
+namespace IronSharePoint.Administration
 {
     /// <summary>
     /// Stores information needed to setup a Hive

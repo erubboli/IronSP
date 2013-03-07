@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using IronSharePoint.Hives;
 using Microsoft.SharePoint;
 using NUnit.Framework;
 using TypeMock.ArrangeActAssert;
-using IronSharePoint.Framework.Hives;
 
 namespace IronSharePoint.Framework.Test.Hive
 {

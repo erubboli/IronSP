@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using FluentAssertions;
-using IronSharePoint.Framework.Hives;
+using IronSharePoint.Hives;
 using NUnit.Framework;
 
 namespace IronSharePoint.Framework.Test.Hive

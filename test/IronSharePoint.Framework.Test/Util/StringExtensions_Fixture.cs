@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IronSharePoint.Util;
 using NUnit.Framework;
-using IronSharePoint.Framework.Util;
 using FluentAssertions;
 
 namespace IronSharePoint.Framework.Test.Util

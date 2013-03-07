@@ -7,7 +7,7 @@
     <ProjectGuid>{73E78E79-90F3-4859-9DDF-2E33A92B65A1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronSharePoint.Framework</RootNamespace>
+    <RootNamespace>IronSharePoint</RootNamespace>
     <AssemblyName>IronSharePoint.Framework</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

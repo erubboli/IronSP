@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IronSharePoint.Framework.Hives;
+using IronSharePoint.Hives;
 using Moq;
 using NUnit.Framework;
 

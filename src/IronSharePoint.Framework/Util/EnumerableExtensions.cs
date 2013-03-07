@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace IronSharePoint.Framework.Util
+namespace IronSharePoint.Util
 {
     internal static class EnumerableExtensions
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace IronSharePoint.Framework
+namespace IronSharePoint
 {
     /// <summary>
     /// Interface for a virtual folder that contains script files

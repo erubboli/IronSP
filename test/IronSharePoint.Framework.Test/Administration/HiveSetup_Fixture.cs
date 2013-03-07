@@ -1,6 +1,6 @@
 ﻿using System;
-using IronSharePoint.Framework.Administration;
-using IronSharePoint.Framework.Hives;
+using IronSharePoint.Administration;
+using IronSharePoint.Hives;
 using Moq;
 using NUnit.Framework;
 using FluentAssertions;

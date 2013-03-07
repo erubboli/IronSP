@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
-namespace IronSharePoint.Framework.Administration
+namespace IronSharePoint.Administration
 {
     /// <summary>
     /// Custom collection for <see cref="HiveSetup"/>s that perform additional security checks on its operations when

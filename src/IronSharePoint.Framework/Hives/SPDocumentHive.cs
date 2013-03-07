@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
-using IronSharePoint.Framework.Util;
+using IronSharePoint.Util;
 using Microsoft.SharePoint;
 
-namespace IronSharePoint.Framework.Hives
+namespace IronSharePoint.Hives
 {
     /// <summary>
     /// Hive implementation where the files are retrieved from a SharePoint Document Library

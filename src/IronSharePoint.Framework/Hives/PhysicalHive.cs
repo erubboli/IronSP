@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 
-namespace IronSharePoint.Framework.Hives
+namespace IronSharePoint.Hives
 {
     /// <summary>
     /// Hive implementation for folders on a physical hard disk

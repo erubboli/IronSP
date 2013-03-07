@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using IronSharePoint.Framework.Hives;
+using IronSharePoint.Hives;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint;
 using System.Security;
 
-namespace IronSharePoint.Framework.Administration
+namespace IronSharePoint.Administration
 {
     [Guid("DFEADCC2-F2E6-4797-9514-C2D26BC8747B")]
     public class IronHiveRegistry : SPPersistedObject
@@ -45,7 +45,7 @@ namespace IronSharePoint.Framework.Administration
             get
             {
                 var registry = SPFarm.Local.GetObject(ObjectId) as IronHiveRegistry ??
-                               new IronHiveRegistry("IronSharePoint.Administration.IronHiveRegistry", SPFarm.Local,
+                               new IronHiveRegistry("IronSharePoint.Administration.HiveRegistry", SPFarm.Local,
                                                     ObjectId);
 
                 return registry;
