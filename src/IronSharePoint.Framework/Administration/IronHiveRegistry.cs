@@ -2,28 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using IronSharePoint.Framework.Hives;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint;
 using System.Security;
 
 namespace IronSharePoint.Framework.Administration
 {
-    [Guid("BAC9FD8C-27B1-4D15-9D10-8A3901F455DB")]
+    [Guid("DFEADCC2-F2E6-4797-9514-C2D26BC8747B")]
     public class IronHiveRegistry : SPPersistedObject
     {
-        private static readonly Guid ObjectId = new Guid("{BAC9FD8C-27B1-4D15-9D10-8A3901F455DB}");
+        private static readonly Guid ObjectId = new Guid("DFEADCC2-F2E6-4797-9514-C2D26BC8747B");
 
         /// <summary>
         /// Maps a target id (SPSite, SPWebApplication, ...) to a list of hives
         /// </summary>
-        [Persisted] private readonly Dictionary<Guid, MappedHives> _mappedHives = new Dictionary<Guid, MappedHives>();
+        [Persisted] private readonly Dictionary<Guid, HiveSetupCollection> _mappedHives = new Dictionary<Guid, HiveSetupCollection>();
 
         /// <summary>
         /// The list of trusted hives
         /// </summary>
-        [Persisted] private readonly List<HiveDescription> _trustedHives = new List<HiveDescription>();
+        [Persisted] private readonly List<HiveSetup> _trustedHives = new List<HiveSetup>();
 
-        public IEnumerable<HiveDescription> TrustedHives
+        public IEnumerable<HiveSetup> TrustedHives
         {
             get { return _trustedHives.AsEnumerable(); }
         }
@@ -59,20 +60,20 @@ namespace IronSharePoint.Framework.Administration
         /// <param name="target"></param>
         /// <param name="hives"></param>
         /// <exception cref="SecurityException"></exception>
-        public void AddHiveMapping(object target, params HiveDescription[] hives)
+        public void AddHiveMapping(object target, params HiveSetup[] hives)
         {
             var targetId = GetTargetId(target);
 
-            MappedHives mappedHives;
-            if (!_mappedHives.TryGetValue(targetId, out mappedHives))
+            HiveSetupCollection hiveSetupCollection;
+            if (!_mappedHives.TryGetValue(targetId, out hiveSetupCollection))
             {
-                mappedHives = new MappedHives(this);
-                _mappedHives[targetId] = mappedHives;
+                hiveSetupCollection = new HiveSetupCollection {Registry = this};
+                _mappedHives[targetId] = hiveSetupCollection;
             }
             foreach (var hiveId in hives)
             {
                 EnsureTrustedHive(hiveId);
-                mappedHives.Add(hiveId);
+                hiveSetupCollection.Add(hiveId);
             }
         }
 
@@ -82,7 +83,7 @@ namespace IronSharePoint.Framework.Administration
         /// <param name="site"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public IList<HiveDescription> GetMappedHivesForSite(SPSite site)
+        public IList<HiveSetup> GetMappedHivesForSite(SPSite site)
         {
             return GetMappedHivesForSite(site.ID);
         }
@@ -93,16 +94,16 @@ namespace IronSharePoint.Framework.Administration
         /// <param name="siteId"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public IList<HiveDescription> GetMappedHivesForSite(Guid siteId)
+        public IList<HiveSetup> GetMappedHivesForSite(Guid siteId)
         {
-            var mappings = new MappedHives(this);
+            var mappings = new HiveSetupCollection();
             SPSecurity.RunWithElevatedPrivileges(() =>
                 {
                     using (var site = new SPSite(siteId))
                     {
 
                         var hasMapping = _mappedHives.TryGetValue(site.ID, out mappings) ||
-                                         _mappedHives.TryGetValue(site.SiteSubscription.Id, out mappings) ||
+                                         (site.SiteSubscription != null && _mappedHives.TryGetValue(site.SiteSubscription.Id, out mappings)) ||
                                          _mappedHives.TryGetValue(site.WebApplication.Id, out mappings) ||
                                          _mappedHives.TryGetValue(SPFarm.Local.Id, out mappings);
 
@@ -113,6 +114,7 @@ namespace IronSharePoint.Framework.Administration
                     }
                 });
 
+            mappings.Registry = this;
             return mappings;
         }
 
@@ -138,7 +140,7 @@ namespace IronSharePoint.Framework.Administration
         /// Adds the <paramref name="hive"/> to the list of trusted hives
         /// </summary>
         /// <param name="hive"></param>
-        public void AddTrustedHive(HiveDescription hive)
+        public void AddTrustedHive(HiveSetup hive)
         {
             if (!TrustedHives.Contains(hive))
             {
@@ -150,7 +152,7 @@ namespace IronSharePoint.Framework.Administration
         /// Removes the <paramref name="hive"/> from the list of trusted hives
         /// </summary>
         /// <param name="hive"></param>
-        public void RemoveTrustedHive(HiveDescription hive)
+        public void RemoveTrustedHive(HiveSetup hive)
         {
             if (TrustedHives.Contains(hive))
             {
@@ -159,23 +161,13 @@ namespace IronSharePoint.Framework.Administration
         }
 
         /// <summary>
-        /// Removes the hive with the given <paramref name="id"/> from the list of trusted hives
-        /// </summary>
-        /// <param name="id"></param>
-        public void RemoveTrustedHive(object id)
-        {
-            var hive = TrustedHives.FirstOrDefault(x => x.Id == id);
-            RemoveTrustedHive(hive);
-        }
-
-        /// <summary>
         /// Ensures that the hive with the given <paramref name="id"/> is a trusted hive
         /// </summary>
         /// <param name="id"></param>
         /// <exception cref="SecurityException"></exception>
-        public void EnsureTrustedHive(object id)
+        public virtual void EnsureTrustedHive(object id)
         {
-            var hive = TrustedHives.FirstOrDefault(x => x.Id == id);
+            var hive = TrustedHives.FirstOrDefault(x => Object.Equals(x.HiveArguments[0], id));
             EnsureTrustedHive(hive);
         }
 
@@ -184,7 +176,7 @@ namespace IronSharePoint.Framework.Administration
         /// </summary>
         /// <param name="hive"></param>
         /// <exception cref="SecurityException"></exception>
-        public void EnsureTrustedHive(HiveDescription hive)
+        public virtual void EnsureTrustedHive(HiveSetup hive)
         {
             if (hive == null || !TrustedHives.Contains(hive))
             {
@@ -194,11 +186,12 @@ namespace IronSharePoint.Framework.Administration
 
         public override void Update(bool ensure)
         {
+            base.Update(ensure);
             SPSecurity.RunWithElevatedPrivileges(() =>
                 {
-                    foreach (var hive in _trustedHives.Where(x => x.HiveType == typeof(SPDocumentLibrary)))
+                    foreach (var hive in _trustedHives.Where(x => x.HiveType == typeof(SPDocumentHive)))
                     {
-                        using (var hiveSite = new SPSite((Guid) hive.Id))
+                        using (var hiveSite = new SPSite((Guid) hive.HiveArguments[0]))
                         {
                             if (hiveSite.Features[new Guid(IronConstant.IronHiveSiteFeatureId)] == null)
                             {
@@ -206,11 +199,7 @@ namespace IronSharePoint.Framework.Administration
                             }
                         }
                     }
-
                 });
-
-            base.Update(ensure);
         }
-
     }
 }

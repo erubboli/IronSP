@@ -18,8 +18,8 @@ namespace IronSharePoint.Framework.Test.Administration
     {
         public IronHiveRegistry Sut;
         public SPSite Site;
-        public HiveDescription Hive;
-        public HiveDescription OtherHive;
+        public HiveSetup HiveSetup;
+        public HiveSetup OtherHiveSetup;
 
         [TestFixtureSetUp]
         public void FixtureSetUp()
@@ -37,33 +37,33 @@ namespace IronSharePoint.Framework.Test.Administration
         public void SetUp()
         {
             Sut = new IronHiveRegistry();
-            Hive = new HiveDescription()
+            HiveSetup = new HiveSetup()
                 {
-                    Description = "Test Hive",
+                    DisplayName = "Test Hive",
                     HiveType = typeof(SPDocumentHive),
-                    Id = new Guid("23D9567E-AA85-45E8-A21E-522B18B4CCF2")
+                    HiveArguments = new object[] {new Guid("23D9567E-AA85-45E8-A21E-522B18B4CCF2")}
                 };
-            OtherHive = new HiveDescription()
-            {
-                Description = "Other Test Hive",
-                HiveType = typeof(SPDocumentHive),
-                Id = new Guid("DB479166-77D4-484B-B3A4-D839E5824008")
-            };
+            OtherHiveSetup = new HiveSetup()
+                {
+                    DisplayName = "Other Test Hive",
+                    HiveType = typeof (SPDocumentHive),
+                    HiveArguments = new object[] {new Guid("DB479166-77D4-484B-B3A4-D839E5824008")}
+                };
         }
 
         [Test]
         public void AddTrustedHive_AddsTheHive()
         {
-            Sut.AddTrustedHive(Hive);
+            Sut.AddTrustedHive(HiveSetup);
 
-            Sut.TrustedHives.Should().Contain(Hive);
+            Sut.TrustedHives.Should().Contain(HiveSetup);
         }
 
         [Test]
         public void AddTrustedHive_DoesntAddDuplicates()
         {
-            Sut.AddTrustedHive(Hive);
-            Sut.AddTrustedHive(Hive);
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.AddTrustedHive(HiveSetup);
 
             Sut.TrustedHives.Should().HaveCount(1);
         }
@@ -71,8 +71,8 @@ namespace IronSharePoint.Framework.Test.Administration
         [Test]
         public void RemoveTrustedHive_WhenExists_RemovesTheHive()
         {
-            Sut.AddTrustedHive(Hive);
-            Sut.RemoveTrustedHive(Hive);
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.RemoveTrustedHive(HiveSetup);
 
             Sut.TrustedHives.Should().BeEmpty();
         }
@@ -80,24 +80,24 @@ namespace IronSharePoint.Framework.Test.Administration
         [Test]
         public void RemoveTrustedHive_WhenNotExists_DoesNothing()
         {
-            Sut.AddTrustedHive(Hive);
-            Sut.RemoveTrustedHive(Guid.NewGuid());
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.RemoveTrustedHive(OtherHiveSetup);
 
-            Sut.TrustedHives.Should().BeEquivalentTo(new[] {Hive});
+            Sut.TrustedHives.Should().BeEquivalentTo(new[] {HiveSetup});
         }
 
         [Test]
         [ExpectedException(typeof(SecurityException))]
         public void EnsureTrustedHive_WithUntrustedHive_ThrowsSecurityExpcetion()
         {
-            Sut.EnsureTrustedHive(Guid.NewGuid());
+            Sut.EnsureTrustedHive(OtherHiveSetup);
         }
 
         [Test]
         public void EnsureTrustedHive_WithTrustedHive_DoesNothing()
         {
-            Sut.AddTrustedHive(Hive);
-            Sut.EnsureTrustedHive(Hive);
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.EnsureTrustedHive(HiveSetup);
 
             Assert.Pass();
         }
@@ -106,28 +106,28 @@ namespace IronSharePoint.Framework.Test.Administration
         [ExpectedException(typeof(SecurityException))]
         public void AddHiveMapping_WithUntrustedHive_ThrowsSecurityException()
         {
-            Sut.AddHiveMapping(Site, Hive);
+            Sut.AddHiveMapping(Site, HiveSetup);
         }
 
         [Test]
         public void AddHiveMapping_WithNewSite_CreatesMapping()
         {
-            Sut.AddTrustedHive(Hive);
+            Sut.AddTrustedHive(HiveSetup);
 
-            Sut.AddHiveMapping(Site, Hive);
+            Sut.AddHiveMapping(Site, HiveSetup);
 
-            Sut.GetMappedHivesForSite(Site).Should().BeEquivalentTo(new[] {Hive});
+            Sut.GetMappedHivesForSite(Site).Should().BeEquivalentTo(new[] {HiveSetup});
         }
 
         [Test]
         public void AddHiveMapping_WithExistingSite_AppendsHiveToMapping()
         {
-            Sut.AddTrustedHive(Hive);
-            Sut.AddTrustedHive(OtherHive);
-            Sut.AddHiveMapping(Site, Hive);
-            Sut.AddHiveMapping(Site, OtherHive);
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.AddTrustedHive(OtherHiveSetup);
+            Sut.AddHiveMapping(Site, HiveSetup);
+            Sut.AddHiveMapping(Site, OtherHiveSetup);
 
-            Sut.GetMappedHivesForSite(Site).Should().ContainInOrder(new[] {Hive, OtherHive});
+            Sut.GetMappedHivesForSite(Site).Should().ContainInOrder(new[] {HiveSetup, OtherHiveSetup});
         }
 
         [Test]
@@ -140,23 +140,10 @@ namespace IronSharePoint.Framework.Test.Administration
         [Test]
         public void GetMappedHivesForSite_WithKnownSite_ReturnsMappedHives()
         {
-            Sut.AddTrustedHive(Hive);
-            Sut.AddHiveMapping(Site, Hive);
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.AddHiveMapping(Site, HiveSetup);
 
-            Sut.GetMappedHivesForSite(Site).Should().ContainInOrder(new[] { Hive });
-        }
-
-        /// <summary>
-        /// TODO seperate fixture for MappedHives ?
-        /// </summary>
-        [Test]
-        [ExpectedException(typeof(SecurityException))]
-        public void AddingHiveToMapping_WhenUntrusted_ThrowsSecurityException()
-        {
-            Sut.AddTrustedHive(Hive);
-            Sut.AddHiveMapping(Site, Hive);
-            var mappings = Sut.GetMappedHivesForSite(Site);
-            mappings.Add(OtherHive);
+            Sut.GetMappedHivesForSite(Site).Should().ContainInOrder(new[] { HiveSetup });
         }
     }
 }

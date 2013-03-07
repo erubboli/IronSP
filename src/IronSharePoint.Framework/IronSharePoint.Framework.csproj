@@ -95,9 +95,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Administration\HiveDescription.cs" />
+    <Compile Include="Administration\HiveSetup.cs" />
     <Compile Include="Administration\IronHiveRegistry.cs" />
-    <Compile Include="Administration\MappedHives.cs" />
+    <Compile Include="Administration\HiveSetupCollection.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
     <Compile Include="Hives\OrderedHiveList.cs" />
     <Compile Include="Hives\PhysicalHive.cs" />
@@ -115,7 +115,6 @@
     <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeId.cs" />
     <Compile Include="IronControl.cs" />
-    <Compile Include="IronDebug.cs" />
     <Compile Include="IronEngine.cs" />
     <Compile Include="IronEnvironment.cs" />
     <Compile Include="IronExpressionBuilder.cs" />
