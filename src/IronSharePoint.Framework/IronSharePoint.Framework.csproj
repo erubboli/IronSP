@@ -95,7 +95,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Administration\HiveDescription.cs" />
     <Compile Include="Administration\IronHiveRegistry.cs" />
+    <Compile Include="Administration\MappedHives.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
     <Compile Include="Hives\OrderedHiveList.cs" />
     <Compile Include="Hives\PhysicalHive.cs" />
@@ -120,7 +122,9 @@
     <Compile Include="IronExpressionBuilder.cs" />
     <Compile Include="IronField.cs" />
     <Compile Include="IronHelper.cs" />
-    <Compile Include="IronHive.cs" />
+    <Compile Include="IronHive.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="IronHttpHandler.cs" />
     <Compile Include="IronHttpModule.cs" />
     <Compile Include="IronJob.cs" />
@@ -129,12 +133,14 @@
     <Compile Include="IronLog\LogLevel.cs" />
     <Compile Include="IronPlatformAdaptationLayer.cs" />
     <Compile Include="IronRuntime.cs" />
+    <Compile Include="IronScriptHost.cs" />
     <Compile Include="IronWrapperControl.cs" />
     <Compile Include="IronWrapperUserControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\BlockingQueue.cs" />
+    <Compile Include="Util\EnumerableExtensions.cs" />
     <Compile Include="Util\IBlockingQueue.cs" />
   </ItemGroup>
   <ItemGroup>
