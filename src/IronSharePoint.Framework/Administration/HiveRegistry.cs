@@ -10,7 +10,7 @@ using System.Security;
 namespace IronSharePoint.Administration
 {
     [Guid("DFEADCC2-F2E6-4797-9514-C2D26BC8747B")]
-    public class IronHiveRegistry : SPPersistedObject
+    public class HiveRegistry : SPPersistedObject
     {
         private static readonly Guid ObjectId = new Guid("DFEADCC2-F2E6-4797-9514-C2D26BC8747B");
 
@@ -31,21 +31,21 @@ namespace IronSharePoint.Administration
 
         /*The default constructor must be specified for serialization.*/
 
-        public IronHiveRegistry()
+        public HiveRegistry()
         {
         }
 
-        public IronHiveRegistry(string name, SPPersistedObject parent, Guid id)
+        public HiveRegistry(string name, SPPersistedObject parent, Guid id)
             : base(name, parent, id)
         {
         }
 
-        public static IronHiveRegistry Local
+        public static HiveRegistry Local
         {
             get
             {
-                var registry = SPFarm.Local.GetObject(ObjectId) as IronHiveRegistry ??
-                               new IronHiveRegistry("IronSharePoint.Administration.HiveRegistry", SPFarm.Local,
+                var registry = SPFarm.Local.GetObject(ObjectId) as HiveRegistry ??
+                               new HiveRegistry("IronSharePoint.Administration.HiveRegistry", SPFarm.Local,
                                                     ObjectId);
 
                 return registry;

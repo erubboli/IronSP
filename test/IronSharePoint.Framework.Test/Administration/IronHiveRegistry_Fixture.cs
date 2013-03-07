@@ -16,7 +16,7 @@ namespace IronSharePoint.Framework.Test.Administration
     [TestFixture]
     public class IronHiveRegistry_Fixture
     {
-        public IronHiveRegistry Sut;
+        public HiveRegistry Sut;
         public SPSite Site;
         public HiveSetup HiveSetup;
         public HiveSetup OtherHiveSetup;
@@ -36,7 +36,7 @@ namespace IronSharePoint.Framework.Test.Administration
         [SetUp]
         public void SetUp()
         {
-            Sut = new IronHiveRegistry();
+            Sut = new HiveRegistry();
             HiveSetup = new HiveSetup()
                 {
                     DisplayName = "Test Hive",

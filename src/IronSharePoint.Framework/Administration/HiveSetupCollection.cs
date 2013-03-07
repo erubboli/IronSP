@@ -4,12 +4,12 @@ namespace IronSharePoint.Administration
 {
     /// <summary>
     /// Custom collection for <see cref="HiveSetup"/>s that perform additional security checks on its operations when
-    /// a <see cref="Administration.IronHiveRegistry"/> is set. Also implements some convience methods for changing the
+    /// a <see cref="HiveRegistry"/> is set. Also implements some convience methods for changing the
     /// order of the items
     /// </summary>
     public class HiveSetupCollection : Collection<HiveSetup>
     {
-        public IronHiveRegistry Registry
+        public HiveRegistry Registry
         {
             get; internal set;
         }

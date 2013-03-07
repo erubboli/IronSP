@@ -37,7 +37,7 @@ namespace IronSharePoint.Framework.Test.Administration
         [Test]
         public void AddItem_EnsuresTrustedHive()
         {
-            var registryMock = new Mock<IronHiveRegistry>();
+            var registryMock = new Mock<HiveRegistry>();
             registryMock.Setup(x => x.EnsureTrustedHive(HiveSetup)).Verifiable();
             Sut.Registry = registryMock.Object;
 
