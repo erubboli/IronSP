@@ -120,9 +120,6 @@
     <Compile Include="IronExpressionBuilder.cs" />
     <Compile Include="IronField.cs" />
     <Compile Include="IronHelper.cs" />
-    <Compile Include="IronHive.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="IronHttpHandler.cs" />
     <Compile Include="IronHttpModule.cs" />
     <Compile Include="IronJob.cs" />

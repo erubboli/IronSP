@@ -34,7 +34,7 @@ namespace IronSharePoint.Hives
         }
 
         public SPDocumentHive(Guid siteId)
-            : this(siteId, IronConstant.HiveLibraryPath)
+            : this(siteId, IronConstant.IronHiveLibraryPath)
         {
         }
 

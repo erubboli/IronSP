@@ -17,12 +17,12 @@ namespace IronSharePoint.Administration
         /// <summary>
         /// Maps a target id (SPSite, SPWebApplication, ...) to a list of hives
         /// </summary>
-        [Persisted] private readonly Dictionary<Guid, HiveSetupCollection> _mappedHives = new Dictionary<Guid, HiveSetupCollection>();
+        [Persisted] private Dictionary<Guid, HiveSetupCollection> _mappedHives = new Dictionary<Guid, HiveSetupCollection>();
 
         /// <summary>
         /// The list of trusted hives
         /// </summary>
-        [Persisted] private readonly List<HiveSetup> _trustedHives = new List<HiveSetup>();
+        [Persisted] private List<HiveSetup> _trustedHives = new List<HiveSetup>();
 
         public IEnumerable<HiveSetup> TrustedHives
         {
@@ -178,7 +178,7 @@ namespace IronSharePoint.Administration
         /// <exception cref="SecurityException"></exception>
         public virtual void EnsureTrustedHive(HiveSetup hive)
         {
-            if (hive == null || !TrustedHives.Contains(hive))
+            if(hive != null && !TrustedHives.Contains(hive))
             {
                 throw new SecurityException(String.Format("Hive '{0}' is not a trusted hive", hive));
             }
@@ -200,6 +200,13 @@ namespace IronSharePoint.Administration
                         }
                     }
                 });
+        }
+
+        protected override void OnDeserialization()
+        {
+            base.OnDeserialization();
+            if (_trustedHives == null) _trustedHives = new List<HiveSetup>();
+            if (_mappedHives == null) _mappedHives = new Dictionary<Guid, HiveSetupCollection>();
         }
     }
 }

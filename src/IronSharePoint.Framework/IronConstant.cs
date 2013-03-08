@@ -1,21 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.SharePoint.Administration;
 
 namespace IronSharePoint
 {
     public static class IronConstant
     {
-        public const string IronHiveRoot = "IronHive://";
-        public const string HiveLibraryPath = "_catalogs/IronHive";
+        public const string IronHiveLibraryPath = "_catalogs/IronHive";
         public const string IronLogsListPath = "Lists/IronLogs";
+
         public const string IronSiteFeatureId = "a1752f91-1403-40c1-a257-69eddf8976cf";
         public const string IronHiveSiteFeatureId = "354ee774-7d04-4ad6-91f9-1bc433a70bee";
         public const string IronRubyFeatureId = "183909b9-cfb3-477c-a48c-02e3d5e59844";
-        public const string IronRubyLanguageName = "IronRuby";
+
         public const string IronPrefix = "IronSP_";
-        public const string IronSpRoot = IronPrefix + "Root";
+
+        public const string IronRubyLanguageName = "IronRuby";
+        public const string IronRuntimeKey = IronPrefix + "Runtime";
+
+        public static string IronSPRootDirectory =
+            @"C:\Program Files\Common Files\microsoft shared\Web Server Extensions\14\TEMPLATE\FEATURES\IronSP_Root";
 
         public static IronEnvironment IronEnv
         {
@@ -39,5 +46,12 @@ namespace IronSharePoint
                 return env;
             }
         }
+
+    //    static IronConstant()
+    //    {
+    //        var siteFeatureDirectory = SPFarm.Local.FeatureDefinitions[IronConstant.IronHiveSiteFeatureId].RootDirectory;
+    //        var featureDirectory = new DirectoryInfo(siteFeatureDirectory).Parent.FullName;
+    //        IronSPRootDirectory = Path.Combine(featureDirectory, "IronSP_Root");
+    //    }
     }
 }

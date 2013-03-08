@@ -247,7 +247,7 @@ namespace IronSharePoint.Framework.Test.Hive
                 });
 
             Isolate.WhenCalled(() => site.RootWeb).WillReturn(web);
-            Isolate.WhenCalled(() => web.GetFolder(IronConstant.HiveLibraryPath)).WillReturn(folder);
+            Isolate.WhenCalled(() => web.GetFolder(IronConstant.IronHiveLibraryPath)).WillReturn(folder);
             Isolate.WhenCalled(() => web.ServerRelativeUrl).WillReturn("/sites/IronSP");
             Isolate.WhenCalled(() => folder.DocumentLibrary).WillReturn(lib);
             Isolate.WhenCalled(() => lib.ParentWeb).WillReturn(web);
