@@ -54,9 +54,9 @@ namespace IronSharePoint
                 var descriptions = registry.GetMappedHivesForSite(_siteId).OrderBy(x => x.Priority);
                 return descriptions.Select(x =>
                     {
-                        var argTypes = x.HiveArguments.GetType();
-                        var ctor = x.HiveType.GetConstructor(new[] {argTypes});
-                        return (IHive) ctor.Invoke(new[] {x.HiveArguments});
+                        var argTypes = x.HiveArguments.Select(y => y.GetType()).ToArray();
+                        var ctor = x.HiveType.GetConstructor(argTypes);
+                        return (IHive) ctor.Invoke(x.HiveArguments);
                     });
             }
             catch (ArgumentException)
