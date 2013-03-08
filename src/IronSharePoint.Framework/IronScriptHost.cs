@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using IronSharePoint.Administration;
 using IronSharePoint.Hives;
+using IronSharePoint.Util;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint.Administration;
 
@@ -34,35 +35,39 @@ namespace IronSharePoint
 
         private IHive CreateHive()
         {
-            var hives = CreateHivesFromRegistry().ToList();
+            var hives = GetHiveSetups().OrderBy(x => x.Priority).Select(x =>
+                {
+                    var argTypes = x.HiveArguments.Select(y => y.GetType()).ToArray();
+                    var ctor = x.HiveType.GetConstructor(argTypes);
+                    return ctor != null ? (IHive) ctor.Invoke(x.HiveArguments) : null;
+                }).Compact().ToArray();
 
-            if (!hives.Any(x => x is PhysicalHive && 
-                (x as PhysicalHive).Root == IronConstant.IronSPRootDirectory))
-            {
-                var spRootHive = new PhysicalHive(IronConstant.IronSPRootDirectory);
-                hives.Add(spRootHive);
-            }
-
-            return new OrderedHiveList(hives.ToArray());
+            return new OrderedHiveList(hives);
         }
 
-        private IEnumerable<IHive> CreateHivesFromRegistry()
+        private HiveSetupCollection GetHiveSetups()
+        {
+            var hiveSetups = GetHiveSetupsFromRegistry();
+
+            var ironSPRootHiveSetup = new HiveSetup()
+                {
+                    DisplayName = "IronSP Root",
+                    HiveArguments = new object[] {IronConstant.IronSPRootDirectory},
+                    HiveType = typeof (PhysicalHive)
+                };
+            if (!hiveSetups.Contains(ironSPRootHiveSetup)) hiveSetups.Add(ironSPRootHiveSetup);
+            return hiveSetups;
+        }
+
+        private HiveSetupCollection GetHiveSetupsFromRegistry()
         {
             var registry = HiveRegistry.Local;
-            try
+            HiveSetupCollection setups;
+            if (!registry.TryGetHiveSetups(_siteId, out setups))
             {
-                var descriptions = registry.GetMappedHivesForSite(_siteId).OrderBy(x => x.Priority);
-                return descriptions.Select(x =>
-                    {
-                        var argTypes = x.HiveArguments.Select(y => y.GetType()).ToArray();
-                        var ctor = x.HiveType.GetConstructor(argTypes);
-                        return (IHive) ctor.Invoke(x.HiveArguments);
-                    });
+                setups = new HiveSetupCollection();
             }
-            catch (ArgumentException)
-            {
-                return new IHive[0];
-            }
+            return setups;
         }
     }
 }

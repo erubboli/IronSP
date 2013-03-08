@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using IronSharePoint.Hives;
 using Microsoft.SharePoint.Administration;
+using System.Linq;
 
 namespace IronSharePoint.Administration
 {
@@ -74,7 +77,8 @@ namespace IronSharePoint.Administration
 
         protected bool Equals(HiveSetup other)
         {
-            return Equals(_hiveArguments, other._hiveArguments) && Equals(_hiveType, other._hiveType);
+            return (_hiveArguments ?? new object[0]).SequenceEqual(other._hiveArguments ?? new object[0]) 
+                && Equals(_hiveType, other._hiveType);
         }
 
         public override bool Equals(object obj)
@@ -90,6 +94,23 @@ namespace IronSharePoint.Administration
             unchecked
             {
                 return ((_hiveArguments != null ? _hiveArguments.GetHashCode() : 0)*397) ^ (_hiveType != null ? _hiveType.GetHashCode() : 0);
+            }
+        }
+
+        /// <summary>
+        /// Hive Setup for the IronSP Ruby Framework
+        /// </summary>
+        public static HiveSetup IronSPRoot
+        {
+            get
+            {
+                return new HiveSetup
+                    {
+                        DisplayName = "IronSP Root",
+                        Description = "Contains the Ruby part of the IronSP Framework",
+                        HiveArguments = new object[] {IronConstant.IronSPRootDirectory},
+                        HiveType = typeof (PhysicalHive)
+                    };
             }
         }
     }
