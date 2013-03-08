@@ -83,39 +83,66 @@ namespace IronSharePoint.Administration
         /// <param name="site"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public IList<HiveSetup> GetMappedHivesForSite(SPSite site)
+        public HiveSetupCollection GetHiveSetups(SPSite site)
         {
-            return GetMappedHivesForSite(site.ID);
+            return GetHiveSetups(site.ID);
         }
 
         /// <summary>
-        /// Returns all mapped hives for the SPSite with the given <paramref name="siteId"/>
+        /// Returns all mapped hive setups for the SPSite with the given <paramref name="siteId"/>
         /// </summary>
         /// <param name="siteId"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public IList<HiveSetup> GetMappedHivesForSite(Guid siteId)
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public HiveSetupCollection GetHiveSetups(Guid siteId)
         {
-            var mappings = new HiveSetupCollection();
+            HiveSetupCollection hiveSetups;
+            if (!TryGetHiveSetups(siteId, out hiveSetups))
+            {
+                throw new ArgumentOutOfRangeException("siteId", siteId, "No mapped hive setups found for SPSite");
+            }
+            return hiveSetups;
+        }
+
+        /// <summary>
+        /// Returns all mapped hives for the <paramref name="site"/>
+        /// </summary>
+        /// <param name="site"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public bool TryGetHiveSetups(SPSite site, out HiveSetupCollection hiveSetups)
+        {
+            return TryGetHiveSetups(site.ID, out hiveSetups);
+        }
+
+        /// <summary>
+        /// Tries to rerieve all hive setups for the SPSite with the given <paramref name="siteId"/> and stores the
+        /// result in <paramref name="hiveSetups"/>
+        /// </summary>
+        /// <param name="siteId"></param>
+        /// <param name="hiveSetups"></param>
+        /// <returns></returns>
+        public bool TryGetHiveSetups(Guid siteId, out HiveSetupCollection hiveSetups)
+        {
+            HiveSetupCollection setups = null; // need an extra variable for out parameter below
+            var hasSetups = false;
             SPSecurity.RunWithElevatedPrivileges(() =>
                 {
                     using (var site = new SPSite(siteId))
                     {
 
-                        var hasMapping = _mappedHives.TryGetValue(site.ID, out mappings) ||
-                                         (site.SiteSubscription != null && _mappedHives.TryGetValue(site.SiteSubscription.Id, out mappings)) ||
-                                         _mappedHives.TryGetValue(site.WebApplication.Id, out mappings) ||
-                                         _mappedHives.TryGetValue(SPFarm.Local.Id, out mappings);
-
-                        if (!hasMapping)
-                        {
-                            throw new ArgumentException("No hive mappings found for SPSite", "siteId");
-                        }
+                        hasSetups = _mappedHives.TryGetValue(site.ID, out setups) ||
+                                    (site.SiteSubscription != null &&
+                                     _mappedHives.TryGetValue(site.SiteSubscription.Id, out setups)) ||
+                                    _mappedHives.TryGetValue(site.WebApplication.Id, out setups) ||
+                                    _mappedHives.TryGetValue(SPFarm.Local.Id, out setups);
                     }
                 });
 
-            mappings.Registry = this;
-            return mappings;
+            hiveSetups = setups;
+            if (hasSetups) hiveSetups.Registry = this;
+
+            return hasSetups;
         }
 
         private static Guid GetTargetId(object target)

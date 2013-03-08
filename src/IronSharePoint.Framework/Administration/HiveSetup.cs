@@ -71,5 +71,26 @@ namespace IronSharePoint.Administration
             get { return _order; }
             internal set { _order = value; }
         }
+
+        protected bool Equals(HiveSetup other)
+        {
+            return Equals(_hiveArguments, other._hiveArguments) && Equals(_hiveType, other._hiveType);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((HiveSetup) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((_hiveArguments != null ? _hiveArguments.GetHashCode() : 0)*397) ^ (_hiveType != null ? _hiveType.GetHashCode() : 0);
+            }
+        }
     }
 }

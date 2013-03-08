@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Administration\HiveSetup_Fixture.cs" />
-    <Compile Include="Administration\IronHiveRegistry_Fixture.cs" />
+    <Compile Include="Administration\HiveRegistry_Fixture.cs" />
     <Compile Include="Dummy.cs" />
     <Compile Include="Hive\OrderedHiveList_Fixture.cs" />
     <Compile Include="Hive\PhysicalHive_Fixture.cs" />

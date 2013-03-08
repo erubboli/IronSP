@@ -14,7 +14,7 @@ using TypeMock.ArrangeActAssert;
 namespace IronSharePoint.Framework.Test.Administration
 {
     [TestFixture]
-    public class IronHiveRegistry_Fixture
+    public class HiveRegistry_Fixture
     {
         public HiveRegistry Sut;
         public SPSite Site;
@@ -116,7 +116,7 @@ namespace IronSharePoint.Framework.Test.Administration
 
             Sut.AddHiveMapping(Site, HiveSetup);
 
-            Sut.GetMappedHivesForSite(Site).Should().BeEquivalentTo(new[] {HiveSetup});
+            Sut.GetHiveSetups(Site).Should().BeEquivalentTo(new[] {HiveSetup});
         }
 
         [Test]
@@ -127,23 +127,52 @@ namespace IronSharePoint.Framework.Test.Administration
             Sut.AddHiveMapping(Site, HiveSetup);
             Sut.AddHiveMapping(Site, OtherHiveSetup);
 
-            Sut.GetMappedHivesForSite(Site).Should().ContainInOrder(new[] {HiveSetup, OtherHiveSetup});
+            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] {HiveSetup, OtherHiveSetup});
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void GetMappedHivesForSite_WithUnknownSite_ThrowsArgumentException()
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void GetHiveSetups_WhenNoSetupsRegisteredForSite_ThrowsArgumentException()
         {
-            Sut.GetMappedHivesForSite(Site);
+            Sut.GetHiveSetups(Site);
         }
 
         [Test]
-        public void GetMappedHivesForSite_WithKnownSite_ReturnsMappedHives()
+        public void GetHiveSetups_WhenSetupsRegisteredForSite_ReturnsMappedHives()
         {
             Sut.AddTrustedHive(HiveSetup);
             Sut.AddHiveMapping(Site, HiveSetup);
 
-            Sut.GetMappedHivesForSite(Site).Should().ContainInOrder(new[] { HiveSetup });
+            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] { HiveSetup });
+        }
+
+        [Test]
+        public void TryGetHiveSetups_WhenNoSetupsRegisteredForSite_ReturnsFalse()
+        {
+            HiveSetupCollection hiveSetups;
+
+            Sut.TryGetHiveSetups(Site, out hiveSetups).Should().BeFalse();
+        }
+
+        [Test]
+        public void TryGetHiveSetups_WhenSetupsRegisteredForSite_ReturnsTrue()
+        {
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.AddHiveMapping(Site, HiveSetup);
+            HiveSetupCollection hiveSetups;
+
+            Sut.TryGetHiveSetups(Site, out hiveSetups).Should().BeTrue();
+        }
+
+        [Test]
+        public void TryGetHiveSetups_WhenSetupsRegisteredForSite_StoresSetupsInOutVariable()
+        {
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.AddHiveMapping(Site, HiveSetup);
+            HiveSetupCollection hiveSetups;
+
+            Sut.TryGetHiveSetups(Site, out hiveSetups);
+            hiveSetups.Should().BeEquivalentTo(new[]{HiveSetup});
         }
     }
 }
