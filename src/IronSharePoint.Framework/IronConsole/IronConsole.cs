@@ -55,7 +55,7 @@ namespace IronSharePoint.IronConsole
 
         public static IronConsole GetConsoleForRuntime(IronRuntime runtime)
         {
-            var hiveId = runtime.IronHive.Id;
+            var hiveId = runtime.Id;
             IronConsole console;
             if (!_hiveConsoles.TryGetValue(hiveId, out console) || console.IsDisposed)
             {

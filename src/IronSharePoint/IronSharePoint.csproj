@@ -133,6 +133,7 @@
     <Compile Include="IronConsole\IronConsoleUserControl.ascx.designer.cs">
       <DependentUpon>IronConsoleUserControl.ascx.cs</DependentUpon>
     </Compile>
+    <Compile Include="IronConsole\IronConsoleWebPart.cs" />
     <Compile Include="IronPart\IronPart.cs" />
     <Compile Include="Layouts\IronSP\IronEditor.aspx.cs">
       <DependentUpon>IronEditor.aspx</DependentUpon>

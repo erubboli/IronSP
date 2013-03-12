@@ -44,7 +44,6 @@ namespace IronSharePoint
 
                 logger.Log(String.Format("Error: {0} at {1}!", exception.Message, exception.StackTrace), LogLevel.Fatal);
 
-                //hack: ruby engine hard coded
                 var engine = runtime.GetEngineByExtension(".rb");
 
                 if (engine != null)
@@ -52,7 +51,7 @@ namespace IronSharePoint
                     var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
                     string error = eo.FormatException(exception);
 
-                    logger.Log(String.Format("Ruby Error: {0} at {1}", exception.Message, error),LogLevel.Fatal);
+                    logger.Log(String.Format("Ruby Error: {0} at {1}", exception.Message, error), LogLevel.Fatal);
 
                 }
             }

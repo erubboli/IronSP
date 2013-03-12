@@ -27,7 +27,7 @@ namespace IronSharePoint.IronLog
 
             try
             {
-                SPSite site = _runtime.IronHive.Site;
+                var site = _runtime.Site;
 
                 site.AddWorkItem(Guid.NewGuid(),
                                  DateTime.UtcNow,

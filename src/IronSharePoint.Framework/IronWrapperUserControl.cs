@@ -79,10 +79,7 @@ namespace IronSharePoint
                         if (!String.IsNullOrEmpty(TemplatePath))
                         {
                             var path = TemplatePath.Replace("~site", SPContext.Current.Site.ServerRelativeUrl)
-                                .Replace("~web", SPContext.Current.Web.ServerRelativeUrl)
-                                .Replace("~hiveSite", engine.IronRuntime.IronHive.Site.ServerRelativeUrl)
-                                .Replace("~hiveWeb", engine.IronRuntime.IronHive.Web.ServerRelativeUrl)
-                                .Replace("~hiveFolder", engine.IronRuntime.IronHive.Folder.ServerRelativeUrl);
+                                                   .Replace("~web", SPContext.Current.Web.ServerRelativeUrl);
 
                             Template = this.LoadTemplate(path);
                             Template.InstantiateIn(ctrl);
@@ -105,7 +102,7 @@ namespace IronSharePoint
         {
             if (_exception!=null)
             {
-                if (SPContext.Current.Web.UserIsSiteAdmin && engine.IronRuntime.IronHive.Web.CurrentUser.IsSiteAdmin)
+                if (SPContext.Current.Web.UserIsSiteAdmin)
                 {
                     var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
                     string error = eo.FormatException(_exception);

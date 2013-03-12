@@ -1,121 +1,93 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Scripting;
-using Microsoft.SharePoint;
 using System.IO;
-using System.Web;
-using Microsoft.SharePoint.Utilities;
 
 namespace IronSharePoint
 {
     public class IronPlatformAdaptationLayer : PlatformAdaptationLayer
     {
-        private readonly IronHive _ironHive;
+        private readonly IHive _hive;
 
-        public IronPlatformAdaptationLayer(IronHive host)
+        public IronPlatformAdaptationLayer(IHive hive)
         {
-            _ironHive=host;
+            _hive = hive;
         }
        
         public override string[] GetFileSystemEntries(string path, string searchPattern, bool includeFiles, bool includeDirectories)
         {
-            using (new SPMonitoredScope(string.Format("AdaptionLayer Query - {0}", path)))
+            var entries = new List<string>();
+            if (includeFiles)
             {
-                var entries = base.GetFileSystemEntries(path, searchPattern, includeFiles, includeDirectories);
-                /*
-                 * HACK: if you just return 'app/foo/bar.rb', IronRuby removes the first two characters for whatever reason. Therefore, appending to random chars fixes this
-                 */
-                return entries;//.Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x).ToArray();
+                //entries.AddRange(Directory.GetFiles(path, searchPattern));
+                entries.AddRange(_hive.GetFiles(path, searchPattern));
             }
+            if (includeDirectories)
+            {
+                //entries.AddRange(Directory.GetDirectories(path, searchPattern));
+                entries.AddRange(_hive.GetDirectories(path, searchPattern));
+            }
+            var result = entries.Distinct().Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x).ToArray();
+            return result;
         }
 
         public override bool DirectoryExists(string path)
         {
-            return base.DirectoryExists(path) || _ironHive.ContainsDirectory(path);
+            return base.DirectoryExists(path) || _hive.DirectoryExists(path);
         }
 
         public override bool FileExists(string file)
         {
-            bool fileExists = !file.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(file);
-
-            if (!fileExists)
-            {
-                fileExists = _ironHive.ContainsFile(file);
-            }
-         
-            return fileExists;
-        }
-
-        public override System.IO.Stream OpenOutputFileStream(string path)
-        {
-            Stream fileStream = null;
-            if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
-            {
-                fileStream = base.OpenOutputFileStream(path);
-            }
-            else
-            {
-                var spFile = _ironHive.LoadFile(path);
-
-                if (spFile != null)
-                {
-                    fileStream = spFile.OpenBinaryStream();
-                }
-            }
-
-            return fileStream;
+            return base.FileExists(file) || _hive.FileExists(file);
         }
 
         public override string GetFullPath(string file)
         {
-            if (_ironHive.ContainsFile(file))
-            {
-                return _ironHive.GetFullPath(file);
-            }
-            return base.GetFullPath(file);
+            return base.FileExists(file) ? base.GetFullPath(file) : _hive.GetFullPath(file);
+        }
+
+        public override Stream OpenOutputFileStream(string path)
+        {
+            return base.FileExists(path) ? base.OpenInputFileStream(path) : _hive.OpenOutputFileStream(path);
         }
 
         public override Stream OpenInputFileStream(string path)
         {
-            Stream fileStream = null;
-            if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
-            {
-                fileStream = base.OpenInputFileStream(path);
-            }
-            else
-            {
-                var spFile = _ironHive.LoadFile(path);
-
-                if (spFile != null)
-                {
-                    fileStream = spFile.OpenBinaryStream();
-                }
-            }
-
-            return fileStream;
+            return base.FileExists(path) ? base.OpenInputFileStream(path) : _hive.OpenOutputFileStream(path);
         }
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share)
         {
-            Stream fileStream = null;
-            if (!path.StartsWith(IronConstant.IronHiveRoot) && base.FileExists(path))
-            {
-                fileStream = base.OpenInputFileStream(path, mode, access, share);
-            }
-            else
-            {
-                var spFile = _ironHive.LoadFile(path);
+            return base.FileExists(path) ? base.OpenInputFileStream(path, mode, access, share) : _hive.OpenOutputFileStream(path);
+        }
 
-                if (spFile != null)
-                {
-                    fileStream = spFile.OpenBinaryStream();
-                }
-            }
+        public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize)
+        {
+            return base.FileExists(path) ? 
+                base.OpenInputFileStream(path, mode, access, share, bufferSize) :
+                _hive.OpenOutputFileStream(path);
+        }
 
-            return fileStream;
+        public override void CreateDirectory(string path)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void DeleteDirectory(string path, bool recursive)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void DeleteFile(string path, bool deleteReadOnly)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void MoveFileSystemEntry(string sourcePath, string destinationPath)
+        {
+            throw new NotSupportedException();
         }
     }
 }

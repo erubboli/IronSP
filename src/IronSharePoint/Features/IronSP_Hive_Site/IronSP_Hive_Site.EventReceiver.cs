@@ -26,7 +26,7 @@ namespace IronSharePoint.Features.IronSP_Hive_Site
         {
             //var site = properties.Feature.Parent as SPSite;
             //var web = site.RootWeb;
-            //var list = web.GetList(web.ServerRelativeUrl + "/" + IronConstant.HiveLibraryPath);
+            //var list = web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronHiveLibraryPath);
             
             //string assembly = typeof(IronHiveEventReceiver).Assembly.FullName;
             //string type = typeof(IronHiveEventReceiver).FullName;
@@ -55,7 +55,7 @@ namespace IronSharePoint.Features.IronSP_Hive_Site
         {
             var site = properties.Feature.Parent as SPSite;
             var web = site.RootWeb;
-            var list = web.GetList(web.ServerRelativeUrl + "/" + IronConstant.HiveLibraryPath);
+            var list = web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronHiveLibraryPath);
 
             string type = typeof(IronHiveEventReceiver).FullName;
 

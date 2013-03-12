@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using IronSharePoint.Administration;
 using IronSharePoint.IronConsole;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.WebControls;
 using System.Web;
-using IronSharePoint.Administration;
 using System.Linq;
 
 namespace IronSharePoint
@@ -32,7 +32,7 @@ namespace IronSharePoint
                     return;
                 }
 
-                IronHiveRegistry.Local.EnsureTrustedHive(site.ID);
+                //HiveRegistry.Local.IsTrusted(site.ID);
 
                 //var ironRuntime = IronRuntime.GetIronRuntime(site, site.ID);
                 var ironRuntime = IronRuntime.GetDefaultIronRuntime(site);

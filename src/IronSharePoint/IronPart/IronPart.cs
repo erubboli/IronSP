@@ -92,9 +92,10 @@ namespace IronSharePoint.IronPart
         {
             if (Exception != null)
             {
-                if (SPContext.Current.Web.UserIsSiteAdmin && ironRuntime.IronHive.Web.CurrentUser.IsSiteAdmin)
+                if (SPContext.Current.Web.UserIsSiteAdmin)
                 {
-                    IronRuntime.LogError(String.Format("Error: {0}", ScriptName, Exception.Message), Exception);
+                    IronRuntime.LogError(String.Format("Script: {0}, Error: {1}", ScriptName, Exception.Message),
+                                         Exception);
 
                     writer.Write(Exception.Message);
                 }

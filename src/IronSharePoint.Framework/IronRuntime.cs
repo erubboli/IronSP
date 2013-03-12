@@ -1,41 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Web;
-using IronSharePoint.Administration;
 using IronSharePoint.Diagnostics;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint.Utilities;
-using System.Linq;
 
 namespace IronSharePoint
 {
     public class IronRuntime : IDisposable
     {
-        // the key is the ID of the hive
+        // SiteId -> Runtime
         private static readonly Dictionary<Guid, IronRuntime> _staticLivingRuntimes =
             new Dictionary<Guid, IronRuntime>();
 
         private static readonly object _sync = new Object();
 
-        private readonly Guid _hiveId;
+        private readonly Guid _siteId;
+        private readonly Guid _id;
         private IronConsole.IronConsole _console;
-        private bool _isInitialized;
         private ScriptRuntime _scriptRuntime;
-        private IList<Guid> _authenticatedSites;
 
-        private IronRuntime(Guid hiveId)
+        private IronRuntime(Guid siteId)
         {
-            _hiveId = hiveId;
+            _siteId = siteId;
+            _id = Guid.NewGuid();
 
             DynamicTypeRegistry = new Dictionary<string, Object>();
             DynamicFunctionRegistry = new Dictionary<string, Object>();
             Engines = new Dictionary<string, IronEngine>();
-            _authenticatedSites = new List<Guid>();
         }
 
         internal static Dictionary<Guid, IronRuntime> LivingRuntimes
@@ -56,32 +51,58 @@ namespace IronSharePoint
 
         public ScriptRuntime ScriptRuntime
         {
-            get
-            {
-                if (_scriptRuntime == null)
-                {
-                    Initialize();
-                }
-
-                return _scriptRuntime;
-            }
+            get { return _scriptRuntime; }
         }
 
-        public IronHive IronHive
+        public IronScriptHost ScripHost
         {
-            get { return (IronHive) ScriptRuntime.Host; }
+            get { return (IronScriptHost) ScriptRuntime.Host; }
+        }
+
+        public IHive Hive
+        {
+            get { return ScripHost.Hive; }
         }
 
         public Dictionary<string, Object> DynamicTypeRegistry { get; private set; }
         public Dictionary<string, Object> DynamicFunctionRegistry { get; private set; }
+
         public string HttpHandlerClass { get; set; }
         public bool IsDisposed { get; private set; }
-        public bool IsInitialized { get; set; }
-        public bool IsInitializing { get; set; }
+
+        public Guid SiteId
+        {
+            get { return _siteId; }
+        }
 
         public Guid Id
         {
-            get { return _hiveId; }
+            get { return _id; }
+        }
+
+        public SPSite Site
+        {
+            get
+            {
+                var key = IronHelper.GetPrefixedKey("Site_" + Id);
+                var httpContext = HttpContext.Current;
+                SPSite site;
+
+                if (httpContext != null)
+                {
+                    if (!httpContext.Items.Contains(key))
+                    {
+                        httpContext.Items[key] = new SPSite(Id, SPUserToken.SystemAccount);
+                    }
+                    site = httpContext.Items[key] as SPSite;
+                }
+                else
+                {
+                    site = new SPSite(Id, SPUserToken.SystemAccount);
+                }
+
+                return site;
+            }
         }
 
         #region IDisposable Members
@@ -91,16 +112,12 @@ namespace IronSharePoint
             if (!IsDisposed)
             {
                 IsDisposed = true;
-                if (IronHive != null)
-                {
-                    IronHive.Close();
-                }
                 if (_console != null)
                 {
                     _console.Dispose();
                     _console = null;
                 }
-                LivingRuntimes.Remove(_hiveId);
+                LivingRuntimes.Remove(_siteId);
             }
         }
 
@@ -108,79 +125,74 @@ namespace IronSharePoint
 
         private void Initialize()
         {
-            if (!IsInitialized && !IsInitializing)
+            var setup = new ScriptRuntimeSetup();
+            var languageSetup = new LanguageSetup(
+                "IronRuby.Runtime.RubyContext, IronRuby, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1",
+                IronConstant.IronRubyLanguageName,
+                new[] {"IronRuby", "Ruby", "rb"},
+                new[] {".rb"});
+            setup.LanguageSetups.Add(languageSetup);
+            setup.HostType = typeof (IronScriptHost);
+            setup.HostArguments = new object[] {_siteId};
+            setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Debug;
+
+            _scriptRuntime = new ScriptRuntime(setup);
+
+            _scriptRuntime.LoadAssembly(typeof (IronRuntime).Assembly); // IronSharePoint
+            _scriptRuntime.LoadAssembly(typeof (SPSite).Assembly); // Microsoft.SharePoint
+            _scriptRuntime.LoadAssembly(typeof (IHttpHandler).Assembly); // System.Web
+
+            using (new SPMonitoredScope("Creating IronEngine(s)"))
             {
-                lock (_sync)
-                {
-                    if (!IsInitialized && !IsInitializing)
+                string ironRubyRoot =
+                    @"C:\Program Files\Common Files\microsoft shared\Web Server Extensions\15\TEMPLATE\FEATURES\IronSP_IronRuby";
+                SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
+
+                ScriptEngine rubyEngine = _scriptRuntime.GetEngineByFileExtension(".rb");
+                rubyEngine.SetSearchPaths(new List<String>
                     {
-                        IsInitializing = true;
+                        Path.Combine(ironRubyRoot, @"ironruby"),
+                        Path.Combine(ironRubyRoot, @"ruby\site_ruby\1.9.1"),
+                        Path.Combine(ironRubyRoot, @"ruby\1.9.1")
+                    });
 
-                        var setup = new ScriptRuntimeSetup();
-                        var languageSetup = new LanguageSetup(
-                            "IronRuby.Runtime.RubyContext, IronRuby, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1",
-                            IronConstant.IronRubyLanguageName,
-                            new[] {"IronRuby", "Ruby", "rb"},
-                            new[] {".rb"});
-                        setup.LanguageSetups.Add(languageSetup);
-                        setup.HostType = typeof (IronHive);
-                        setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Debug;
+                var ironRubyEngine = new IronEngine(this, rubyEngine);
+                Engines[".rb"] = ironRubyEngine;
 
-                        _scriptRuntime = new ScriptRuntime(setup);
-                        (_scriptRuntime.Host as IronHive).Id = _hiveId;
-
-                        _scriptRuntime.LoadAssembly(typeof (IronRuntime).Assembly); // IronSharePoint
-                        _scriptRuntime.LoadAssembly(typeof (SPSite).Assembly); // Microsoft.SharePoint
-                        _scriptRuntime.LoadAssembly(typeof (IHttpHandler).Assembly); // System.Web
-
-                        using (new SPMonitoredScope("Creating IronEngine(s)"))
-                        {
-                            string ironRubyRoot = Path.Combine(IronHive.FeatureFolderPath, "IronSP_IronRuby\\");
-                            SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
-
-                            ScriptEngine rubyEngine = _scriptRuntime.GetEngineByFileExtension(".rb");
-                            rubyEngine.SetSearchPaths(new List<String>
-                                                          {
-                                                              Path.Combine(ironRubyRoot, @"ironruby"),
-                                                              Path.Combine(ironRubyRoot, @"ruby\site_ruby\1.9.1"),
-                                                              Path.Combine(ironRubyRoot, @"ruby\1.9.1"),
-                                                              IronHive.CurrentDir
-                                                          });
-
-                            var ironRubyEngine = new IronEngine(this, rubyEngine);
-                            Engines[".rb"] = ironRubyEngine;
-
-                            ScriptScope scope = rubyEngine.CreateScope();
-                            scope.SetVariable("iron_runtime", this);
-                            scope.SetVariable("ruby_engine", ironRubyEngine);
-                            scope.SetVariable("rails_root", IronHive.CurrentDir);
-                            scope.SetVariable("rails_env", IronConstant.IronEnv == IronEnvironment.Debug ? "development" : IronConstant.IronEnv.ToString().ToLower());
-                            rubyEngine.Execute("$RUNTIME = iron_runtime; $RUBY_ENGINE = ruby_engine; RAILS_ROOT = rails_root; RAILS_ENV = rails_env", scope);
-                            IronConsole.Execute(@"
+                ScriptScope scope = rubyEngine.CreateScope();
+                scope.SetVariable("iron_runtime", this);
+                scope.SetVariable("ruby_engine", ironRubyEngine);
+                scope.SetVariable("rails_root", ironRubyRoot);
+                scope.SetVariable("rails_env",
+                                  IronConstant.IronEnv == IronEnvironment.Debug
+                                      ? "development"
+                                      : IronConstant.IronEnv.ToString().ToLower());
+                rubyEngine.Execute(
+                    "$RUNTIME = iron_runtime; " +
+                    "RUBY_ENGINE = ruby_engine;" +
+                    "RAILS_ROOT = rails_root;" +
+                    "RAILS_ENV = rails_env",
+                    scope);
+                IronConsole.Execute(@"
 Dir.chdir RAILS_ROOT
 
 require 'rubygems'
 
 begin
     load_assembly 'Microsoft.SharePoint.Publishing, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'
-    require './iron_sharepoint'
-    require 'application'
+#require './iron_sharepoint'
+#   require 'application'
 rescue Exception => ex
     IRON_DEFAULT_LOGGER.error ex
 ensure
     $RUBY_ENGINE.is_initialized = true
 end", ".rb", false);
-                            IsInitializing = false;
-                            IsInitialized = true;
-                        }
-                    }
-                }
             }
         }
 
         private void PrivilegedInitialize(string rubyRoot)
         {
-            string gemDir = Path.Combine(rubyRoot, "lib/ironruby/gems/1.8").Replace("\\", "/");
+            string gemDir = Path.Combine(rubyRoot, "lib/ironruby/gems/1.9.1").Replace("\\", "/");
 
             Environment.SetEnvironmentVariable("IRONRUBY_10_20", rubyRoot);
             Environment.SetEnvironmentVariable("GEM_PATH", gemDir);
@@ -189,99 +201,42 @@ end", ".rb", false);
 
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
         {
-            const string RuntimeKey = "IronSP_Runtime";
             using (new SPMonitoredScope("Retrieving IronRuntime"))
             {
-                var runtime = TryGetFromAuthenticated(targetSite);
-                runtime = TryGetFromHttpContext(RuntimeKey, runtime);
+                Guid targetId = targetSite.ID;
+                IronRuntime runtime;
 
-                if (runtime == null)
+                if (!TryGetExistingRuntime(targetId, out runtime))
                 {
-                    using (new SPMonitoredScope("Checking IronHiveRegistry"))
+                    lock (_sync)
                     {
-                        Guid hiveId = IronHiveRegistry.Local.GetHiveForSite(targetSite.ID);
-                        if (hiveId == Guid.Empty)
+                        if (!TryGetExistingRuntime(targetId, out runtime))
                         {
-                            throw new InvalidOperationException(
-                                String.Format("There is no IronHive mapping for the site with id {0}", targetSite.ID));
-                        }
-
-                        if (!LivingRuntimes.ContainsKey(hiveId))
-                        {
-                            lock (_sync)
+                            using (new SPMonitoredScope("Creating IronRuntime"))
                             {
-                                if (!LivingRuntimes.TryGetValue(hiveId, out runtime))
-                                {
-                                    using (new SPMonitoredScope("Creating IronRuntime"))
-                                    {
-                                        runtime = new IronRuntime(hiveId);
-                                        runtime.Authenticate(targetSite.ID);
-                                        LivingRuntimes[hiveId] = runtime;
-                                        runtime.Initialize();
-                                    }
-                                }
+                                runtime = new IronRuntime(targetId);
+                                LivingRuntimes[targetId] = runtime;
+                                runtime.Initialize();
                             }
-                        }
-
-                        runtime = LivingRuntimes[hiveId];
-                        if (HttpContext.Current != null)
-                        {
-                            HttpContext.Current.Items[RuntimeKey] = runtime;
                         }
                     }
                 }
-
-
-                if (!runtime.IsInitialized)
-                {
-                    ShowUnavailable();
-                }
+                if (HttpContext.Current != null) HttpContext.Current.Items[IronConstant.IronRuntimeKey] = runtime;
 
                 return runtime;
             }
         }
 
-        private static IronRuntime TryGetFromHttpContext(string RuntimeKey, IronRuntime runtime)
+        private static bool TryGetExistingRuntime(Guid targetId, out IronRuntime runtime)
         {
-            if (HttpContext.Current != null)
+            if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
             {
-                if (runtime != null)
-                {
-                    HttpContext.Current.Items[RuntimeKey] = runtime;
-                }
-                else if (HttpContext.Current.Items.Contains(RuntimeKey))
-                {
-                    runtime = HttpContext.Current.Items[RuntimeKey] as IronRuntime;
-                }
+                runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
             }
-            return runtime;
-        }
-
-        private static IronRuntime TryGetFromAuthenticated(SPSite targetSite)
-        {
-            IronRuntime runtime = LivingRuntimes.Values.FirstOrDefault(x => x.IsAuthenticated(targetSite.ID));
-            return runtime;
-        }
-
-        private void Authenticate(Guid targetSite)
-        {
-            if (!_authenticatedSites.Contains(targetSite))
-            {
-                _authenticatedSites.Add(targetSite);
-            }
-        }
-
-        private bool IsAuthenticated(Guid targetSite)
-        {
-            return _authenticatedSites.Contains(targetSite);
+            return runtime != null;
         }
 
         public IronEngine GetEngineByExtension(string extension)
-        {
-            return GetEngineByExtension(extension, true);
-        }
-
-        public IronEngine GetEngineByExtension(string extension, bool initialized)
         {
             IronEngine ironEngine = null;
 
@@ -291,11 +246,6 @@ end", ".rb", false);
                 var ex = new ArgumentException(error, "extension");
                 LogError(error, ex);
                 throw ex;
-            }
-
-            if (initialized && !ironEngine.IsInitialized)
-            {
-                ShowUnavailable();
             }
 
             return ironEngine;
@@ -346,7 +296,7 @@ end", ".rb", false);
                                                     TraceSeverity.Verbose, String.Format("{0}.", msg));
         }
 
-        static void ShowUnavailable()
+        private static void ShowUnavailable()
         {
             HttpContext.Current.Response.StatusCode = 503;
             HttpContext.Current.Response.WriteFile(SPUtility.GetGenericSetupPath(@"TEMPLATE\LAYOUTS\IronSP\503.html"));

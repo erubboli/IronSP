@@ -87,7 +87,7 @@ namespace IronSharePoint
         {
             if (Exception != null)
             {
-                if (SPContext.Current.Web.UserIsSiteAdmin && engine.IronRuntime.IronHive.Web.CurrentUser.IsSiteAdmin)
+                if (SPContext.Current.Web.UserIsSiteAdmin)
                 {
                     var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
                     string error = eo.FormatException(Exception);

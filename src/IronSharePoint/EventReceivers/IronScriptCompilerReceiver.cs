@@ -61,7 +61,7 @@ namespace IronSharePoint.EventReceivers
 
                 if (runtime != null)
                 {
-                    runtime.IronHive.Dispose();
+                    //runtime.IronHive.Dispose();
                 }
             }
         }

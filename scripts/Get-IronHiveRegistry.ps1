@@ -1,8 +1,8 @@
 function Global:Get-IronHiveRegistry
 {
     Add-PSSnapin "Microsoft.SharePoint.PowerShell" -ErrorAction SilentlyContinue
-    [void][System.Reflection.Assembly]::LoadWithPartialName("IronSharePoint")
-    return [IronSharePoint.Administration.IronHiveRegistry]::Local
+    [void][System.Reflection.Assembly]::LoadWithPartialName("IronSharePoint.Framework")
+    return [IronSharePoint.Framework.Administration.IronHiveRegistry]::Local
 }
 
 'Use Get-IronHiveRegistry to load the IronHiveRegistry'| out-host

@@ -33,7 +33,7 @@ namespace IronSharePoint.IronConsole
             IronConsoleResult = new IronConsoleResult();
             try
             {
-                _engine = _runtime.GetEngineByExtension(_extension, false);
+                _engine = _runtime.GetEngineByExtension(_extension);
                 var scriptEngine = _engine.ScriptEngine;
 
                 ExecuteBeforeHooks(scriptEngine, IronConsoleResult);
