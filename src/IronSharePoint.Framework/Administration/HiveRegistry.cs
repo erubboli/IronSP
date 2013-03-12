@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using IronSharePoint.Hives;
+using IronSharePoint.Util;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint;
 using System.Security;
@@ -17,7 +18,7 @@ namespace IronSharePoint.Administration
         /// <summary>
         /// Maps a target id (SPSite, SPWebApplication, ...) to a list of hives
         /// </summary>
-        [Persisted] private Dictionary<Guid, HiveSetupCollection> _mappedHives = new Dictionary<Guid, HiveSetupCollection>();
+        [Persisted] private Dictionary<Guid, List<HiveSetup>> _mappedHives = new Dictionary<Guid, List<HiveSetup>>();
 
         /// <summary>
         /// The list of trusted hives
@@ -53,28 +54,25 @@ namespace IronSharePoint.Administration
         }
 
         /// <summary>
-        /// Maps all <paramref name="hives"/> to the given <paramref name="target"/>. If a mapping already exist for the
-        /// given <paramref name="target"/> the <paramref name="hives"/> are appended, otherwise a new mapping is created.
-        /// All <paramref name="hives"/> must be trusted.
+        /// Maps the <paramref name="hive"/> to the given <paramref name="target"/>. If a mapping already exist for the
+        /// given <paramref name="target"/> the <paramref name="hive"/> is appended, otherwise a new mapping is created.
+        /// The <paramref name="hive"/> must be a trusted hive.
         /// </summary>
         /// <param name="target"></param>
-        /// <param name="hives"></param>
+        /// <param name="hive"></param>
         /// <exception cref="SecurityException"></exception>
-        public void AddHiveMapping(object target, params HiveSetup[] hives)
+        public void AddHiveMapping(object target, HiveSetup hive)
         {
+            EnsureTrustedHive(hive);
             var targetId = GetTargetId(target);
 
-            HiveSetupCollection hiveSetupCollection;
-            if (!_mappedHives.TryGetValue(targetId, out hiveSetupCollection))
+            List<HiveSetup> hiveSetups;
+            if (!_mappedHives.TryGetValue(targetId, out hiveSetups))
             {
-                hiveSetupCollection = new HiveSetupCollection {Registry = this};
-                _mappedHives[targetId] = hiveSetupCollection;
+                hiveSetups = new List<HiveSetup>();
+                _mappedHives[targetId] = hiveSetups;
             }
-            foreach (var hiveId in hives)
-            {
-                EnsureTrustedHive(hiveId);
-                hiveSetupCollection.Add(hiveId);
-            }
+            hiveSetups.Add(hive);
         }
 
         /// <summary>
@@ -124,25 +122,32 @@ namespace IronSharePoint.Administration
         /// <returns></returns>
         public bool TryGetHiveSetups(Guid siteId, out HiveSetupCollection hiveSetups)
         {
-            HiveSetupCollection setups = null; // need an extra variable for out parameter below
-            var hasSetups = false;
+            hiveSetups = new HiveSetupCollection(){Registry = this};
+            HiveSetupCollection localSetups = hiveSetups; // Needed b/c of delegate
             SPSecurity.RunWithElevatedPrivileges(() =>
                 {
                     using (var site = new SPSite(siteId))
                     {
+                        var ids = new[]
+                            {
+                                site.ID,
+                                site.SiteSubscription != null ? site.SiteSubscription.Id : Guid.Empty,
+                                site.WebApplication.Id,
+                                SPFarm.Local.Id
+                            }.Compact();
 
-                        hasSetups = _mappedHives.TryGetValue(site.ID, out setups) ||
-                                    (site.SiteSubscription != null &&
-                                     _mappedHives.TryGetValue(site.SiteSubscription.Id, out setups)) ||
-                                    _mappedHives.TryGetValue(site.WebApplication.Id, out setups) ||
-                                    _mappedHives.TryGetValue(SPFarm.Local.Id, out setups);
+                        foreach (var id in ids)
+                        {
+                            List<HiveSetup> idSetups;
+                            if (_mappedHives.TryGetValue(id, out idSetups))
+                            {
+                                localSetups.AddRange(idSetups);
+                            }
+                        }
                     }
                 });
 
-            hiveSetups = setups;
-            if (hasSetups) hiveSetups.Registry = this;
-
-            return hasSetups;
+            return hiveSetups.Count > 0;
         }
 
         private static Guid GetTargetId(object target)
@@ -233,7 +238,7 @@ namespace IronSharePoint.Administration
         {
             base.OnDeserialization();
             if (_trustedHives == null) _trustedHives = new List<HiveSetup>();
-            if (_mappedHives == null) _mappedHives = new Dictionary<Guid, HiveSetupCollection>();
+            if (_mappedHives == null) _mappedHives = new Dictionary<Guid, List<HiveSetup>>();
         }
     }
 }

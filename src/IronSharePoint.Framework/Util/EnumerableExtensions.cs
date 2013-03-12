@@ -21,9 +21,8 @@ namespace IronSharePoint.Util
         /// <param name="enumerable"></param>
         /// <returns></returns>
         public static IEnumerable<T> Compact<T>(this IEnumerable<T> enumerable)
-            where T : class
         {
-            return enumerable.Where(x => x != null);
+            return enumerable.Where(x => !Equals(x, default(T)));
         }
     }
 }

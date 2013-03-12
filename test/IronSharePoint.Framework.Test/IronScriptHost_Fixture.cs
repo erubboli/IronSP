@@ -16,71 +16,34 @@ namespace IronSharePoint.Framework.Test
     {
         IronScriptHost Sut;
 
-        [Test]
-        public void Hive_WhenNoHiveSetupsInRegistry_ContainsOnlyIronSPRootHive()
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
         {
-            var siteId = Guid.NewGuid();
-            var hiveSetups = new HiveSetupCollection();
             Isolate.Fake.StaticMethods<HiveRegistry>(Members.ReturnRecursiveFakes);
-            var registry = HiveRegistry.Local;
-            Isolate.WhenCalled(() => registry.TryGetHiveSetups(siteId, out hiveSetups)).WillReturn(true);
-
-            Sut = new IronScriptHost(siteId);
-
-            Sut.Hive.Should().BeOfType<OrderedHiveList>();
-            (Sut.Hive as OrderedHiveList).Should()
-                                         .Contain(
-                                             hive =>
-                                             hive is PhysicalHive &&
-                                             (hive as PhysicalHive).Root == IronConstant.IronSPRootDirectory);
         }
+
 
         [Test]
         public void Hive_WhenOneHiveSetup_CreatesHiveFromSetup()
         {
             var siteId = Guid.NewGuid();
-            var hiveSetups = new HiveSetupCollection()
+            var hiveSetups = new HiveSetupCollection
                 {
-                    new HiveSetup()
+                    new HiveSetup
                         {
-                            HiveType = typeof(PhysicalHive),
-                            HiveArguments = new[]{"c:\\"}
+                            HiveType = typeof (PhysicalHive),
+                            HiveArguments = new[] {"c:\\"}
                         }
                 };
-            Isolate.Fake.StaticMethods<HiveRegistry>(Members.ReturnRecursiveFakes);
             var registry = HiveRegistry.Local;
             Isolate.WhenCalled(() => registry.TryGetHiveSetups(siteId, out hiveSetups)).WillReturn(true);
 
             Sut = new IronScriptHost(siteId);
 
             Sut.Hive.Should().BeOfType<OrderedHiveList>();
-            (Sut.Hive as OrderedHiveList).Should()
-                                         .Contain(
-                                             hive =>
-                                             hive is PhysicalHive &&
-                                             (hive as PhysicalHive).Root == "c:\\");
+            (Sut.Hive as OrderedHiveList).Should().Contain(hive =>
+                                                           hive is PhysicalHive &&
+                                                           (hive as PhysicalHive).Root == "c:\\");
         }
-
-        [Test]
-        public void Hive_WhenRegistryHasIronSPRootSetup_DoesntCreateItTwice()
-        {
-            var siteId = Guid.NewGuid();
-            var hiveSetups = new HiveSetupCollection()
-                {
-                    HiveSetup.IronSPRoot
-                };
-            Isolate.Fake.StaticMethods<HiveRegistry>(Members.ReturnRecursiveFakes);
-            var registry = HiveRegistry.Local;
-            Isolate.WhenCalled(() => registry.TryGetHiveSetups(siteId, out hiveSetups)).WillReturn(true);
-
-            Sut = new IronScriptHost(siteId);
-
-            Sut.Hive.Should().BeOfType<OrderedHiveList>();
-            (Sut.Hive as OrderedHiveList).Should()
-                                         .ContainSingle(
-                                             hive =>
-                                             hive is PhysicalHive &&
-                                             (hive as PhysicalHive).Root == IronConstant.IronSPRootDirectory);
-        } 
     }
 }

@@ -8,6 +8,7 @@ using FluentAssertions;
 using IronSharePoint.Administration;
 using IronSharePoint.Hives;
 using Microsoft.SharePoint;
+using Microsoft.SharePoint.Administration;
 using NUnit.Framework;
 using TypeMock.ArrangeActAssert;
 
@@ -18,19 +19,29 @@ namespace IronSharePoint.Framework.Test.Administration
     {
         public HiveRegistry Sut;
         public SPSite Site;
+        public SPWebApplication WebApplication;
+        public SPFarm Farm;
         public HiveSetup HiveSetup;
         public HiveSetup OtherHiveSetup;
+        public HiveSetup ThirdHiveSetup;
 
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
+            Isolate.Fake.StaticMethods<SPFarm>();
+            Farm = SPFarm.Local;
+            Site = Isolate.Fake.AllInstances<SPSite>();
+            WebApplication = Isolate.Fake.Instance<SPWebApplication>();
+            Isolate.WhenCalled(() => Site.ID).WillReturn(Guid.NewGuid());
+            Isolate.WhenCalled(() => Site.WebApplication).WillReturn(WebApplication);
+            Isolate.WhenCalled(() => WebApplication.Id).WillReturn(Guid.NewGuid());
+            Isolate.WhenCalled(() => Farm.Id).WillReturn(Guid.NewGuid());
+
             Isolate.WhenCalled(() => SPSecurity.RunWithElevatedPrivileges(null)).DoInstead(ctx =>
                 {
                     var action = ctx.Parameters[0] as SPSecurity.CodeToRunElevated;
                     action.Invoke();
                 });
-            Site = Isolate.Fake.AllInstances<SPSite>();
-            Isolate.WhenCalled(() => Site.ID).WillReturn(Guid.NewGuid());
         }
 
         [SetUp]
@@ -49,6 +60,12 @@ namespace IronSharePoint.Framework.Test.Administration
                     HiveType = typeof (SPDocumentHive),
                     HiveArguments = new object[] {new Guid("DB479166-77D4-484B-B3A4-D839E5824008")}
                 };
+            ThirdHiveSetup = new HiveSetup()
+            {
+                DisplayName = "Third Test Hive",
+                HiveType = typeof(SPDocumentHive),
+                HiveArguments = new object[] { new Guid("EDD13B27-7944-4626-BA25-6905172C0F0B") }
+            };
         }
 
         [Test]
@@ -145,6 +162,40 @@ namespace IronSharePoint.Framework.Test.Administration
 
             Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] { HiveSetup });
         }
+
+
+        [Test]
+        public void GetHiveSetups_WhenSetupsRegisteredForHive_ReturnsMappedHives()
+        {
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.AddHiveMapping(Farm, HiveSetup);
+
+            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] { HiveSetup });
+        }
+
+        [Test]
+        public void GetHiveSetups_WhenSetupsRegisteredForWebApplication_ReturnsMappedHives()
+        {
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.AddHiveMapping(WebApplication, HiveSetup);
+
+            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] { HiveSetup });
+        }
+
+        [Test]
+        public void GetHiveSetups_SetupsAreOrdered()
+        {
+            Sut.AddTrustedHive(HiveSetup);
+            Sut.AddTrustedHive(OtherHiveSetup);
+            Sut.AddTrustedHive(ThirdHiveSetup);
+
+            Sut.AddHiveMapping(Farm, ThirdHiveSetup);
+            Sut.AddHiveMapping(WebApplication, OtherHiveSetup);
+            Sut.AddHiveMapping(Site, HiveSetup);
+
+            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] { HiveSetup, OtherHiveSetup, ThirdHiveSetup });
+        }
+
 
         [Test]
         public void TryGetHiveSetups_WhenNoSetupsRegisteredForSite_ReturnsFalse()

@@ -65,16 +65,6 @@ namespace IronSharePoint.Administration
             set { _description = value; }
         }
 
-        /// <summary>
-        /// Priority of the hive when accessing files. The lower the number, the higher the priority.
-        /// Will be set by the <see cref="HiveSetupCollection"/> depending on its position.
-        /// </summary>
-        public int Priority
-        {
-            get { return _order; }
-            internal set { _order = value; }
-        }
-
         protected bool Equals(HiveSetup other)
         {
             return (_hiveArguments ?? new object[0]).SequenceEqual(other._hiveArguments ?? new object[0]) 

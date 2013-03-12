@@ -35,7 +35,7 @@ namespace IronSharePoint
 
         private IHive CreateHive()
         {
-            var hives = GetHiveSetups().OrderBy(x => x.Priority).Select(x =>
+            var hives = GetHiveSetups().Select(x =>
                 {
                     var argTypes = x.HiveArguments.Select(y => y.GetType()).ToArray();
                     var ctor = x.HiveType.GetConstructor(argTypes);
@@ -45,21 +45,7 @@ namespace IronSharePoint
             return new OrderedHiveList(hives);
         }
 
-        private HiveSetupCollection GetHiveSetups()
-        {
-            var hiveSetups = GetHiveSetupsFromRegistry();
-
-            var ironSPRootHiveSetup = new HiveSetup()
-                {
-                    DisplayName = "IronSP Root",
-                    HiveArguments = new object[] {IronConstant.IronSPRootDirectory},
-                    HiveType = typeof (PhysicalHive)
-                };
-            if (!hiveSetups.Contains(ironSPRootHiveSetup)) hiveSetups.Add(ironSPRootHiveSetup);
-            return hiveSetups;
-        }
-
-        private HiveSetupCollection GetHiveSetupsFromRegistry()
+        private IEnumerable<HiveSetup> GetHiveSetups()
         {
             var registry = HiveRegistry.Local;
             HiveSetupCollection setups;
