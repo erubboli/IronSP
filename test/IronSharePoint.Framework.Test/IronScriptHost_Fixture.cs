@@ -36,7 +36,7 @@ namespace IronSharePoint.Framework.Test
                         }
                 };
             var registry = HiveRegistry.Local;
-            Isolate.WhenCalled(() => registry.TryGetHiveSetups(siteId, out hiveSetups)).WillReturn(true);
+            Isolate.WhenCalled(() => registry.TryResolve(siteId, out hiveSetups)).WillReturn(true);
 
             Sut = new IronScriptHost(siteId);
 

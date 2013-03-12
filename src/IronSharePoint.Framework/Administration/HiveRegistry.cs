@@ -58,12 +58,12 @@ namespace IronSharePoint.Administration
         /// given <paramref name="target"/> the <paramref name="hive"/> is appended, otherwise a new mapping is created.
         /// The <paramref name="hive"/> must be a trusted hive.
         /// </summary>
-        /// <param name="target"></param>
         /// <param name="hive"></param>
+        /// <param name="target"></param>
         /// <exception cref="SecurityException"></exception>
-        public void AddHiveMapping(object target, HiveSetup hive)
+        public void Map(HiveSetup hive, object target)
         {
-            EnsureTrustedHive(hive);
+            IsTrusted(hive);
             var targetId = GetTargetId(target);
 
             List<HiveSetup> hiveSetups;
@@ -81,9 +81,9 @@ namespace IronSharePoint.Administration
         /// <param name="site"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public HiveSetupCollection GetHiveSetups(SPSite site)
+        public HiveSetupCollection Resolve(SPSite site)
         {
-            return GetHiveSetups(site.ID);
+            return Resolve(site.ID);
         }
 
         /// <summary>
@@ -92,10 +92,10 @@ namespace IronSharePoint.Administration
         /// <param name="siteId"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public HiveSetupCollection GetHiveSetups(Guid siteId)
+        public HiveSetupCollection Resolve(Guid siteId)
         {
             HiveSetupCollection hiveSetups;
-            if (!TryGetHiveSetups(siteId, out hiveSetups))
+            if (!TryResolve(siteId, out hiveSetups))
             {
                 throw new ArgumentOutOfRangeException("siteId", siteId, "No mapped hive setups found for SPSite");
             }
@@ -108,19 +108,19 @@ namespace IronSharePoint.Administration
         /// <param name="site"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public bool TryGetHiveSetups(SPSite site, out HiveSetupCollection hiveSetups)
+        public bool TryResolve(SPSite site, out HiveSetupCollection hiveSetups)
         {
-            return TryGetHiveSetups(site.ID, out hiveSetups);
+            return TryResolve(site.ID, out hiveSetups);
         }
 
         /// <summary>
-        /// Tries to rerieve all hive setups for the SPSite with the given <paramref name="siteId"/> and stores the
+        /// Tries to resolve all hive setups for the SPSite with the given <paramref name="siteId"/> and stores the
         /// result in <paramref name="hiveSetups"/>
         /// </summary>
         /// <param name="siteId"></param>
         /// <param name="hiveSetups"></param>
         /// <returns></returns>
-        public bool TryGetHiveSetups(Guid siteId, out HiveSetupCollection hiveSetups)
+        public bool TryResolve(Guid siteId, out HiveSetupCollection hiveSetups)
         {
             hiveSetups = new HiveSetupCollection(){Registry = this};
             HiveSetupCollection localSetups = hiveSetups; // Needed b/c of delegate
@@ -172,7 +172,7 @@ namespace IronSharePoint.Administration
         /// Adds the <paramref name="hive"/> to the list of trusted hives
         /// </summary>
         /// <param name="hive"></param>
-        public void AddTrustedHive(HiveSetup hive)
+        public void Trust(HiveSetup hive)
         {
             if (!TrustedHives.Contains(hive))
             {
@@ -184,7 +184,7 @@ namespace IronSharePoint.Administration
         /// Removes the <paramref name="hive"/> from the list of trusted hives
         /// </summary>
         /// <param name="hive"></param>
-        public void RemoveTrustedHive(HiveSetup hive)
+        public void Untrust(HiveSetup hive)
         {
             if (TrustedHives.Contains(hive))
             {
@@ -197,10 +197,10 @@ namespace IronSharePoint.Administration
         /// </summary>
         /// <param name="id"></param>
         /// <exception cref="SecurityException"></exception>
-        public virtual void EnsureTrustedHive(object id)
+        public virtual void IsTrusted(object id)
         {
             var hive = TrustedHives.FirstOrDefault(x => Object.Equals(x.HiveArguments[0], id));
-            EnsureTrustedHive(hive);
+            IsTrusted(hive);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace IronSharePoint.Administration
         /// </summary>
         /// <param name="hive"></param>
         /// <exception cref="SecurityException"></exception>
-        public virtual void EnsureTrustedHive(HiveSetup hive)
+        public virtual void IsTrusted(HiveSetup hive)
         {
             if(hive != null && !TrustedHives.Contains(hive))
             {

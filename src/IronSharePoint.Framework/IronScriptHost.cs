@@ -49,7 +49,7 @@ namespace IronSharePoint
         {
             var registry = HiveRegistry.Local;
             HiveSetupCollection setups;
-            if (!registry.TryGetHiveSetups(_siteId, out setups))
+            if (!registry.TryResolve(_siteId, out setups))
             {
                 setups = new HiveSetupCollection();
             }

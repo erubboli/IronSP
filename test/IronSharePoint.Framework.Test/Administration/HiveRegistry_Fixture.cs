@@ -69,160 +69,160 @@ namespace IronSharePoint.Framework.Test.Administration
         }
 
         [Test]
-        public void AddTrustedHive_AddsTheHive()
+        public void Trust_AddsTheHive()
         {
-            Sut.AddTrustedHive(HiveSetup);
+            Sut.Trust(HiveSetup);
 
             Sut.TrustedHives.Should().Contain(HiveSetup);
         }
 
         [Test]
-        public void AddTrustedHive_DoesntAddDuplicates()
+        public void Trust_DoesntAddDuplicates()
         {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.AddTrustedHive(HiveSetup);
+            Sut.Trust(HiveSetup);
+            Sut.Trust(HiveSetup);
 
             Sut.TrustedHives.Should().HaveCount(1);
         }
 
         [Test]
-        public void RemoveTrustedHive_WhenExists_RemovesTheHive()
+        public void Untrust_WhenExists_RemovesTheHive()
         {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.RemoveTrustedHive(HiveSetup);
+            Sut.Trust(HiveSetup);
+            Sut.Untrust(HiveSetup);
 
             Sut.TrustedHives.Should().BeEmpty();
         }
 
         [Test]
-        public void RemoveTrustedHive_WhenNotExists_DoesNothing()
+        public void Untrust_WhenNotExists_DoesNothing()
         {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.RemoveTrustedHive(OtherHiveSetup);
+            Sut.Trust(HiveSetup);
+            Sut.Untrust(OtherHiveSetup);
 
             Sut.TrustedHives.Should().BeEquivalentTo(new[] {HiveSetup});
         }
 
         [Test]
         [ExpectedException(typeof(SecurityException))]
-        public void EnsureTrustedHive_WithUntrustedHive_ThrowsSecurityExpcetion()
+        public void IsTrusted_WithUntrustedHive_ThrowsSecurityExpcetion()
         {
-            Sut.EnsureTrustedHive(OtherHiveSetup);
+            Sut.IsTrusted(OtherHiveSetup);
         }
 
         [Test]
-        public void EnsureTrustedHive_WithTrustedHive_DoesNothing()
+        public void IsTrusted_WithTrustedHive_DoesNothing()
         {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.EnsureTrustedHive(HiveSetup);
+            Sut.Trust(HiveSetup);
+            Sut.IsTrusted(HiveSetup);
 
             Assert.Pass();
         }
 
         [Test]
         [ExpectedException(typeof(SecurityException))]
-        public void AddHiveMapping_WithUntrustedHive_ThrowsSecurityException()
+        public void Map_WithUntrustedHive_ThrowsSecurityException()
         {
-            Sut.AddHiveMapping(Site, HiveSetup);
+            Sut.Map(HiveSetup, Site);
         }
 
         [Test]
-        public void AddHiveMapping_WithNewSite_CreatesMapping()
+        public void Map_WithNewSite_CreatesMapping()
         {
-            Sut.AddTrustedHive(HiveSetup);
+            Sut.Trust(HiveSetup);
 
-            Sut.AddHiveMapping(Site, HiveSetup);
+            Sut.Map(HiveSetup, Site);
 
-            Sut.GetHiveSetups(Site).Should().BeEquivalentTo(new[] {HiveSetup});
+            Sut.Resolve(Site).Should().BeEquivalentTo(new[] {HiveSetup});
         }
 
         [Test]
-        public void AddHiveMapping_WithExistingSite_AppendsHiveToMapping()
+        public void Map_WithExistingSite_AppendsHiveToMapping()
         {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.AddTrustedHive(OtherHiveSetup);
-            Sut.AddHiveMapping(Site, HiveSetup);
-            Sut.AddHiveMapping(Site, OtherHiveSetup);
+            Sut.Trust(HiveSetup);
+            Sut.Trust(OtherHiveSetup);
+            Sut.Map(HiveSetup, Site);
+            Sut.Map(OtherHiveSetup, Site);
 
-            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] {HiveSetup, OtherHiveSetup});
+            Sut.Resolve(Site).Should().ContainInOrder(new[] {HiveSetup, OtherHiveSetup});
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void GetHiveSetups_WhenNoSetupsRegisteredForSite_ThrowsArgumentException()
+        public void Resolve_WhenNoSetupsRegisteredForSite_ThrowsArgumentException()
         {
-            Sut.GetHiveSetups(Site);
+            Sut.Resolve(Site);
         }
 
         [Test]
-        public void GetHiveSetups_WhenSetupsRegisteredForSite_ReturnsMappedHives()
+        public void Resolve_WhenSetupsRegisteredForSite_ReturnsMappedHives()
         {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.AddHiveMapping(Site, HiveSetup);
+            Sut.Trust(HiveSetup);
+            Sut.Map(HiveSetup, Site);
 
-            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] { HiveSetup });
-        }
-
-
-        [Test]
-        public void GetHiveSetups_WhenSetupsRegisteredForHive_ReturnsMappedHives()
-        {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.AddHiveMapping(Farm, HiveSetup);
-
-            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] { HiveSetup });
-        }
-
-        [Test]
-        public void GetHiveSetups_WhenSetupsRegisteredForWebApplication_ReturnsMappedHives()
-        {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.AddHiveMapping(WebApplication, HiveSetup);
-
-            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] { HiveSetup });
-        }
-
-        [Test]
-        public void GetHiveSetups_SetupsAreOrdered()
-        {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.AddTrustedHive(OtherHiveSetup);
-            Sut.AddTrustedHive(ThirdHiveSetup);
-
-            Sut.AddHiveMapping(Farm, ThirdHiveSetup);
-            Sut.AddHiveMapping(WebApplication, OtherHiveSetup);
-            Sut.AddHiveMapping(Site, HiveSetup);
-
-            Sut.GetHiveSetups(Site).Should().ContainInOrder(new[] { HiveSetup, OtherHiveSetup, ThirdHiveSetup });
+            Sut.Resolve(Site).Should().ContainInOrder(new[] { HiveSetup });
         }
 
 
         [Test]
-        public void TryGetHiveSetups_WhenNoSetupsRegisteredForSite_ReturnsFalse()
+        public void Resolve_WhenSetupsRegisteredForHive_ReturnsMappedHives()
+        {
+            Sut.Trust(HiveSetup);
+            Sut.Map(HiveSetup, Farm);
+
+            Sut.Resolve(Site).Should().ContainInOrder(new[] { HiveSetup });
+        }
+
+        [Test]
+        public void Resolve_WhenSetupsRegisteredForWebApplication_ReturnsMappedHives()
+        {
+            Sut.Trust(HiveSetup);
+            Sut.Map(HiveSetup, WebApplication);
+
+            Sut.Resolve(Site).Should().ContainInOrder(new[] { HiveSetup });
+        }
+
+        [Test]
+        public void Resolve_SetupsAreOrdered()
+        {
+            Sut.Trust(HiveSetup);
+            Sut.Trust(OtherHiveSetup);
+            Sut.Trust(ThirdHiveSetup);
+
+            Sut.Map(ThirdHiveSetup, Farm);
+            Sut.Map(OtherHiveSetup, WebApplication);
+            Sut.Map(HiveSetup, Site);
+
+            Sut.Resolve(Site).Should().ContainInOrder(new[] { HiveSetup, OtherHiveSetup, ThirdHiveSetup });
+        }
+
+
+        [Test]
+        public void TryResolve_WhenNoSetupsRegisteredForSite_ReturnsFalse()
         {
             HiveSetupCollection hiveSetups;
 
-            Sut.TryGetHiveSetups(Site, out hiveSetups).Should().BeFalse();
+            Sut.TryResolve(Site, out hiveSetups).Should().BeFalse();
         }
 
         [Test]
-        public void TryGetHiveSetups_WhenSetupsRegisteredForSite_ReturnsTrue()
+        public void TryResolve_WhenSetupsRegisteredForSite_ReturnsTrue()
         {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.AddHiveMapping(Site, HiveSetup);
+            Sut.Trust(HiveSetup);
+            Sut.Map(HiveSetup, Site);
             HiveSetupCollection hiveSetups;
 
-            Sut.TryGetHiveSetups(Site, out hiveSetups).Should().BeTrue();
+            Sut.TryResolve(Site, out hiveSetups).Should().BeTrue();
         }
 
         [Test]
-        public void TryGetHiveSetups_WhenSetupsRegisteredForSite_StoresSetupsInOutVariable()
+        public void TryResolve_WhenSetupsRegisteredForSite_StoresSetupsInOutVariable()
         {
-            Sut.AddTrustedHive(HiveSetup);
-            Sut.AddHiveMapping(Site, HiveSetup);
+            Sut.Trust(HiveSetup);
+            Sut.Map(HiveSetup, Site);
             HiveSetupCollection hiveSetups;
 
-            Sut.TryGetHiveSetups(Site, out hiveSetups);
+            Sut.TryResolve(Site, out hiveSetups);
             hiveSetups.Should().BeEquivalentTo(new[]{HiveSetup});
         }
     }

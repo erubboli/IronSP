@@ -25,19 +25,19 @@ namespace IronSharePoint.Administration
 
         protected override void InsertItem(int index, HiveSetup item)
         {
-            EnsureTrustedHive(item);
+            IsTrusted(item);
             base.InsertItem(index, item);
         }
 
         protected override void SetItem(int index, HiveSetup item)
         {
-            EnsureTrustedHive(item);
+            IsTrusted(item);
             base.SetItem(index, item);
         }
 
-        private void EnsureTrustedHive(HiveSetup item)
+        private void IsTrusted(HiveSetup item)
         {
-            if (Registry != null) Registry.EnsureTrustedHive(item);
+            if (Registry != null) Registry.IsTrusted(item);
         }
     }
 }
