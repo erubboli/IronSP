@@ -12,8 +12,7 @@ namespace IronSharePoint
     {
         public IronEngine Engine { get; set; }
         public WebPart WebPart { get; set; }
-        public IIronDataStore Data { get; set; }
-        public string Config { get; set; }
+        public IIronDataStore DataStore { get; set; }
 
         public virtual List<EditorPart> CreateEditorParts()
         {

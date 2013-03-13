@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Web.UI;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
@@ -92,6 +93,11 @@ namespace IronSharePoint
                     ScriptEngine.Runtime.Globals);
 
             return output;
+        }
+
+        public Control CreateDynamicInstance(string controlName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

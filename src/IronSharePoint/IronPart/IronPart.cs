@@ -70,8 +70,9 @@ namespace IronSharePoint.IronPart
                 if (DynamicControl != null)
                 {
                     DynamicControl.WebPart = this;
-                    DynamicControl.Data = this;
+                    DynamicControl.DataStore = this;
                 }
+
 
                 this.Controls.Add(ctrl);
 

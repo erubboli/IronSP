@@ -65,8 +65,7 @@ namespace IronSharePoint
                     if (dynamicControl != null)
                     {
                         dynamicControl.WebPart = null;
-                        dynamicControl.Data = null;
-                        dynamicControl.Config = Config;
+                        dynamicControl.DataStore = null;
                     }
 
                     if (Template != null)

@@ -15,13 +15,7 @@ namespace IronSharePoint
     {
         public IronEngine Engine { get; set; }
         public WebPart WebPart { get; set; }
-        public IIronDataStore Data { get; set; }
-        public string Config { get; set; }
-
-        public Exception RenderException { get; set; }
-        public bool IsAsync { get; set; }
-
-        protected delegate void AsyncTaskDelegate();
+        public IIronDataStore DataStore { get; set; }
 
         public virtual List<EditorPart> CreateEditorParts()
         {

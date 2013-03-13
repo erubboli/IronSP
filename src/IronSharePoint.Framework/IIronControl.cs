@@ -10,8 +10,7 @@ namespace IronSharePoint
     public interface IIronControl
     {
         WebPart WebPart { get; set; }
-        IIronDataStore Data { get; set; }
-        string Config { get; set; }
+        IIronDataStore DataStore { get; set; }
         List<EditorPart> CreateEditorParts();
     }
 }
