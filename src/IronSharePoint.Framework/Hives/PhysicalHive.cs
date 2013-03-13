@@ -46,15 +46,15 @@ namespace IronSharePoint.Hives
         {
             path = GetFullPath(path);
 
-            if(!File.Exists(path)) throw new FileNotFoundException("", path);
-            return File.OpenWrite(path);
+            return File.OpenRead(path);
         }
 
         public Stream OpenOutputFileStream(string path)
         {
             path = GetFullPath(path);
 
-            return File.OpenRead(path);
+            if(!File.Exists(path)) throw new FileNotFoundException("", path);
+            return File.OpenWrite(path);
         }
 
         public string GetFullPath(string path)

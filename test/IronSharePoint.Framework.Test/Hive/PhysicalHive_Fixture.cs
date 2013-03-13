@@ -137,7 +137,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
             using (var stream = Sut.OpenInputFileStream("lorem.txt"))
             {
-                stream.CanWrite.Should().BeTrue();
+                stream.CanRead.Should().BeTrue();
             }
         }
 
@@ -172,7 +172,7 @@ namespace IronSharePoint.Framework.Test.Hive
 
             using (var stream = Sut.OpenOutputFileStream("lorem.txt"))
             {
-                stream.CanRead.Should().BeTrue();
+                stream.CanWrite.Should().BeTrue();
             }
         }
 
