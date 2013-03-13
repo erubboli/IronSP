@@ -7,6 +7,7 @@ using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint.Utilities;
+using System.Linq;
 
 namespace IronSharePoint
 {
@@ -152,8 +153,9 @@ namespace IronSharePoint
                 rubyEngine.SetSearchPaths(new List<String>
                     {
                         Path.Combine(IronConstant.IronRubyRootDirectory, @"ironruby"),
-                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\site_ruby\1.9.1"),
-                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\1.9.1")
+                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\1.9.1"),
+                        IronConstant.FakeHiveDirectory,
+                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\site_ruby\1.9.1")
                     });
 
                 var ironRubyEngine = new IronEngine(this, rubyEngine);
@@ -192,11 +194,16 @@ end", ".rb", false);
 
         private void PrivilegedInitialize()
         {
-            string gemDir = Path.Combine(IronConstant.IronRubyRootDirectory, "lib/ironruby/gems/1.9.1").Replace("\\", "/");
+            string gemDir = Path.Combine(IronConstant.IronRubyRootDirectory, "ruby", "gems", "1.9.1");
 
-            Environment.SetEnvironmentVariable("IRONRUBY_10_20", IronConstant.IronRubyRootDirectory);
-            Environment.SetEnvironmentVariable("GEM_PATH", gemDir);
-            Environment.SetEnvironmentVariable("GEM_HOME", gemDir);
+            var gemPath = (Environment.GetEnvironmentVariable("GEM_PATH") ?? "").Split(new[]{';'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (!gemPath.Contains(gemDir))
+            {
+                gemPath.Add(gemDir);
+            }
+            Environment.SetEnvironmentVariable("GEM_PATH", String.Join(";", gemPath));
+
+            Directory.SetCurrentDirectory(IronConstant.IronRubyRootDirectory);
         }
 
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
@@ -268,7 +275,6 @@ end", ".rb", false);
             object obj = null;
 
             object dynamicType = DynamicTypeRegistry[className];
-
             if (args != null && args.Length > 0)
             {
                 obj = ScriptRuntime.Operations.CreateInstance(dynamicType, args);

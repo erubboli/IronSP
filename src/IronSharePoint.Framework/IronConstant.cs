@@ -54,7 +54,20 @@ namespace IronSharePoint
             }
         }
 
-    //    static IronConstant()
+        public static string FakeHiveDirectory
+        {
+            get
+            {
+                var dir = Environment.GetEnvironmentVariable("IRONSP_HIVE");
+                if (String.IsNullOrWhiteSpace(dir))
+                {
+                    dir = Path.GetTempPath();
+                }
+                return dir;
+            }
+        }
+
+        //    static IronConstant()
     //    {
     //        var siteFeatureDirectory = SPFarm.Local.FeatureDefinitions[IronConstant.IronHiveSiteFeatureId].RootDirectory;
     //        var featureDirectory = new DirectoryInfo(siteFeatureDirectory).Parent.FullName;
