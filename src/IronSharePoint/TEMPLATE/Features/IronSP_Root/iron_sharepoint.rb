@@ -1,5 +1,8 @@
 require 'active_support'
 require 'log4r'
+require 'haml'
+require 'slim'
+require 'tilt'
 require 'iron_sharepoint/ext/log4r/outputter/iron_logs_outputter'
 require 'iron_sharepoint/ext/log4r/outputter/iron_memory_outputter'
 
@@ -22,5 +25,3 @@ Dir["iron_sharepoint/**/*.rb"].each do |file|
     IRON_DEFAULT_LOGGER.error ex
   end
 end
-
-$: << IronSharePoint::IronConstant.IronHiveRoot
