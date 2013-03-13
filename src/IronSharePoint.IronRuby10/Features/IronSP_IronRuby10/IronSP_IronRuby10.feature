@@ -1,2 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<feature xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="183909b9-cfb3-477c-a48c-02e3d5e59844" featureId="183909b9-cfb3-477c-a48c-02e3d5e59844" imageUrl="" scope="Farm" solutionId="00000000-0000-0000-0000-000000000000" title="IronSP- Iron Ruby 1.0" version="" deploymentPath="$SharePoint.Feature.FileNameWithoutExtension$" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/FeatureModel" />
