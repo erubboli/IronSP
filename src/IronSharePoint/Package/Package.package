@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="aacb7026-8941-4faa-b4bb-04562e317e53" solutionId="aacb7026-8941-4faa-b4bb-04562e317e53" resetWebServer="false" name="IronSharePoint" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="aacb7026-8941-4faa-b4bb-04562e317e53" solutionId="aacb7026-8941-4faa-b4bb-04562e317e53" resetWebServer="false" sharePointProductVersion="15.0" name="IronSharePoint" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
   <assemblies>
     <customAssembly location="Microsoft.Dynamic.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\Microsoft.Dynamic.dll" />
     <customAssembly location="Microsoft.Scripting.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\Microsoft.Scripting.dll" />
