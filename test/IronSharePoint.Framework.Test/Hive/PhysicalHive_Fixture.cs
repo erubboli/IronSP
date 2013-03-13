@@ -19,6 +19,16 @@ namespace IronSharePoint.Framework.Test.Hive
             _assetsRoot = Path.Combine(Directory.GetCurrentDirectory(), "_assets");
         }
 
+        [SetUp]
+        public void SetUp()
+        {
+            if (File.Exists(Path.Combine(_assetsRoot, "i_do_not.exist")))
+            {
+                File.Delete(Path.Combine(_assetsRoot, "i_do_not.exist"));
+            }
+        }
+
+
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void Ctor_WhenDirectoryIsMissing_ThrowArgumentException()
