@@ -38,8 +38,8 @@ namespace IronSharePoint.EventReceivers
                 engine =  runtime.GetEngineByExtension(Path.GetExtension(properties.ListItem.File.Name));
 
                 EventFiringEnabled = false;
-                properties.ListItem[IronField.IronOutput] = engine.ExcecuteScriptFile(properties.ListItem.File);
-                properties.ListItem[IronField.IronErrorFlag] = false; 
+                properties.ListItem[FieldHelper.IronOutput] = engine.ExcecuteScriptFile(properties.ListItem.File);
+                properties.ListItem[FieldHelper.IronErrorFlag] = false; 
                 properties.ListItem.SystemUpdate(false);
 
                 //cause compile bug??
@@ -51,8 +51,8 @@ namespace IronSharePoint.EventReceivers
                 var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
                 string error = eo.FormatException(ex);
 
-                properties.ListItem[IronField.IronOutput] = error;
-                properties.ListItem[IronField.IronErrorFlag] = true; 
+                properties.ListItem[FieldHelper.IronOutput] = error;
+                properties.ListItem[FieldHelper.IronErrorFlag] = true; 
                 properties.ListItem.SystemUpdate(false);
             }
             finally
@@ -72,15 +72,5 @@ namespace IronSharePoint.EventReceivers
 
             base.ItemUpdated(properties);
         }
-
-        public override void ItemDeleted(SPItemEventProperties properties)
-        {
-            var ironRuntime = IronRuntime.GetDefaultIronRuntime(properties.List.ParentWeb.Site);       
-            
-            //ironRuntime.IronHive.ReloadFiles();
-
-            base.ItemDeleted(properties);
-        }
-
     }
 }

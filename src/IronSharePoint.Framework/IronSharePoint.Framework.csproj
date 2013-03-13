@@ -118,14 +118,10 @@
     <Compile Include="IronEngine.cs" />
     <Compile Include="IronEnvironment.cs" />
     <Compile Include="IronExpressionBuilder.cs" />
-    <Compile Include="IronField.cs" />
-    <Compile Include="IronHelper.cs" />
+    <Compile Include="FieldHelper.cs" />
     <Compile Include="IronHttpHandler.cs" />
     <Compile Include="IronHttpModule.cs" />
     <Compile Include="IronJob.cs" />
-    <Compile Include="IronLog\IronLogger.cs" />
-    <Compile Include="IronLog\IronLogWorkItemJobDefinition.cs" />
-    <Compile Include="IronLog\LogLevel.cs" />
     <Compile Include="IronPlatformAdaptationLayer.cs" />
     <Compile Include="IronRuntime.cs" />
     <Compile Include="IronScriptHost.cs" />

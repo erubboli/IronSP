@@ -107,15 +107,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlTemplates\IronSP\IronHiveScriptControl.ascx.cs">
-      <DependentUpon>IronHiveScriptControl.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ControlTemplates\IronSP\IronHiveScriptControl.ascx.designer.cs">
-      <DependentUpon>IronHiveScriptControl.ascx.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EventReceivers\IronItemEventReceiver.cs" />
-    <Compile Include="EventReceivers\IronHiveEventReceiver.cs" />
     <Compile Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.EventReceiver.cs">
       <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
     </Compile>
@@ -135,13 +126,6 @@
     </Compile>
     <Compile Include="IronConsole\IronConsoleWebPart.cs" />
     <Compile Include="IronPart\IronPart.cs" />
-    <Compile Include="Layouts\IronSP\IronEditor.aspx.cs">
-      <DependentUpon>IronEditor.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Layouts\IronSP\IronEditor.aspx.designer.cs">
-      <DependentUpon>IronEditor.aspx.cs</DependentUpon>
-    </Compile>
     <Compile Include="Layouts\IronSP\IronConsoleService.ashx.cs">
       <DependentUpon>IronConsoleService.ashx</DependentUpon>
     </Compile>
@@ -149,9 +133,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ControlTemplates\SharePointProjectItem.spdata">
-      <SharePointProjectItemId>{59d42f7e-41b6-4989-aa42-58f74002ef8b}</SharePointProjectItemId>
-    </None>
     <None Include="DelegateControls\IronHiveScriptControl\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{f25008d4-c714-4b53-9241-da106544379a}</SharePointProjectItemId>
     </None>
@@ -258,9 +239,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ControlTemplates\IronSP\IronHiveScriptControl.ascx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
     <Content Include="DelegateControls\IronHiveScriptControl\Elements.xml" />
     <Content Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.Template.xml">
       <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
@@ -287,59 +265,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Layouts\IronSP\503.html" />
-    <Content Include="Layouts\IronSP\ace\ace-uncompressed.js" />
-    <Content Include="Layouts\IronSP\ace\ace.js" />
-    <Content Include="Layouts\IronSP\ace\cockpit-uncompressed.js" />
-    <Content Include="Layouts\IronSP\ace\cockpit.js" />
-    <Content Include="Layouts\IronSP\ace\keybinding-emacs.js" />
-    <Content Include="Layouts\IronSP\ace\keybinding-vim.js" />
-    <Content Include="Layouts\IronSP\ace\mode-clojure.js" />
-    <Content Include="Layouts\IronSP\ace\mode-coffee.js" />
-    <Content Include="Layouts\IronSP\ace\mode-csharp.js" />
-    <Content Include="Layouts\IronSP\ace\mode-css.js" />
-    <Content Include="Layouts\IronSP\ace\mode-c_cpp.js" />
-    <Content Include="Layouts\IronSP\ace\mode-groovy.js" />
-    <Content Include="Layouts\IronSP\ace\mode-html.js" />
-    <Content Include="Layouts\IronSP\ace\mode-java.js" />
-    <Content Include="Layouts\IronSP\ace\mode-javascript.js" />
-    <Content Include="Layouts\IronSP\ace\mode-json.js" />
-    <Content Include="Layouts\IronSP\ace\mode-ocaml.js" />
-    <Content Include="Layouts\IronSP\ace\mode-perl.js" />
-    <Content Include="Layouts\IronSP\ace\mode-php.js" />
-    <Content Include="Layouts\IronSP\ace\mode-python.js" />
-    <Content Include="Layouts\IronSP\ace\mode-ruby.js" />
-    <Content Include="Layouts\IronSP\ace\mode-scad.js" />
-    <Content Include="Layouts\IronSP\ace\mode-scala.js" />
-    <Content Include="Layouts\IronSP\ace\mode-scss.js" />
-    <Content Include="Layouts\IronSP\ace\mode-svg.js" />
-    <Content Include="Layouts\IronSP\ace\mode-textile.js" />
-    <Content Include="Layouts\IronSP\ace\mode-xml.js" />
-    <Content Include="Layouts\IronSP\ace\theme-clouds.js" />
-    <Content Include="Layouts\IronSP\ace\theme-clouds_midnight.js" />
-    <Content Include="Layouts\IronSP\ace\theme-cobalt.js" />
-    <Content Include="Layouts\IronSP\ace\theme-crimson_editor.js" />
-    <Content Include="Layouts\IronSP\ace\theme-dawn.js" />
-    <Content Include="Layouts\IronSP\ace\theme-eclipse.js" />
-    <Content Include="Layouts\IronSP\ace\theme-idle_fingers.js" />
-    <Content Include="Layouts\IronSP\ace\theme-kr_theme.js" />
-    <Content Include="Layouts\IronSP\ace\theme-merbivore.js" />
-    <Content Include="Layouts\IronSP\ace\theme-merbivore_soft.js" />
-    <Content Include="Layouts\IronSP\ace\theme-monokai.js" />
-    <Content Include="Layouts\IronSP\ace\theme-mono_industrial.js" />
-    <Content Include="Layouts\IronSP\ace\theme-pastel_on_dark.js" />
-    <Content Include="Layouts\IronSP\ace\theme-solarized_dark.js" />
-    <Content Include="Layouts\IronSP\ace\theme-solarized_light.js" />
-    <Content Include="Layouts\IronSP\ace\theme-textmate.js" />
-    <Content Include="Layouts\IronSP\ace\theme-twilight.js" />
-    <Content Include="Layouts\IronSP\ace\theme-vibrant_ink.js" />
-    <Content Include="Layouts\IronSP\ace\worker-coffee.js" />
-    <Content Include="Layouts\IronSP\ace\worker-css.js" />
-    <Content Include="Layouts\IronSP\ace\worker-javascript.js" />
-    <Content Include="Layouts\IronSP\IronEditor.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
     <Content Include="Layouts\IronSP\IronConsole.js" />
-    <Content Include="Layouts\IronSP\jquery-fieldselection.min.js" />
     <Content Include="Layouts\IronSP\jquery.js" />
     <Content Include="Layouts\IronSP\mustache.js" />
     <Content Include="Lists\IronHive\EditDlg.htm" />

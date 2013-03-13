@@ -19,7 +19,7 @@ namespace IronSharePoint.Features.IronSP_WebApp
     [Guid("62d325a0-90f5-4b80-a484-4681c4b7de5d")]
     public class IronSP_WebAppEventReceiver : SPFeatureReceiver
     {
-        private static readonly string modificationOwner = IronHelper.GetPrefixedKey("WebAppEventReceiver");
+        private static readonly string modificationOwner = IronConstant.GetPrefixed("WebAppEventReceiver");
 
         public override void FeatureActivated(SPFeatureReceiverProperties properties)
         {

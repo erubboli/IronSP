@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
-using IronSharePoint.IronLog;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint.Security;
@@ -20,14 +19,13 @@ namespace IronSharePoint.Features.IronSP_Hive_Site
     [Guid("a78520f4-de3a-446f-96f5-80f3c9b741df")]
     public class IronSP_Hive_SiteEventReceiver : SPFeatureReceiver
     {
-        // Uncomment the method below to handle the event raised after a feature has been activated.
-
         public override void FeatureActivated(SPFeatureReceiverProperties properties)
         {
+            // TODO fix event receivers
             //var site = properties.Feature.Parent as SPSite;
             //var web = site.RootWeb;
             //var list = web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronHiveLibraryPath);
-            
+
             //string assembly = typeof(IronHiveEventReceiver).Assembly.FullName;
             //string type = typeof(IronHiveEventReceiver).FullName;
 
@@ -44,25 +42,19 @@ namespace IronSharePoint.Features.IronSP_Hive_Site
             //list.EventReceivers.Add(SPEventReceiverType.ItemCheckingOut, assembly, type);
 
             //list.Update();
-
-            //AddTimerJobs(site.WebApplication);
         }
-
-
-        // Uncomment the method below to handle the event raised before a feature is deactivated.
 
         public override void FeatureDeactivating(SPFeatureReceiverProperties properties)
         {
-            var site = properties.Feature.Parent as SPSite;
-            var web = site.RootWeb;
-            var list = web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronHiveLibraryPath);
+            // TODO fix event receivers
+            //var site = properties.Feature.Parent as SPSite;
+            //var web = site.RootWeb;
+            //var list = web.GetList(web.ServerRelativeUrl + "/" + IronConstant.IronHiveLibraryPath);
 
-            string type = typeof(IronHiveEventReceiver).FullName;
+            //string type = typeof(IronHiveEventReceiver).FullName;
 
-            list.EventReceivers.OfType<SPEventReceiverDefinition>().Where(d=>d.Class == type).ToList().ForEach(d=>d.Delete());
-            list.Update();
-
-            RemoveTimerJobs(site.WebApplication);
+            //list.EventReceivers.OfType<SPEventReceiverDefinition>().Where(d=>d.Class == type).ToList().ForEach(d=>d.Delete());
+            //list.Update();
         }
 
 
@@ -85,31 +77,5 @@ namespace IronSharePoint.Features.IronSP_Hive_Site
         //{
         //}
 
-        private void RemoveTimerJobs(SPWebApplication webapp)
-        {
-            foreach (SPJobDefinition job in webapp.JobDefinitions)
-            {
-                if (job.Name == IronLogWorkItemJobDefinition.JobName)
-                {
-                    job.Delete();
-                }
-            }
-        }
-
-        private void AddTimerJobs(SPWebApplication webApp)
-        {
-            RemoveTimerJobs(webApp);
-
-            var ironLogSchedule = new SPMinuteSchedule {Interval = 1, BeginSecond = 0, EndSecond = 59};
-            var ironLogJobDefinition = new IronLogWorkItemJobDefinition(webApp) {Schedule = ironLogSchedule};
-            ironLogJobDefinition.Update();
-            try
-            {
-                ironLogJobDefinition.RunNow();
-            }
-            catch
-            {
-            }
-        }
     }
 }

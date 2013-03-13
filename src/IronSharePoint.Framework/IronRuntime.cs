@@ -31,6 +31,8 @@ namespace IronSharePoint
             DynamicTypeRegistry = new Dictionary<string, Object>();
             DynamicFunctionRegistry = new Dictionary<string, Object>();
             Engines = new Dictionary<string, IronEngine>();
+
+            Initialize();
         }
 
         internal static Dictionary<Guid, IronRuntime> LivingRuntimes
@@ -84,7 +86,7 @@ namespace IronSharePoint
         {
             get
             {
-                var key = IronHelper.GetPrefixedKey("Site_" + Id);
+                var key = IronConstant.GetPrefixed("Site_" + Id);
                 var httpContext = HttpContext.Current;
                 SPSite site;
 
@@ -144,16 +146,14 @@ namespace IronSharePoint
 
             using (new SPMonitoredScope("Creating IronEngine(s)"))
             {
-                string ironRubyRoot =
-                    @"C:\Program Files\Common Files\microsoft shared\Web Server Extensions\15\TEMPLATE\FEATURES\IronSP_IronRuby";
-                SPSecurity.RunWithElevatedPrivileges(() => PrivilegedInitialize(ironRubyRoot));
+                SPSecurity.RunWithElevatedPrivileges(PrivilegedInitialize);
 
                 ScriptEngine rubyEngine = _scriptRuntime.GetEngineByFileExtension(".rb");
                 rubyEngine.SetSearchPaths(new List<String>
                     {
-                        Path.Combine(ironRubyRoot, @"ironruby"),
-                        Path.Combine(ironRubyRoot, @"ruby\site_ruby\1.9.1"),
-                        Path.Combine(ironRubyRoot, @"ruby\1.9.1")
+                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ironruby"),
+                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\site_ruby\1.9.1"),
+                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\1.9.1")
                     });
 
                 var ironRubyEngine = new IronEngine(this, rubyEngine);
@@ -162,7 +162,7 @@ namespace IronSharePoint
                 ScriptScope scope = rubyEngine.CreateScope();
                 scope.SetVariable("iron_runtime", this);
                 scope.SetVariable("ruby_engine", ironRubyEngine);
-                scope.SetVariable("rails_root", ironRubyRoot);
+                scope.SetVariable("rails_root", IronConstant.IronRubyRootDirectory);
                 scope.SetVariable("rails_env",
                                   IronConstant.IronEnv == IronEnvironment.Debug
                                       ? "development"
@@ -190,11 +190,11 @@ end", ".rb", false);
             }
         }
 
-        private void PrivilegedInitialize(string rubyRoot)
+        private void PrivilegedInitialize()
         {
-            string gemDir = Path.Combine(rubyRoot, "lib/ironruby/gems/1.9.1").Replace("\\", "/");
+            string gemDir = Path.Combine(IronConstant.IronRubyRootDirectory, "lib/ironruby/gems/1.9.1").Replace("\\", "/");
 
-            Environment.SetEnvironmentVariable("IRONRUBY_10_20", rubyRoot);
+            Environment.SetEnvironmentVariable("IRONRUBY_10_20", IronConstant.IronRubyRootDirectory);
             Environment.SetEnvironmentVariable("GEM_PATH", gemDir);
             Environment.SetEnvironmentVariable("GEM_HOME", gemDir);
         }
@@ -216,7 +216,6 @@ end", ".rb", false);
                             {
                                 runtime = new IronRuntime(targetId);
                                 LivingRuntimes[targetId] = runtime;
-                                runtime.Initialize();
                             }
                         }
                     }
@@ -286,7 +285,7 @@ end", ".rb", false);
         {
             IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Core],
                                                     TraceSeverity.Unexpected,
-                                                    String.Format("{0}. Error:{1}; Stack:{2}", msg, ex.Message,
+                                                    String.Format("{0}\nError:{1}\nStack:{2}", msg, ex.Message,
                                                                   ex.StackTrace));
         }
 

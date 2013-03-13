@@ -8,7 +8,6 @@ namespace IronSharePoint.EventReceivers
 {
     public class IronHiveEventReceiver : SPItemEventReceiver
     {
-
         public new bool EventFiringEnabled
         {
             get { return base.EventFiringEnabled; }

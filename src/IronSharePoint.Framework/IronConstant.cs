@@ -23,6 +23,13 @@ namespace IronSharePoint
 
         public static string IronSPRootDirectory =
             @"C:\Program Files\Common Files\microsoft shared\Web Server Extensions\14\TEMPLATE\FEATURES\IronSP_Root";
+        public static string IronRubyRootDirectory =
+            @"C:\Program Files\Common Files\microsoft shared\Web Server Extensions\15\TEMPLATE\FEATURES\IronSP_IronRuby";
+
+        public static string GetPrefixed(string s)
+        {
+            return string.Format("{0}_{1}", IronPrefix, s);
+        }
 
         public static IronEnvironment IronEnv
         {

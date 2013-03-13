@@ -13,7 +13,6 @@ using Microsoft.SharePoint.Administration;
 using System.Web.Caching;
 using System.Web;
 using System.ComponentModel;
-using IronSharePoint.IronLog;
 
 namespace IronSharePoint
 {
@@ -85,6 +84,7 @@ namespace IronSharePoint
 
         protected override void Render(HtmlTextWriter writer)
         {
+            // Todo better error handling
             if (Exception != null)
             {
                 if (SPContext.Current.Web.UserIsSiteAdmin)
@@ -94,10 +94,10 @@ namespace IronSharePoint
 
                     IronRuntime.LogError(String.Format("Error executing script {0}: {1}", ScriptName, error), Exception);
 
-                    if(engine!=null)
-                    {
-                        new IronLogger(engine.IronRuntime).Log(String.Format("Ruby Error: {0} at {1}", Exception.Message, error));
-                    }
+                    //if(engine!=null)
+                    //{
+                    //    new IronLogger(engine.IronRuntime).Log(String.Format("Ruby Error: {0} at {1}", Exception.Message, error));
+                    //}
 
                     writer.Write(error);
                 }

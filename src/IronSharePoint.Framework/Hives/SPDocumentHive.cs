@@ -166,7 +166,7 @@ namespace IronSharePoint.Hives
 
         private T OpenLibrary<T>(Func<SPDocumentLibrary, T> func)
         {
-            var siteKey = IronHelper.GetPrefixedKey("Hive_" + _siteId);
+            var siteKey = IronConstant.GetPrefixed("Site_" + _siteId);
             var context = HttpContext.Current;
             T result;
 

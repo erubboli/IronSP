@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Microsoft.SharePoint;
-using IronSharePoint.IronLog;
 using Microsoft.Scripting.Hosting;
 
 namespace IronSharePoint
@@ -37,22 +36,19 @@ namespace IronSharePoint
             if (SPContext.Current != null)
             {
                 var runtime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-
-                var logger = new IronLogger(runtime);
-
-                var exception =  application.Server.GetLastError();
-
-                logger.Log(String.Format("Error: {0} at {1}!", exception.Message, exception.StackTrace), LogLevel.Fatal);
-
                 var engine = runtime.GetEngineByExtension(".rb");
+                var exception =  application.Server.GetLastError();
 
                 if (engine != null)
                 {
                     var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
                     string error = eo.FormatException(exception);
 
-                    logger.Log(String.Format("Ruby Error: {0} at {1}", exception.Message, error), LogLevel.Fatal);
-
+                    IronRuntime.LogError(error, exception);
+               }
+                else
+                {
+                    IronRuntime.LogError("Error in IronHttpModule", exception);
                 }
             }
         }
