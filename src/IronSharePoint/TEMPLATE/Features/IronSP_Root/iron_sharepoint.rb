@@ -1,4 +1,4 @@
-require 'active_support'
+require 'active_support/core_ext'
 require 'log4r'
 require 'haml'
 require 'slim'

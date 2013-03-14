@@ -97,7 +97,10 @@ namespace IronSharePoint
 
         public Control CreateDynamicInstance(string controlName)
         {
-            throw new NotImplementedException();
+            var control = ScriptEngine.Execute<Control>(string.Format("{0}.new", controlName));
+
+            if (control == null) throw new ArgumentOutOfRangeException("controlName", string.Format("Control '{0}' not found.", controlName));
+            return control;
         }
     }
 }
