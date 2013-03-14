@@ -20,6 +20,9 @@ namespace IronSharePoint.Hives
         private string _webUrl;
         private string _hiveLibraryUrl;
 
+        private SPSite _site;
+        private SPDocumentLibrary _hiveLibrary;
+
         private string[] _cachedFiles;
         private string[] _cachedDirs;
 
@@ -56,15 +59,17 @@ namespace IronSharePoint.Hives
         {
             path = IsAbsolutePath(path) ? GetPartialPath(path) : path;
 
-            return _cachedDirs.Contains(path);
+            return _cachedDirs.Any(x => x.StartsWith(path));
         }
 
         public Stream OpenInputFileStream(string path)
         {
             return OpenLibrary(lib =>
                 {
-                    var spFile = lib.ParentWeb.GetFile(path);
-                    if (!spFile.Exists) throw new FileNotFoundException("", path);
+                    string fullPath = GetFullPath(path);
+                    Console.WriteLine(fullPath);
+                    var spFile = lib.ParentWeb.GetFile(fullPath);
+                    if (!spFile.Exists) throw new FileNotFoundException("", fullPath);
 
                     return spFile.OpenBinaryStream();
                 });
@@ -117,15 +122,14 @@ namespace IronSharePoint.Hives
 
         public IEnumerable<string> GetDirectories(string path, string searchPattern, bool absolutePaths = false)
         {
-            searchPattern = searchPattern.Replace("*", "[^/]+") + "$";
-            path = "^" + (path.Replace(".", "") + "/").TrimStart('/');
-            var regexPattern = string.Format("{0}{1}", path, searchPattern);
+            path = (path.Replace(".", "") + "/").TrimStart('/');
+            var regexPattern = searchPattern.Replace("*", string.Format("^({0}[^/]+)(/.*)?", path)) + "$";
             var regex = new Regex(regexPattern);
             var dirs = CachedDirs.Select(dir =>
             {
                 var match = regex.Match(dir);
-                return match.Success ? dir : null;
-            }).Where(x => x != null).Distinct().ToArray();
+                return match.Success ? match.Groups[1].Value : null;
+            }).Compact().Distinct().ToArray();
             return absolutePaths ? dirs.Select(GetFullPath) : dirs;
         }
 
@@ -166,31 +170,14 @@ namespace IronSharePoint.Hives
 
         private T OpenLibrary<T>(Func<SPDocumentLibrary, T> func)
         {
-            var siteKey = IronConstant.GetPrefixed("Site_" + _siteId);
-            var context = HttpContext.Current;
-            T result;
-
-            if (context != null)
+            if (_site == null)
             {
-                if (!context.Items.Contains(siteKey))
-                {
-                    // Site gets automatically disposed after http request ended
-                    context.Items[siteKey] = new SPSite(_siteId, SPUserToken.SystemAccount);
-                }
-                var site = context.Items[siteKey] as SPSite;
-                var library = GetHiveLibrary(site);
-                result = func(library);
-            }
-            else
-            {
-                using (var site = new SPSite(_siteId))
-                {
-                    var library = GetHiveLibrary(site);
-                    result = func(library);
-                }
+                _site = new SPSite(_siteId);
+                var folder = _site.RootWeb.GetFolder(_hiveLibraryPath);
+                _hiveLibrary = folder.DocumentLibrary;
             }
 
-            return result;
+            return func(_hiveLibrary);
         }
 
         private void OpenLibrary(Action<SPDocumentLibrary> action)
@@ -203,18 +190,21 @@ namespace IronSharePoint.Hives
             OpenLibrary(func);
         }
 
-        private SPDocumentLibrary GetHiveLibrary(SPSite site)
-        {
-            var web = site.RootWeb;
-            var folder = web.GetFolder(_hiveLibraryPath);
-            return folder.DocumentLibrary;
-        }
-
         private string GetPartialPath(string path)
         {
             Contract.Requires<ArgumentNullException>(path != null);
 
             return path.Replace(_hiveLibraryUrl, "").TrimStart('/');
+        }
+
+        public void Dispose()
+        {
+            if (_site != null)
+            {
+                _site.Dispose();
+                _site = null;
+                _hiveLibrary = null;
+            }
         }
     }
 }

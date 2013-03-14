@@ -16,11 +16,12 @@ namespace IronSharePoint.Framework.Test.Hive
     class SPDocumentHive_Fixture
     {
         public SPDocumentHive Sut;
+        public SPSite Site;
 
         [SetUp]
         public void SetUp()
         {
-            FakeNextSPSite();
+            Site = FakeNextSPSite();
             Sut = new SPDocumentHive(Guid.Empty);
         }
 
@@ -43,7 +44,8 @@ namespace IronSharePoint.Framework.Test.Hive
                 {
                     "foo.txt",
                     "bar/baz.txt",
-                    "bar/baz/qux.txt"
+                    "bar/baz/qux.txt",
+                    "qux/quux/gorge.txt"
                 });
         }
 
@@ -53,7 +55,8 @@ namespace IronSharePoint.Framework.Test.Hive
             Sut.CachedDirs.Should().BeEquivalentTo(new[]
                 {
                     "bar",
-                    "bar/baz"
+                    "bar/baz",
+                    "qux/quux"
                 });
         }
 
@@ -85,6 +88,12 @@ namespace IronSharePoint.Framework.Test.Hive
         public void DirectoryExists_WithMissingDirectory_ReturnsFalse()
         {
             Sut.DirectoryExists("i_do_not_exist").Should().BeFalse();
+        }
+
+        [Test]
+        public void DirectoryExists_WithDirectoryThatHasNoFile_ReturnsTrue()
+        {
+            Sut.DirectoryExists("qux").Should().BeTrue();
         }
 
         [Test]
@@ -138,10 +147,10 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void OpenInputFileStream_WhenFileExists_ReturnsFilestream()
         {
-            var web = FakeNextSPSite().RootWeb;
             var spFile = Isolate.Fake.Instance<SPFile>();
             var stream = Isolate.Fake.Instance<Stream>();
-            Isolate.WhenCalled(() => web.GetFile("foo.txt")).WithExactArguments().WillReturn(spFile);
+            var web = Site.RootWeb;
+            Isolate.WhenCalled(() => web.GetFile("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt")).WithExactArguments().WillReturn(spFile);
             Isolate.WhenCalled(() => spFile.Exists).WillReturn(true);
             Isolate.WhenCalled(() => spFile.OpenBinaryStream()).WillReturn(stream);
 
@@ -152,9 +161,9 @@ namespace IronSharePoint.Framework.Test.Hive
         [ExpectedException(typeof(FileNotFoundException))]
         public void OpenInputFileStream_WhenFileIsMissing_ThrowsFileNotFoundException()
         {
-            var web = FakeNextSPSite().RootWeb;
             var spFile = Isolate.Fake.Instance<SPFile>();
-            Isolate.WhenCalled(() => web.GetFile("foo.txt")).WithExactArguments().WillReturn(spFile);
+            var web = Site.RootWeb;
+            Isolate.WhenCalled(() => web.GetFile("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt")).WithExactArguments().WillReturn(spFile);
             Isolate.WhenCalled(() => spFile.Exists).WillReturn(false);
 
             Sut.OpenInputFileStream("foo.txt");
@@ -163,10 +172,10 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void OpenOutputFileStream_WhenFileExists_ReturnsFilestream()
         {
-            var web = FakeNextSPSite().RootWeb;
             var spFile = Isolate.Fake.Instance<SPFile>();
             var stream = Isolate.Fake.Instance<Stream>();
-            Isolate.WhenCalled(() => web.GetFile("foo.txt")).WithExactArguments().WillReturn(spFile);
+            var web = Site.RootWeb;
+            Isolate.WhenCalled(() => web.GetFile("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt")).WithExactArguments().WillReturn(spFile);
             Isolate.WhenCalled(() => spFile.Exists).WillReturn(true);
             Isolate.WhenCalled(() => spFile.OpenBinaryStream()).WillReturn(stream);
 
@@ -177,9 +186,9 @@ namespace IronSharePoint.Framework.Test.Hive
         [ExpectedException(typeof(FileNotFoundException))]
         public void OpenOutputFileStream_WhenFileIsMissing_ThrowsFileNotFoundException()
         {
-            var web = FakeNextSPSite().RootWeb;
             var spFile = Isolate.Fake.Instance<SPFile>();
-            Isolate.WhenCalled(() => web.GetFile("foo.txt")).WithExactArguments().WillReturn(spFile);
+            var web = Site.RootWeb;
+            Isolate.WhenCalled(() => web.GetFile("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt")).WithExactArguments().WillReturn(spFile);
             Isolate.WhenCalled(() => spFile.Exists).WillReturn(false);
 
             Sut.OpenOutputFileStream("foo.txt");
@@ -212,7 +221,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void GetDirectories_OnRoot_ContainsDirectory()
         {
-            Sut.GetDirectories(".", "*").Should().Contain("bar");
+            Sut.GetDirectories(".", "*").Should().BeEquivalentTo(new object[]{ "bar", "qux"});
         }
 
         [Test]
@@ -227,7 +236,6 @@ namespace IronSharePoint.Framework.Test.Hive
             Sut.GetDirectories("bar", "*").Should().BeEquivalentTo(new object[] { "bar/baz" });
         }
 
-
         private SPSite FakeNextSPSite()
         {
             var site = Isolate.Fake.NextInstance<SPSite>(Members.MustSpecifyReturnValues);
@@ -238,7 +246,8 @@ namespace IronSharePoint.Framework.Test.Hive
                 {
                     "/sites/IronSP/_catalogs/IronHive/foo.txt",
                     "/sites/IronSP/_catalogs/IronHive/bar/baz.txt",
-                    "/sites/IronSP/_catalogs/IronHive/bar/baz/qux.txt"
+                    "/sites/IronSP/_catalogs/IronHive/bar/baz/qux.txt",
+                    "/sites/IronSP/_catalogs/IronHive/qux/quux/gorge.txt",
                 }.Select(x =>
                 {
                     var spItem = Isolate.Fake.Instance<SPListItem>();
