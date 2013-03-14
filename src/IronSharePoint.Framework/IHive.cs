@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace IronSharePoint
@@ -6,7 +7,7 @@ namespace IronSharePoint
     /// <summary>
     /// Interface for a virtual folder that contains script files
     /// </summary>
-    public interface IHive
+    public interface IHive : IDisposable
     {
         /// <summary>
         /// Checks if a file exists at the given <paramref name="path"/>.

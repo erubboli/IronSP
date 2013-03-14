@@ -11,7 +11,7 @@ using Microsoft.SharePoint.Administration;
 
 namespace IronSharePoint
 {
-    public class IronScriptHost : ScriptHost
+    public class IronScriptHost : ScriptHost, IDisposable
     {
         private readonly IronPlatformAdaptationLayer _ironPlatformAdaptationLayer;
         private readonly Guid _siteId;
@@ -67,6 +67,14 @@ namespace IronSharePoint
                 setups = new HiveSetupCollection();
             }
             return setups;
+        }
+
+        public void Dispose()
+        {
+            if (_hive != null)
+            {
+                _hive.Dispose();
+            }
         }
     }
 }

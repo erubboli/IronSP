@@ -94,5 +94,10 @@ namespace IronSharePoint.Hives
 
             return path.Replace(Root, "").TrimStart('\\');
         }
+
+        public void Dispose()
+        {
+            // nothing to do
+        }
     }
 }

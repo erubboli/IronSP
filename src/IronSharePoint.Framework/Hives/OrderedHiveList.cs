@@ -111,5 +111,13 @@ namespace IronSharePoint.Hives
         {
             return GetEnumerator();
         }
+
+        public void Dispose()
+        {
+            foreach (var hive in _hives)
+            {
+                hive.Dispose();
+            }
+        }
     }
 }
