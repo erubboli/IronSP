@@ -8,7 +8,7 @@ namespace IronSharePoint.IronConsole
     public class IronConsoleWebPart : WebPart
     {
         // Visual Studio might automatically update this path when you change the Visual Web Part project item.
-        const string _ascxPath = @"~/_CONTROLTEMPLATES/IronSP/IronConsole/IronConsoleUserControl.ascx";
+        const string _ascxPath = @"~/_CONTROLTEMPLATES/15/IronSP/IronConsole/IronConsoleUserControl.ascx";
 
         protected override void CreateChildControls()
         {

@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
 using IronSharePoint.Util;
 using Microsoft.SharePoint;
@@ -20,10 +21,14 @@ namespace IronSharePoint.Hives
         private string _webUrl;
         private string _hiveLibraryUrl;
 
-        private SPSite _site;
-        private SPDocumentLibrary _hiveLibrary;
+        private ThreadLocal<SPSite> _site;
 
-        private string[] _cachedFiles;
+        public SPSite Site
+        {
+            get { return _site.Value; }
+        }
+
+    private string[] _cachedFiles;
         private string[] _cachedDirs;
 
         public IEnumerable<string> CachedFiles
@@ -45,6 +50,8 @@ namespace IronSharePoint.Hives
         {
             _siteId = siteId;
             _hiveLibraryPath = hiveLibraryPath;
+
+            _site = new ThreadLocal<SPSite>(() => new SPSite(_siteId, SPUserToken.SystemAccount), true);
             Reset();
         }
 
@@ -64,15 +71,11 @@ namespace IronSharePoint.Hives
 
         public Stream OpenInputFileStream(string path)
         {
-            return OpenLibrary(lib =>
-                {
-                    string fullPath = GetFullPath(path);
-                    Console.WriteLine(fullPath);
-                    var spFile = lib.ParentWeb.GetFile(fullPath);
-                    if (!spFile.Exists) throw new FileNotFoundException("", fullPath);
+            string filePath = GetFullPath(path);
+            var spFile = Site.RootWeb.GetFile(filePath);
+            if (!spFile.Exists) throw new FileNotFoundException("", filePath);
 
-                    return spFile.OpenBinaryStream();
-                });
+            return spFile.OpenBinaryStream();
         }
 
         public Stream OpenOutputFileStream(string path)
@@ -135,6 +138,8 @@ namespace IronSharePoint.Hives
 
         public void Reset()
         {
+            Dispose();
+
             var allFilesQuery = new SPQuery();
             allFilesQuery.Query = "<Where></Where>";
             allFilesQuery.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='FileLeafRef'/>";
@@ -143,51 +148,28 @@ namespace IronSharePoint.Hives
 
             var allFiles = new List<string>();
 
-            OpenLibrary(lib =>
-                {
-                    _webUrl = lib.ParentWebUrl;
-                    _hiveLibraryUrl = CombinePath(_webUrl, _hiveLibraryPath);
+            var folder = Site.RootWeb.GetFolder(_hiveLibraryPath);
+            var lib = folder.DocumentLibrary;
+            _webUrl = Site.RootWeb.Url;
+            _hiveLibraryUrl = CombinePath(_webUrl, _hiveLibraryPath);
 
-                     var allItems = lib.GetItems(allFilesQuery);
-                     foreach (SPListItem item in allItems)
-                     {
-                         var fileRef = item["FileRef"].ToString();
-                         var siteRelative = fileRef.ReplaceFirst(lib.ParentWeb.ServerRelativeUrl, string.Empty).TrimStart('/');
-                         var hiveRelative = siteRelative.ReplaceFirst(_hiveLibraryPath,string.Empty).TrimStart('/');
-
-                         allFiles.Add(hiveRelative);
-                     }
-                });
-
-            _cachedFiles = allFiles.ToArray();
-// ReSharper disable PossibleNullReferenceException
-            _cachedDirs = _cachedFiles.Select(x => Path.GetDirectoryName(x).Replace('\\', '/'))
-                .Distinct()
-                .Where(x => !String.IsNullOrWhiteSpace(x))
-                .ToArray();
-// ReSharper restore PossibleNullReferenceException
-        }
-
-        private T OpenLibrary<T>(Func<SPDocumentLibrary, T> func)
-        {
-            if (_site == null)
+            var allItems = lib.GetItems(allFilesQuery);
+            foreach (SPListItem item in allItems)
             {
-                _site = new SPSite(_siteId);
-                var folder = _site.RootWeb.GetFolder(_hiveLibraryPath);
-                _hiveLibrary = folder.DocumentLibrary;
+                var fileRef = item["FileRef"].ToString();
+                var siteRelative = fileRef.ReplaceFirst(Site.RootWeb.ServerRelativeUrl, string.Empty).TrimStart('/');
+                var hiveRelative = siteRelative.ReplaceFirst(_hiveLibraryPath, string.Empty).TrimStart('/');
+
+                allFiles.Add(hiveRelative);
             }
 
-            return func(_hiveLibrary);
-        }
-
-        private void OpenLibrary(Action<SPDocumentLibrary> action)
-        {
-            var func = new Func<SPDocumentLibrary, bool>(lib =>
-                {
-                    action(lib);
-                    return true;
-                });
-            OpenLibrary(func);
+            _cachedFiles = allFiles.ToArray();
+            // ReSharper disable PossibleNullReferenceException
+            _cachedDirs = _cachedFiles.Select(x => Path.GetDirectoryName(x).Replace('\\', '/'))
+                                      .Distinct()
+                                      .Where(x => !String.IsNullOrWhiteSpace(x))
+                                      .ToArray();
+            // ReSharper restore PossibleNullReferenceException
         }
 
         private string GetPartialPath(string path)
@@ -199,11 +181,9 @@ namespace IronSharePoint.Hives
 
         public void Dispose()
         {
-            if (_site != null)
+            foreach (var spSite in _site.Values)
             {
-                _site.Dispose();
-                _site = null;
-                _hiveLibrary = null;
+                spSite.Dispose();
             }
         }
     }

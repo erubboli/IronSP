@@ -69,7 +69,7 @@ namespace IronSharePoint
             return DelegateToHiveOrBase(path,
                                         _hive.OpenInputFileStream,
                                         x =>
-                                        base.FileExists(x) ? base.OpenInputFileStream(x) : _hive.OpenOutputFileStream(x));
+                                        base.FileExists(x) ? base.OpenInputFileStream(x) : _hive.OpenInputFileStream(x));
         }
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share)
@@ -79,7 +79,7 @@ namespace IronSharePoint
                                         x =>
                                         base.FileExists(x)
                                             ? base.OpenInputFileStream(x, mode, access, share)
-                                            : _hive.OpenOutputFileStream(x));
+                                            : _hive.OpenInputFileStream(x));
         }
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share,
@@ -90,12 +90,16 @@ namespace IronSharePoint
                                         x =>
                                         base.FileExists(x)
                                             ? base.OpenInputFileStream(x, mode, access, share, bufferSize)
-                                            : _hive.OpenOutputFileStream(x));
+                                            : _hive.OpenInputFileStream(x));
         }
 
         private T DelegateToHiveOrBase<T>(string path, Func<string, T> hive, Func<string, T> @base)
         {
             T result;
+            if (path.StartsWith("./"))
+            {
+                path = path.ReplaceFirst("./", "");
+            }
             if (path.StartsWith(IronConstant.FakeHiveDirectory))
             {
                 result = hive(path.ReplaceFirst(IronConstant.FakeHiveDirectory, string.Empty));

@@ -1,0 +1,1 @@
+﻿Regexp::FIXEDENCODING=16

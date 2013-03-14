@@ -76,7 +76,9 @@ namespace IronSharePoint.Hives
         {
             path = GetFullPath(path);
 
-            var files = Directory.GetFiles(path, searchPattern).Select(Path.GetFullPath);
+            var files = DirectoryExists(path)
+                            ? Directory.GetFiles(path, searchPattern).Select(Path.GetFullPath)
+                            : new string[0];
             return absolutePaths ? files : files.Select(GetPartialPath);
         }
 
@@ -84,7 +86,9 @@ namespace IronSharePoint.Hives
         {
             path = GetFullPath(path);
 
-            var directories = Directory.GetDirectories(path, searchPattern).Select(Path.GetFullPath);
+            var directories = DirectoryExists(path)
+                                  ? Directory.GetDirectories(path, searchPattern).Select(Path.GetFullPath)
+                                  : new string[0];
             return absolutePaths ? directories : directories.Select(GetPartialPath);
         }
 

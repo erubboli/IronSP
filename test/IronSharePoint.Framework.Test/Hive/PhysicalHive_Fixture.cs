@@ -223,6 +223,14 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
+        public void GetFiles_InMissingDirectory_DoesNotThrow()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Assert.DoesNotThrow(() => Sut.GetFiles("c:\\i_do_not_exist", "*"));
+        }
+
+        [Test]
         public void GetDirectories_AbsolutePaths()
         {
             Sut = new PhysicalHive(_assetsRoot);
@@ -244,6 +252,14 @@ namespace IronSharePoint.Framework.Test.Hive
             Sut = new PhysicalHive(_assetsRoot);
 
             Sut.GetDirectories(".", "*").Should().NotContain("lorem.txt");
+        }
+
+        [Test]
+        public void GetDirectories_InMissingDirectory_DoesNotThrow()
+        {
+            Sut = new PhysicalHive(_assetsRoot);
+
+            Assert.DoesNotThrow(() => Sut.GetDirectories("c:\\i_do_not_exist", "*"));
         }
     }
 }
