@@ -7,9 +7,9 @@ using System.Linq;
 namespace IronSharePoint.Hives
 {
     /// <summary>
-    /// Hive implementation for folders on a physical hard disk
+    /// Hive implementation which acts on a directory on a hard disk
     /// </summary>
-    public class PhysicalHive : IHive
+    public class DirectoryHive : IHive
     {
         private string _root;
 
@@ -19,7 +19,7 @@ namespace IronSharePoint.Hives
         /// Creates a new Hive for the folder <paramref name="root"/>.
         /// </summary>
         /// <param name="root"></param>
-        public PhysicalHive(string root)
+        public DirectoryHive(string root)
         {
             Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(root), "Root directory cannot be null or blank");
             Contract.Requires<ArgumentException>(Directory.Exists(root), "Root directory can not be found");

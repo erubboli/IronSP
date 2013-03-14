@@ -12,12 +12,12 @@ using NUnit.Framework;
 namespace IronSharePoint.Framework.Test.Hive
 {
     [TestFixture]
-    class OrderedHiveList_Fixture
+    class HiveComposite_Fixture
     {
         private Mock<IHive> _hiveMock1;
         private Mock<IHive> _hiveMock2;
 
-        public OrderedHiveList Sut;
+        public HiveComposite Sut;
 
         IHive Hive1 { get { return _hiveMock1.Object; } }
         IHive Hive2 { get { return _hiveMock2.Object; } }
@@ -32,7 +32,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void Ctor_RemovesNulls()
         {
-            Sut = new OrderedHiveList(Hive1, null, Hive2);
+            Sut = new HiveComposite(Hive1, null, Hive2);
 
             Sut.Should().NotContainNulls();
         }
@@ -40,7 +40,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void Ctor_PreservesOrder()
         {
-            Sut = new OrderedHiveList(Hive1, Hive2);
+            Sut = new HiveComposite(Hive1, Hive2);
 
             Sut.Should().BeEquivalentTo(new object[] {Hive1, Hive2});
         }
@@ -48,7 +48,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void Prepend_AddsHiveAsFirstItem()
         {
-            Sut = new OrderedHiveList(Hive1);
+            Sut = new HiveComposite(Hive1);
 
             Sut.Prepend(Hive2);
 
@@ -59,7 +59,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [ExpectedException(typeof(ArgumentNullException))]
         public void Prepend_WithNull_ThrowsArgumentNullException()
         {
-            Sut = new OrderedHiveList();
+            Sut = new HiveComposite();
 
             Sut.Prepend(null);
         }
@@ -67,7 +67,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void Append_AddsHiveAsLastItem()
         {
-            Sut = new OrderedHiveList(Hive1);
+            Sut = new HiveComposite(Hive1);
 
             Sut.Append(Hive2);
 
@@ -78,7 +78,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [ExpectedException(typeof (ArgumentNullException))]
         public void Append_WithNull_ThrowsArgumentNullException()
         {
-            Sut = new OrderedHiveList();
+            Sut = new HiveComposite();
 
             Sut.Prepend(null);
         }
@@ -89,7 +89,7 @@ namespace IronSharePoint.Framework.Test.Hive
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
             _hiveMock2.Setup(x => x.FileExists(path)).Returns(false);
-            Sut = new OrderedHiveList(Hive1, Hive2);
+            Sut = new HiveComposite(Hive1, Hive2);
 
             Sut.FileExists(path).Should().BeFalse();
         }
@@ -100,7 +100,7 @@ namespace IronSharePoint.Framework.Test.Hive
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(true);
             _hiveMock2.Setup(x => x.FileExists(path)).Returns(false);
-            Sut = new OrderedHiveList(Hive1, Hive2);
+            Sut = new HiveComposite(Hive1, Hive2);
 
             Sut.FileExists(path).Should().BeTrue();
         }
@@ -111,7 +111,7 @@ namespace IronSharePoint.Framework.Test.Hive
             var path = "foo";
             _hiveMock1.Setup(x => x.DirectoryExists(path)).Returns(false);
             _hiveMock2.Setup(x => x.DirectoryExists(path)).Returns(false);
-            Sut = new OrderedHiveList(Hive1, Hive2);
+            Sut = new HiveComposite(Hive1, Hive2);
 
             Sut.DirectoryExists(path).Should().BeFalse();
         }
@@ -122,7 +122,7 @@ namespace IronSharePoint.Framework.Test.Hive
             var path = "foo";
             _hiveMock1.Setup(x => x.DirectoryExists(path)).Returns(false);
             _hiveMock2.Setup(x => x.DirectoryExists(path)).Returns(true);
-            Sut = new OrderedHiveList(Hive1, Hive2);
+            Sut = new HiveComposite(Hive1, Hive2);
 
             Sut.DirectoryExists(path).Should().BeTrue();
         }
@@ -132,7 +132,7 @@ namespace IronSharePoint.Framework.Test.Hive
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
-            Sut = new OrderedHiveList(Hive1);
+            Sut = new HiveComposite(Hive1);
 
             Sut.GetFullPath(path).Should().Be(Path.GetFullPath(path));
         }
@@ -142,7 +142,7 @@ namespace IronSharePoint.Framework.Test.Hive
         public void GetFullPath_WhenPathBlank_ThrowsArgumentException()
         {
             var path = "   ";
-            Sut = new OrderedHiveList();
+            Sut = new HiveComposite();
 
             Sut.GetFullPath(path);
         }
@@ -156,7 +156,7 @@ namespace IronSharePoint.Framework.Test.Hive
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(true);
             _hiveMock1.Setup(x => x.GetFullPath(path)).Returns(expected).Verifiable();
             _hiveMock2.Setup(x => x.FileExists(path)).Returns(true);
-            Sut = new OrderedHiveList(Hive1, Hive2);
+            Sut = new HiveComposite(Hive1, Hive2);
 
             Sut.GetFullPath(path).Should().Be(expected);
 
@@ -169,7 +169,7 @@ namespace IronSharePoint.Framework.Test.Hive
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
-            Sut = new OrderedHiveList(Hive1);
+            Sut = new HiveComposite(Hive1);
 
             Sut.OpenInputFileStream(path);
         }
@@ -179,7 +179,7 @@ namespace IronSharePoint.Framework.Test.Hive
         public void OpenInputFileStream_WhenPathIsBlank_ThrowsArgumentException()
         {
             var path = "   ";
-            Sut = new OrderedHiveList();
+            Sut = new HiveComposite();
 
             Sut.OpenInputFileStream(path);
         }
@@ -193,7 +193,7 @@ namespace IronSharePoint.Framework.Test.Hive
                 _hiveMock1.Setup(x => x.FileExists(path)).Returns(true);
                 _hiveMock1.Setup(x => x.OpenInputFileStream(path)).Returns(expected).Verifiable();
                 _hiveMock2.Setup(x => x.FileExists(path)).Returns(true);
-                Sut = new OrderedHiveList(Hive1, Hive2);
+                Sut = new HiveComposite(Hive1, Hive2);
 
                 Sut.OpenInputFileStream(path).Should().Be(expected);
 
@@ -207,7 +207,7 @@ namespace IronSharePoint.Framework.Test.Hive
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
-            Sut = new OrderedHiveList(Hive1);
+            Sut = new HiveComposite(Hive1);
 
             Sut.OpenOutputFileStream(path);
         }
@@ -217,7 +217,7 @@ namespace IronSharePoint.Framework.Test.Hive
         public void OpenOutputFileStream_WhenPathIsBlank_ThrowsArgumentException()
         {
             var path = "   ";
-            Sut = new OrderedHiveList();
+            Sut = new HiveComposite();
 
             Sut.OpenOutputFileStream(path);
         }
@@ -231,7 +231,7 @@ namespace IronSharePoint.Framework.Test.Hive
                 _hiveMock1.Setup(x => x.FileExists(path)).Returns(true);
                 _hiveMock1.Setup(x => x.OpenOutputFileStream(path)).Returns(expected).Verifiable();
                 _hiveMock2.Setup(x => x.FileExists(path)).Returns(true);
-                Sut = new OrderedHiveList(Hive1, Hive2);
+                Sut = new HiveComposite(Hive1, Hive2);
 
                 Sut.OpenOutputFileStream(path).Should().Be(expected);
 
@@ -246,7 +246,7 @@ namespace IronSharePoint.Framework.Test.Hive
             _hiveMock1.Setup(x => x.IsAbsolutePath(path)).Returns(false);
             _hiveMock2.Setup(x => x.IsAbsolutePath(path)).Returns(true);
 
-            Sut = new OrderedHiveList(Hive1, Hive2);
+            Sut = new HiveComposite(Hive1, Hive2);
 
             Sut.IsAbsolutePath(path).Should().BeTrue();
         }
@@ -258,7 +258,7 @@ namespace IronSharePoint.Framework.Test.Hive
             _hiveMock1.Setup(x => x.IsAbsolutePath(path)).Returns(false);
             _hiveMock2.Setup(x => x.IsAbsolutePath(path)).Returns(false);
 
-            Sut = new OrderedHiveList(Hive1, Hive2);
+            Sut = new HiveComposite(Hive1, Hive2);
 
             Sut.IsAbsolutePath(path).Should().BeFalse();
         }
@@ -269,7 +269,7 @@ namespace IronSharePoint.Framework.Test.Hive
             _hiveMock1.Setup(x => x.GetFiles("","", false)).Returns(new[]{"file1", "file2"});
             _hiveMock2.Setup(x => x.GetFiles("","", false)).Returns(new[]{"file2", "file3"});
 
-            Sut = new OrderedHiveList(Hive1, Hive2);
+            Sut = new HiveComposite(Hive1, Hive2);
 
             Sut.GetFiles("","").Should().BeEquivalentTo(new object[]{"file1", "file2", "file3"});
         }
@@ -279,7 +279,7 @@ namespace IronSharePoint.Framework.Test.Hive
         {
             _hiveMock1.Setup(x => x.GetFiles(".", "*", true)).Returns(new string[0]).Verifiable();
 
-            Sut = new OrderedHiveList(Hive1);
+            Sut = new HiveComposite(Hive1);
 
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             Sut.GetFiles(".", "*", true).ToList(); // evaluate the enumerable

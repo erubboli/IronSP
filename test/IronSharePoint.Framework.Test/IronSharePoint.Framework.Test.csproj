@@ -66,8 +66,8 @@
     <Compile Include="Administration\HiveSetupCollection_Fixture.cs" />
     <Compile Include="Administration\HiveSetup_Fixture.cs" />
     <Compile Include="Administration\HiveRegistry_Fixture.cs" />
-    <Compile Include="Hive\OrderedHiveList_Fixture.cs" />
-    <Compile Include="Hive\PhysicalHive_Fixture.cs" />
+    <Compile Include="Hive\HiveComposite_Fixture.cs" />
+    <Compile Include="Hive\DirectoryHive_Fixture.cs" />
     <Compile Include="Hive\SPDocumentHive_Fixture.cs" />
     <Compile Include="IronScriptHost_Fixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

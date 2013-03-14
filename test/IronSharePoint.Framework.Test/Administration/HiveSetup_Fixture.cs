@@ -40,7 +40,7 @@ namespace IronSharePoint.Framework.Test.Administration
         [Test]
         public void IronSPRoot_HiveType_IsPysicalHive()
         {
-            HiveSetup.IronSPRoot.HiveType.Should().Be(typeof (PhysicalHive));
+            HiveSetup.IronSPRoot.HiveType.Should().Be(typeof (DirectoryHive));
 
         }
 
@@ -49,12 +49,12 @@ namespace IronSharePoint.Framework.Test.Administration
         {
             var hiveSetup = new HiveSetup
                 {
-                    HiveType = typeof (PhysicalHive),
+                    HiveType = typeof (DirectoryHive),
                     HiveArguments = new object[] {1}
                 };
             var otherHiveSetup = new HiveSetup
                 {
-                    HiveType = typeof (PhysicalHive),
+                    HiveType = typeof (DirectoryHive),
                     HiveArguments = new object[] {1}
                 };
 

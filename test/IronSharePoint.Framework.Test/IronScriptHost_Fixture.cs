@@ -31,7 +31,7 @@ namespace IronSharePoint.Framework.Test
                 {
                     new HiveSetup
                         {
-                            HiveType = typeof (PhysicalHive),
+                            HiveType = typeof (DirectoryHive),
                             HiveArguments = new[] {"c:\\"}
                         }
                 };
@@ -40,10 +40,10 @@ namespace IronSharePoint.Framework.Test
 
             Sut = new IronScriptHost(siteId);
 
-            Sut.Hive.Should().BeOfType<OrderedHiveList>();
-            (Sut.Hive as OrderedHiveList).Should().Contain(hive =>
-                                                           hive is PhysicalHive &&
-                                                           (hive as PhysicalHive).Root == "c:\\");
+            Sut.Hive.Should().BeOfType<HiveComposite>();
+            (Sut.Hive as HiveComposite).Should().Contain(hive =>
+                                                           hive is DirectoryHive &&
+                                                           (hive as DirectoryHive).Root == "c:\\");
         }
     }
 }

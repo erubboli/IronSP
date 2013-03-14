@@ -55,7 +55,7 @@ namespace IronSharePoint
                     return ctor != null ? (IHive) ctor.Invoke(x.HiveArguments) : null;
                 }).Compact().ToArray();
 
-            return new OrderedHiveList(hives);
+            return new HiveComposite(hives);
         }
 
         private IEnumerable<HiveSetup> GetHiveSetups()

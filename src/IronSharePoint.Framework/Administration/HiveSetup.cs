@@ -99,7 +99,7 @@ namespace IronSharePoint.Administration
                         DisplayName = "IronSP Root",
                         Description = "Contains the Ruby part of the IronSP Framework",
                         HiveArguments = new object[] {IronConstant.IronSPRootDirectory},
-                        HiveType = typeof (PhysicalHive)
+                        HiveType = typeof (DirectoryHive)
                     };
             }
         }

@@ -8,13 +8,17 @@ using System.Linq;
 namespace IronSharePoint.Hives
 {
     /// <summary>
-    /// Hive implementation which operates an ordered list of hives. First come, first serve.
+    /// Hive implementation which delegates its operations to an ordered list of leaf-hives.
+    /// Operations that return a single object, e.g. OpenInputFileStream(), the composite delegates the call
+    /// to the first leaf-hive that is able to handle the operation (in that case, the file exists in the hive).
+    /// For operations that return a collection of objects, the result of all leaf-hives are combined.
+    /// For operations that return a bool, the result of all leaf-hives are combined with an OR.
     /// </summary>
-    public class OrderedHiveList : IHive, IEnumerable<IHive>
+    public class HiveComposite : IHive, IEnumerable<IHive>
     {
         private readonly List<IHive> _hives; 
 
-        public OrderedHiveList(params IHive[] hives)
+        public HiveComposite(params IHive[] hives)
         {
             _hives = new List<IHive>(hives.Where(x => x != null));
         }
