@@ -31,7 +31,7 @@ namespace IronSharePoint
                 //entries.AddRange(Directory.GetDirectories(path, searchPattern));
                 entries.AddRange(_hive.GetDirectories(path, searchPattern));
             }
-            string[] result = entries.Distinct().Select(x => Regex.IsMatch(x, @"^\w:") ? x : "@@" + x).ToArray();
+            string[] result = entries.Distinct().Select(x => Regex.IsMatch(x, @"(^\w:|^\./)") ? x : "./" + x).ToArray();
             return result;
         }
 
