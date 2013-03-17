@@ -99,6 +99,7 @@
     <Compile Include="Administration\HiveRegistry.cs" />
     <Compile Include="Administration\HiveSetupCollection.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
+    <Compile Include="Hives\SystemHive.cs" />
     <Compile Include="Hives\HiveComposite.cs" />
     <Compile Include="Hives\DirectoryHive.cs" />
     <Compile Include="Hives\SPDocumentHive.cs" />

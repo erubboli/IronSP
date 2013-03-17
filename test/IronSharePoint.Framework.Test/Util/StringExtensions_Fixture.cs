@@ -17,5 +17,17 @@ namespace IronSharePoint.Framework.Test.Util
         {
             "bar bar baz".ReplaceFirst("bar", "foo").Should().Be("foo bar baz");
         }
+
+        [Test]
+        public void ReplaceStart_ReplacesPatternWithSubstitute()
+        {
+            "foobar".ReplaceStart("foo", "baz").Should().Be("bazbar");
+        }
+
+        [Test]
+        public void ReplaceStart_ReplacesOnlyWhenStartMatchesPattern()
+        {
+            "foobar".ReplaceStart("bar", "qux").Should().Be("foobar");
+        }
     }
 }

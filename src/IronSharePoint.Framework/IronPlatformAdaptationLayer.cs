@@ -20,15 +20,15 @@ namespace IronSharePoint
         public override string[] GetFileSystemEntries(string path, string searchPattern, bool includeFiles,
                                                       bool includeDirectories)
         {
+            path = TrimPath(path);
+
             var entries = new List<string>();
             if (includeFiles)
             {
-                //entries.AddRange(Directory.GetFiles(path, searchPattern));
                 entries.AddRange(_hive.GetFiles(path, searchPattern));
             }
             if (includeDirectories)
             {
-                //entries.AddRange(Directory.GetDirectories(path, searchPattern));
                 entries.AddRange(_hive.GetDirectories(path, searchPattern));
             }
             string[] result = entries.Distinct().Select(x => Regex.IsMatch(x, @"(^\w:|^\./)") ? x : "./" + x).ToArray();
@@ -37,82 +37,65 @@ namespace IronSharePoint
 
         public override bool DirectoryExists(string path)
         {
-            return DelegateToHiveOrBase(path,
-                                        _hive.DirectoryExists,
-                                        x => base.DirectoryExists(x) || _hive.DirectoryExists(x));
+            path = TrimPath(path);
+
+            return _hive.DirectoryExists(path);
         }
 
         public override bool FileExists(string file)
         {
-            return DelegateToHiveOrBase(file,
-                                        _hive.FileExists,
-                                        x => base.FileExists(x) || _hive.FileExists(x));
+            file = TrimPath(file);
+
+            return _hive.FileExists(file);
         }
 
         public override string GetFullPath(string file)
         {
-            return DelegateToHiveOrBase(file,
-                                        _hive.GetFullPath,
-                                        x => base.FileExists(file) ? base.GetFullPath(file) : _hive.GetFullPath(file));
+            file = TrimPath(file);
+
+            return _hive.GetFullPath(file);
         }
 
         public override Stream OpenOutputFileStream(string path)
         {
-            return DelegateToHiveOrBase(path,
-                                        _hive.OpenOutputFileStream,
-                                        x =>
-                                        base.FileExists(x) ? base.OpenOutputFileStream(x) : _hive.OpenOutputFileStream(x));
+            path = TrimPath(path);
+
+            return _hive.OpenOutputFileStream(path);
         }
 
         public override Stream OpenInputFileStream(string path)
         {
-            return DelegateToHiveOrBase(path,
-                                        _hive.OpenInputFileStream,
-                                        x =>
-                                        base.FileExists(x) ? base.OpenInputFileStream(x) : _hive.OpenInputFileStream(x));
+            path = TrimPath(path);
+
+            return _hive.OpenInputFileStream(path);
         }
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share)
         {
-            return DelegateToHiveOrBase(path,
-                                        _hive.OpenInputFileStream,
-                                        x =>
-                                        base.FileExists(x)
-                                            ? base.OpenInputFileStream(x, mode, access, share)
-                                            : _hive.OpenInputFileStream(x));
+            return OpenInputFileStream(path);
         }
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share,
                                                    int bufferSize)
         {
-            return DelegateToHiveOrBase(path,
-                                        _hive.OpenInputFileStream,
-                                        x =>
-                                        base.FileExists(x)
-                                            ? base.OpenInputFileStream(x, mode, access, share, bufferSize)
-                                            : _hive.OpenInputFileStream(x));
+            return OpenInputFileStream(path);
         }
 
-        private T DelegateToHiveOrBase<T>(string path, Func<string, T> hive, Func<string, T> @base)
+        private string TrimPath(string path)
         {
-            T result;
-            if (path.StartsWith("./"))
+            var invalidPrefixes = new[] {".\\", IronConstant.FakeHiveDirectory};
+            foreach (string prefix in invalidPrefixes)
             {
-                path = path.ReplaceFirst("./", "");
+                path = path.ReplaceStart(prefix, string.Empty);
+                path = path.ReplaceStart(prefix.Replace('\\', '/'), string.Empty);
             }
-            if (path.StartsWith(IronConstant.FakeHiveDirectory))
-            {
-                result = hive(path.ReplaceFirst(IronConstant.FakeHiveDirectory, string.Empty));
-            }
-            else if (path.StartsWith(IronConstant.FakeHiveDirectory.Replace('\\', '/')))
-            {
-                result = hive(path.ReplaceFirst(IronConstant.FakeHiveDirectory.Replace('\\', '/'), string.Empty));
-            } 
-            else
-            {
-                result = @base(path);
-            }
-            return result;
+
+            return path;
+        }
+
+        private T TrimPath<T>(string path, Func<string, T> func)
+        {
+            return func(TrimPath(path));
         }
 
         public override void CreateDirectory(string path)
