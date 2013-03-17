@@ -18,27 +18,32 @@ namespace IronSharePoint.Hives
     {
         private readonly Guid _siteId;
         private readonly string _hiveLibraryPath;
-        private string _webUrl;
-        private string _hiveLibraryUrl;
+        private readonly string _hiveLibraryUrl;
 
-        private ThreadLocal<SPSite> _site;
+        private readonly ThreadLocal<SPSite> _site;
+        private readonly ThreadLocal<SPDocumentLibrary> _documentLibrary;
 
         public SPSite Site
         {
             get { return _site.Value; }
         }
 
-    private string[] _cachedFiles;
-        private string[] _cachedDirs;
-
-        public IEnumerable<string> CachedFiles
+        public SPDocumentLibrary DocumentLibrary
         {
-            get { return _cachedFiles.AsEnumerable(); }
+            get { return _documentLibrary.Value; }
+        }
+
+        private Dictionary<string, int> _allFiles;
+        private string[] _allDirs;
+
+        public IEnumerable<string> Files
+        {
+            get { return _allFiles.Keys.AsEnumerable(); }
         } 
 
-        public IEnumerable<string> CachedDirs
+        public IEnumerable<string> Directories
         {
-            get { return _cachedDirs.AsEnumerable(); }
+            get { return _allDirs.AsEnumerable(); }
         }
 
         public SPDocumentHive(Guid siteId)
@@ -52,6 +57,9 @@ namespace IronSharePoint.Hives
             _hiveLibraryPath = hiveLibraryPath;
 
             _site = new ThreadLocal<SPSite>(() => new SPSite(_siteId, SPUserToken.SystemAccount), true);
+            _documentLibrary = new ThreadLocal<SPDocumentLibrary>(() => Site.RootWeb.GetFolder(_hiveLibraryPath).DocumentLibrary);
+            _hiveLibraryUrl = CombinePath(Site.RootWeb.Url, _hiveLibraryPath);
+
             Reset();
         }
 
@@ -59,23 +67,40 @@ namespace IronSharePoint.Hives
         {
             path = IsAbsolutePath(path) ? GetPartialPath(path) : path;
 
-            return _cachedFiles.Contains(path);
+            return Files.Contains(path);
         }
 
         public bool DirectoryExists(string path)
         {
             path = IsAbsolutePath(path) ? GetPartialPath(path) : path;
 
-            return _cachedDirs.Any(x => x.StartsWith(path));
+            return Directories.Any(x => x.StartsWith(path));
         }
 
         public Stream OpenInputFileStream(string path)
         {
-            string filePath = GetFullPath(path);
-            var spFile = Site.RootWeb.GetFile(filePath);
-            if (!spFile.Exists) throw new FileNotFoundException("", filePath);
+            var item = GetSPListItem(path);
+            if (item == null) throw new FileNotFoundException("", path);
 
-            return spFile.OpenBinaryStream();
+            return item.File.OpenBinaryStream();
+        }
+
+        public SPListItem GetSPListItem(string path)
+        {
+            path = GetPartialPath(path);
+            int id;
+            if (_allFiles.TryGetValue(path, out id))
+            {
+                try
+                {
+                    return DocumentLibrary.GetItemById(id);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+            return null;
         }
 
         public Stream OpenOutputFileStream(string path)
@@ -115,7 +140,7 @@ namespace IronSharePoint.Hives
             path = "^" + (path.Replace(".", "") + "/").TrimStart('/');
             var regexPattern = string.Format("{0}{1}", path, searchPattern);
             var regex = new Regex(regexPattern);
-            var files = CachedFiles.Select(file =>
+            var files = Files.Select(file =>
                 {
                     var match = regex.Match(file);
                     return match.Success ? file : null;
@@ -128,7 +153,7 @@ namespace IronSharePoint.Hives
             path = (path.Replace(".", "") + "/").TrimStart('/');
             var regexPattern = searchPattern.Replace("*", string.Format("^({0}[^/]+)(/.*)?", path)) + "$";
             var regex = new Regex(regexPattern);
-            var dirs = CachedDirs.Select(dir =>
+            var dirs = Directories.Select(dir =>
             {
                 var match = regex.Match(dir);
                 return match.Success ? match.Groups[1].Value : null;
@@ -138,34 +163,26 @@ namespace IronSharePoint.Hives
 
         public void Reset()
         {
-            Dispose();
-
             var allFilesQuery = new SPQuery();
             allFilesQuery.Query = "<Where></Where>";
-            allFilesQuery.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='FileLeafRef'/>";
+            allFilesQuery.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='ID'/><FieldRef Name='FileLeafRef'/>";
             allFilesQuery.ViewAttributes = "Scope='Recursive'";
             allFilesQuery.IncludeMandatoryColumns = false;
 
-            var allFiles = new List<string>();
-
-            var folder = Site.RootWeb.GetFolder(_hiveLibraryPath);
-            var lib = folder.DocumentLibrary;
-            _webUrl = Site.RootWeb.Url;
-            _hiveLibraryUrl = CombinePath(_webUrl, _hiveLibraryPath);
-
-            var allItems = lib.GetItems(allFilesQuery);
+            _allFiles = new Dictionary<string, int>();
+            var allItems = DocumentLibrary.GetItems(allFilesQuery);
             foreach (SPListItem item in allItems)
             {
                 var fileRef = item["FileRef"].ToString();
                 var siteRelative = fileRef.ReplaceFirst(Site.RootWeb.ServerRelativeUrl, string.Empty).TrimStart('/');
                 var hiveRelative = siteRelative.ReplaceFirst(_hiveLibraryPath, string.Empty).TrimStart('/');
+                var id = Convert.ToInt32(item["ID"]);
 
-                allFiles.Add(hiveRelative);
+                _allFiles.Add(hiveRelative, id);
             }
 
-            _cachedFiles = allFiles.ToArray();
             // ReSharper disable PossibleNullReferenceException
-            _cachedDirs = _cachedFiles.Select(x => Path.GetDirectoryName(x).Replace('\\', '/'))
+            _allDirs = _allFiles.Keys.Select(x => Path.GetDirectoryName(x).Replace('\\', '/'))
                                       .Distinct()
                                       .Where(x => !String.IsNullOrWhiteSpace(x))
                                       .ToArray();
@@ -184,7 +201,9 @@ namespace IronSharePoint.Hives
             foreach (var spSite in _site.Values)
             {
                 spSite.Dispose();
+                _site.Dispose();
             }
+            _documentLibrary.Dispose();
         }
     }
 }

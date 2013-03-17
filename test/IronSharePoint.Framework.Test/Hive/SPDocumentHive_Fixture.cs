@@ -40,7 +40,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void Ctor_CachesFiles()
         {
-            Sut.CachedFiles.Should().BeEquivalentTo(new[]
+            Sut.Files.Should().BeEquivalentTo(new[]
                 {
                     "foo.txt",
                     "bar/baz.txt",
@@ -52,7 +52,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void Ctor_CachesDirs()
         {
-            Sut.CachedDirs.Should().BeEquivalentTo(new[]
+            Sut.Directories.Should().BeEquivalentTo(new[]
                 {
                     "bar",
                     "bar/baz",
@@ -147,11 +147,12 @@ namespace IronSharePoint.Framework.Test.Hive
         [Test]
         public void OpenInputFileStream_WhenFileExists_ReturnsFilestream()
         {
+            var spListItem = Isolate.Fake.Instance<SPListItem>();
             var spFile = Isolate.Fake.Instance<SPFile>();
             var stream = Isolate.Fake.Instance<Stream>();
-            var web = Site.RootWeb;
-            Isolate.WhenCalled(() => web.GetFile("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt")).WithExactArguments().WillReturn(spFile);
-            Isolate.WhenCalled(() => spFile.Exists).WillReturn(true);
+            var lib = Sut.DocumentLibrary;
+            Isolate.WhenCalled(() => lib.GetItemById(0)).WithExactArguments().WillReturn(spListItem);
+            Isolate.WhenCalled(() => spListItem.File).WillReturn(spFile);
             Isolate.WhenCalled(() => spFile.OpenBinaryStream()).WillReturn(stream);
 
             Sut.OpenInputFileStream("foo.txt").Should().BeSameAs(stream);
@@ -161,22 +162,18 @@ namespace IronSharePoint.Framework.Test.Hive
         [ExpectedException(typeof(FileNotFoundException))]
         public void OpenInputFileStream_WhenFileIsMissing_ThrowsFileNotFoundException()
         {
-            var spFile = Isolate.Fake.Instance<SPFile>();
-            var web = Site.RootWeb;
-            Isolate.WhenCalled(() => web.GetFile("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt")).WithExactArguments().WillReturn(spFile);
-            Isolate.WhenCalled(() => spFile.Exists).WillReturn(false);
-
-            Sut.OpenInputFileStream("foo.txt");
+            Sut.OpenInputFileStream("i_do_not.exist");
         }
 
         [Test]
         public void OpenOutputFileStream_WhenFileExists_ReturnsFilestream()
         {
+            var spListItem = Isolate.Fake.Instance<SPListItem>();
             var spFile = Isolate.Fake.Instance<SPFile>();
             var stream = Isolate.Fake.Instance<Stream>();
-            var web = Site.RootWeb;
-            Isolate.WhenCalled(() => web.GetFile("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt")).WithExactArguments().WillReturn(spFile);
-            Isolate.WhenCalled(() => spFile.Exists).WillReturn(true);
+            var lib = Sut.DocumentLibrary;
+            Isolate.WhenCalled(() => lib.GetItemById(0)).WithExactArguments().WillReturn(spListItem);
+            Isolate.WhenCalled(() => spListItem.File).WillReturn(spFile);
             Isolate.WhenCalled(() => spFile.OpenBinaryStream()).WillReturn(stream);
 
             Sut.OpenOutputFileStream("foo.txt").Should().BeSameAs(stream);
@@ -186,12 +183,7 @@ namespace IronSharePoint.Framework.Test.Hive
         [ExpectedException(typeof(FileNotFoundException))]
         public void OpenOutputFileStream_WhenFileIsMissing_ThrowsFileNotFoundException()
         {
-            var spFile = Isolate.Fake.Instance<SPFile>();
-            var web = Site.RootWeb;
-            Isolate.WhenCalled(() => web.GetFile("http://foo.com/sites/IronSP/_catalogs/IronHive/foo.txt")).WithExactArguments().WillReturn(spFile);
-            Isolate.WhenCalled(() => spFile.Exists).WillReturn(false);
-
-            Sut.OpenOutputFileStream("foo.txt");
+            Sut.OpenOutputFileStream("i_do_not.exist");
         }
 
         [Test]
@@ -244,14 +236,15 @@ namespace IronSharePoint.Framework.Test.Hive
             var lib = Isolate.Fake.Instance<SPDocumentLibrary>(Members.MustSpecifyReturnValues);
             var spListItems = new[]
                 {
-                    "/sites/IronSP/_catalogs/IronHive/foo.txt",
-                    "/sites/IronSP/_catalogs/IronHive/bar/baz.txt",
-                    "/sites/IronSP/_catalogs/IronHive/bar/baz/qux.txt",
-                    "/sites/IronSP/_catalogs/IronHive/qux/quux/gorge.txt",
+                    new {Id = 0, FileRef = "/sites/IronSP/_catalogs/IronHive/foo.txt"},
+                    new {Id = 1, FileRef = "/sites/IronSP/_catalogs/IronHive/bar/baz.txt"},
+                    new {Id = 2, FileRef = "/sites/IronSP/_catalogs/IronHive/bar/baz/qux.txt"},
+                    new {Id = 3, FileRef = "/sites/IronSP/_catalogs/IronHive/qux/quux/gorge.txt"},
                 }.Select(x =>
                 {
                     var spItem = Isolate.Fake.Instance<SPListItem>();
-                    Isolate.WhenCalled(() => spItem["FileRef"]).WillReturn(x);
+                    Isolate.WhenCalled(() => spItem["FileRef"]).WillReturn(x.FileRef);
+                    Isolate.WhenCalled(() => spItem["ID"]).WillReturn(x.Id);
                     return spItem;
                 });
 
