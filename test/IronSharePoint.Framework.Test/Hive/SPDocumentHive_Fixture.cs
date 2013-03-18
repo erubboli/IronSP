@@ -223,7 +223,7 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void GeDirectories_OnSubdir_ContainsDirectory()
+        public void GetDirectories_OnSubdir_ContainsDirectory()
         {
             Sut.GetDirectories("bar", "*").Should().BeEquivalentTo(new object[] { "bar/baz" });
         }

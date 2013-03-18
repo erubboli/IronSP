@@ -163,11 +163,16 @@ namespace IronSharePoint.Hives
 
         public void Reset()
         {
-            var allFilesQuery = new SPQuery();
-            allFilesQuery.Query = "<Where></Where>";
-            allFilesQuery.ViewFields = "<FieldRef Name='FileRef'/><FieldRef Name='ID'/><FieldRef Name='FileLeafRef'/>";
-            allFilesQuery.ViewAttributes = "Scope='Recursive'";
-            allFilesQuery.IncludeMandatoryColumns = false;
+            var allFilesQuery = new SPQuery
+                {
+                    Query = "<Where></Where>",
+                    ViewFields = "<FieldRef Name='FileRef'/>" +
+                                 "<FieldRef Name='ID'/>" +
+                                 "<FieldRef Name='File_x0020_Size'/>" +
+                                 "<FieldRef Name='FileLeafRef'/>",
+                    ViewAttributes = "Scope='Recursive'",
+                    IncludeMandatoryColumns = false
+                };
 
             _allFiles = new Dictionary<string, int>();
             var allItems = DocumentLibrary.GetItems(allFilesQuery);
@@ -189,7 +194,7 @@ namespace IronSharePoint.Hives
             // ReSharper restore PossibleNullReferenceException
         }
 
-        private string GetPartialPath(string path)
+        public string GetPartialPath(string path)
         {
             Contract.Requires<ArgumentNullException>(path != null);
 

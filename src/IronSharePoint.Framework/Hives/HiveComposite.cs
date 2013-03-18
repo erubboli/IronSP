@@ -99,7 +99,7 @@ namespace IronSharePoint.Hives
             return _hives.SelectMany(x => x.GetDirectories(path, searchPattern, absolutePaths)).Distinct();
         }
 
-        IHive FindHandler(string path)
+        public IHive FindHandler(string path)
         {
             Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(path), "path cannot be null or blank");
 

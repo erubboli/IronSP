@@ -194,6 +194,8 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\kernel.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_logs_outputter.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_memory_outputter.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\file_stat.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\hives\sp_document_hive.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_composite_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_view.rb" />
@@ -208,6 +210,7 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\object.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\regexp.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\string.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\digest\md5.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\log4r\logger.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\rescues\template_error.haml" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\rescues\template_not_found.haml" />
