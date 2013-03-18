@@ -166,31 +166,26 @@ namespace IronSharePoint
                 ScriptScope scope = rubyEngine.CreateScope();
                 scope.SetVariable("iron_runtime", this);
                 scope.SetVariable("ruby_engine", ironRubyEngine);
-                scope.SetVariable("rails_root", IronConstant.IronRubyRootDirectory);
-                scope.SetVariable("rails_env",
+                scope.SetVariable("iron_root", IronConstant.IronRubyRootDirectory);
+                scope.SetVariable("iron_env",
                                   IronConstant.IronEnv == IronEnvironment.Debug
                                       ? "development"
                                       : IronConstant.IronEnv.ToString().ToLower());
                 rubyEngine.Execute(
                     "$RUNTIME = iron_runtime; " +
                     "RUBY_ENGINE = ruby_engine;" +
-                    "RAILS_ROOT = rails_root;" +
-                    "RAILS_ENV = rails_env",
+                    "IRON_ROOT = RAILS_ROOT = iron_root;" +
+                    "IRON_ENV = RAILS_ENV = iron_env",
                     scope);
-                IronConsole.Execute(@"
-Dir.chdir RAILS_ROOT
-
+                rubyEngine.Execute(@"
 require 'rubygems'
 
 begin
-    load_assembly 'Microsoft.SharePoint.Publishing, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'
     require 'iron_sharepoint'
     require 'application'
 rescue Exception => ex
     IRON_DEFAULT_LOGGER.error ex
-ensure
-    $RUBY_ENGINE.is_initialized = true
-end", ".rb", false);
+end");
             }
         }
 
@@ -214,7 +209,6 @@ end", ".rb", false);
             {
                 Guid targetId = targetSite.ID;
                 IronRuntime runtime;
-
                 if (!TryGetExistingRuntime(targetId, out runtime))
                 {
                     lock (_sync)
