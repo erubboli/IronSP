@@ -81,7 +81,7 @@ namespace IronSharePoint
             return OpenInputFileStream(path);
         }
 
-        private string TrimPath(string path)
+        public string TrimPath(string path)
         {
             var invalidPrefixes = new[] {".\\", IronConstant.FakeHiveDirectory};
             foreach (string prefix in invalidPrefixes)
@@ -90,10 +90,10 @@ namespace IronSharePoint
                 path = path.ReplaceStart(prefix.Replace('\\', '/'), string.Empty);
             }
 
-            return path;
+            return path.TrimStart('/', '\\');
         }
 
-        private T TrimPath<T>(string path, Func<string, T> func)
+        public T TrimPath<T>(string path, Func<string, T> func)
         {
             return func(TrimPath(path));
         }
