@@ -78,5 +78,15 @@ namespace IronSharePoint
         /// <param name="absolutePaths"></param>
         /// <returns></returns>
         IEnumerable<string> GetDirectories(string path, string searchPattern, bool absolutePaths = false);
+
+        /// <summary>
+        /// Name of the hive
+        /// </summary>
+        string Name { get; set; }
+
+        /// <summary>
+        /// Description for the hive
+        /// </summary>
+        string Description { get; }
     }
 }

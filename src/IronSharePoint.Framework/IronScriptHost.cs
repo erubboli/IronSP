@@ -15,7 +15,7 @@ namespace IronSharePoint
     {
         private readonly IronPlatformAdaptationLayer _ironPlatformAdaptationLayer;
         private readonly Guid _siteId;
-        private readonly IHive _hive;
+        private readonly HiveComposite _hive;
 
         public event EventHandler<SPItemEventProperties> ItemAdded;
         public event EventHandler<SPItemEventProperties> ItemUpdated;
@@ -29,7 +29,7 @@ namespace IronSharePoint
         public event EventHandler<SPItemEventProperties> ItemCheckingIn;
         public event EventHandler<SPItemEventProperties> ItemCheckingOut;
 
-        public IHive Hive
+        public HiveComposite Hive
         {
             get { return _hive; }
         }
@@ -41,18 +41,26 @@ namespace IronSharePoint
             _ironPlatformAdaptationLayer = new IronPlatformAdaptationLayer(Hive);
         }
 
-        public override Microsoft.Scripting.PlatformAdaptationLayer PlatformAdaptationLayer
+        public IronPlatformAdaptationLayer IronPlatformAdaptationLayer
         {
             get { return _ironPlatformAdaptationLayer; }
         }
 
-        private IHive CreateHive()
+        public override Microsoft.Scripting.PlatformAdaptationLayer PlatformAdaptationLayer
+        {
+            get { return IronPlatformAdaptationLayer; }
+        }
+
+        private HiveComposite CreateHive()
         {
             var hives = GetHiveSetups().Select(x =>
                 {
                     var argTypes = x.HiveArguments.Select(y => y.GetType()).ToArray();
                     var ctor = x.HiveType.GetConstructor(argTypes);
-                    return ctor != null ? (IHive) ctor.Invoke(x.HiveArguments) : null;
+                    var hive = ctor != null ? (IHive) ctor.Invoke(x.HiveArguments) : null;
+                    if (hive != null) hive.Name = x.DisplayName;
+
+                    return hive;
                 }).Compact().ToArray();
 
             var composite = new HiveComposite(hives);

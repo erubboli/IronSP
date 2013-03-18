@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using IronSharePoint.Util;
 
 namespace IronSharePoint.Hives
 {
@@ -97,6 +98,18 @@ namespace IronSharePoint.Hives
         public IEnumerable<string> GetDirectories(string path, string searchPattern, bool absolutePaths = false)
         {
             return _hives.SelectMany(x => x.GetDirectories(path, searchPattern, absolutePaths)).Distinct();
+        }
+
+        public string Name { get; set; }
+
+        public string Description
+        {
+            get
+            {
+                return string.Format("{0}({1}): [{2}]", GetType().Name,
+                                     this.Count(),
+                                     this.Any() ? this.Select(x => x.Description).StringJoin() : "none");
+            }
         }
 
         public IHive FindHandler(string path)

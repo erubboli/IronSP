@@ -92,6 +92,10 @@ namespace IronSharePoint.Hives
             return absolutePaths ? directories : directories.Select(GetPartialPath);
         }
 
+        public string Name { get; set; }
+
+        public string Description { get { return string.Format("{0}: {1}", GetType().Name, Root); } }
+
         private string GetPartialPath(string path)
         {
             Contract.Requires<ArgumentNullException>(path != null);
