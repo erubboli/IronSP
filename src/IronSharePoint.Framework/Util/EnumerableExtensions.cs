@@ -24,5 +24,11 @@ namespace IronSharePoint.Util
         {
             return enumerable.Where(x => !Equals(x, default(T)));
         }
+
+        public static string StringJoin<T>(this IEnumerable<T> enumerable, string seperator = ", ")
+        {
+            var values = enumerable.Select(x => x == null ? "null" : x.ToString());
+            return String.Join(seperator, values);
+        }
     }
 }

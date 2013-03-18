@@ -12,5 +12,11 @@ namespace IronSharePoint.Framework.Test.Util
         {
             new[] {"Foo", null, "Bar", null}.Compact().Should().ContainInOrder(new[] {"Foo", "Bar"});
         }
+
+        [Test]
+        public void StringJoin_JoinsValuesAsString()
+        {
+            new object[] {1, null, "Foo"}.StringJoin("#").Should().Be("1#null#Foo");
+        }
     }
 }
