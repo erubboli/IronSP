@@ -21,18 +21,14 @@ namespace IronSharePoint
         public string TemplatePath { get; set; }
 
         public string ScriptName { get; set; }
-
         public string ScriptClass { get; set; }
-
         public string ScriptHiveId { get; set; }
 
         public string Config { get; set; }
 
         private Exception _exception;
-
-        private IronEngine engine;
-
-        protected Control ctrl;
+        private ScriptEngine _scriptEngine;
+        protected Control _ctrl;
 
         protected override void OnInit(EventArgs e)
         {
@@ -55,13 +51,13 @@ namespace IronSharePoint
 
                 //IronRuntime ironRuntime = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId);
                 IronRuntime ironRuntime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-                engine = ironRuntime.GetEngineByExtension(Path.GetExtension(ScriptName));
+                _scriptEngine = ironRuntime.ScriptRuntime.GetEngineByFileExtension(Path.GetExtension(ScriptName));
 
-                if (engine != null)
+                if (_scriptEngine != null)
                 {
-                    ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
+                    _ctrl = null;// TODO _scriptEngine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
 
-                    var dynamicControl = ctrl as IIronControl;
+                    var dynamicControl = _ctrl as IIronControl;
                     if (dynamicControl != null)
                     {
                         dynamicControl.WebPart = null;
@@ -70,7 +66,7 @@ namespace IronSharePoint
 
                     if (Template != null)
                     {
-                        Template.InstantiateIn(ctrl);
+                        Template.InstantiateIn(_ctrl);
                     }
                     else
                     {
@@ -80,11 +76,11 @@ namespace IronSharePoint
                                                    .Replace("~web", SPContext.Current.Web.ServerRelativeUrl);
 
                             Template = this.LoadTemplate(path);
-                            Template.InstantiateIn(ctrl);
+                            Template.InstantiateIn(_ctrl);
                         }
                     }
 
-                    this.Controls.Add(ctrl);
+                    this.Controls.Add(_ctrl);
                 }
             }
             catch (Exception ex)
@@ -103,7 +99,7 @@ namespace IronSharePoint
             {
                 if (SPContext.Current.Web.UserIsSiteAdmin)
                 {
-                    var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
+                    var eo = _scriptEngine.GetService<ExceptionOperations>();
                     string error = eo.FormatException(_exception);
 
                     IronRuntime.LogError(String.Format("Error executing script {0}: {1}", ScriptName, error), _exception);
@@ -122,7 +118,7 @@ namespace IronSharePoint
             }
             try
             {
-                ctrl.RenderControl(writer);
+                _ctrl.RenderControl(writer);
             }
             catch (Exception ex)
             {

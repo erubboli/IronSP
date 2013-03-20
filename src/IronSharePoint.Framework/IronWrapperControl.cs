@@ -19,7 +19,7 @@ namespace IronSharePoint
     public class IronWrapperControl : CompositeControl
     {
         public string ControlName { get; set; }
-        private IronEngine _engine;
+        private ScriptEngine _engine;
         private Control _control;
         private Exception Exception { get; set; }
 
@@ -34,8 +34,10 @@ namespace IronSharePoint
             try
             {
                 IronRuntime ironRuntime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-                _engine = ironRuntime.GetEngineByExtension(".rb");
-                _control = _engine.CreateDynamicInstance(ControlName) as Control;
+                _engine = ironRuntime.RubyEngine;
+                var scope = _engine.CreateScope();
+                var controlClass = scope.GetVariable("ControlName");
+                _control = controlClass.@new();
 
                 this.Controls.Add(_control);
             }
@@ -55,7 +57,7 @@ namespace IronSharePoint
                 string errorMessage = null;
                 if (SPContext.Current.Web.UserIsSiteAdmin)
                 {
-                    var eo = _engine.ScriptEngine.GetService<ExceptionOperations>();
+                    var eo = _engine.GetService<ExceptionOperations>();
                     errorMessage = eo.FormatException(Exception);
                     IronRuntime.LogError(String.Format("Error creating control: {0}", ControlName), Exception);
                 }

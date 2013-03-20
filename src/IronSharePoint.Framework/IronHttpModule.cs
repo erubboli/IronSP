@@ -12,22 +12,9 @@ namespace IronSharePoint
     {
         public void Init(HttpApplication application)
         {
-            //application.PreRequestHandlerExecute += new EventHandler(OnPreRequest);
             application.EndRequest += new EventHandler(EndRequest);
             application.Error += new EventHandler(Error);
         }
-
-        //private void OnPreRequest(object sender, EventArgs e)
-        //{
-        //    var application = sender as HttpApplication;
-        //    var context = application.Context;
-
-        //    if (SPContext.Current != null)
-        //    {
-        //        var runtime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-        //        context.Items[IronHelper.GetPrefixedKey("Runtime")] = runtime;
-        //    }
-        //}
 
         void Error(object sender, EventArgs e)
         {
@@ -36,20 +23,13 @@ namespace IronSharePoint
             if (SPContext.Current != null)
             {
                 var runtime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-                var engine = runtime.GetEngineByExtension(".rb");
-                var exception =  application.Server.GetLastError();
+                var engine = runtime.RubyEngine;
+                var exception = application.Server.GetLastError();
 
-                if (engine != null)
-                {
-                    var eo = engine.ScriptEngine.GetService<ExceptionOperations>();
-                    string error = eo.FormatException(exception);
+                var eo = engine.GetService<ExceptionOperations>();
+                string error = eo.FormatException(exception);
 
-                    IronRuntime.LogError(error, exception);
-               }
-                else
-                {
-                    IronRuntime.LogError("Error in IronHttpModule", exception);
-                }
+                IronRuntime.LogError(error, exception);
             }
         }
         
@@ -62,13 +42,6 @@ namespace IronSharePoint
 
         private static void CleanUp(HttpApplication application)
         {
-            //var runtime = HttpContext.Current.Items[IronHelper.GetPrefixedKey("Runtime")] as IronRuntime;
-
-            //if (runtime != null)
-            //{
-            //    runtime.IronHive.Close();
-            //}
-
             var ironObjectsToDispose = new List<IDisposable>();
 
             foreach (var key in application.Context.Items.Keys.OfType<String>())

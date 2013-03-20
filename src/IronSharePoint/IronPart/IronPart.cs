@@ -9,6 +9,7 @@ using Microsoft.SharePoint.WebControls;
 using System.Collections.Generic;
 using Microsoft.Scripting.Hosting;
 using System.IO;
+using IronSharePoint.Util;
 
 namespace IronSharePoint.IronPart
 {
@@ -58,8 +59,8 @@ namespace IronSharePoint.IronPart
                 Control ctrl = null;
                 if (!String.IsNullOrEmpty(ScriptName))
                 {
-                    var engine = ironRuntime.GetEngineByExtension(Path.GetExtension(ScriptName));
-                    ctrl = engine.CreateDynamicInstance(ScriptClass, ScriptName) as Control;
+                    var engine = ironRuntime.ScriptRuntime.GetEngineByFileExtension(Path.GetExtension(ScriptName));
+                    ctrl = engine.CreateInstance(ScriptClass) as Control;
                 }
                 else
                 {
