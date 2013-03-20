@@ -27,11 +27,8 @@ namespace IronSharePoint.Features.IronSP_WebApp
             {
                 var webApp = properties.Feature.Parent as SPWebApplication;
 
-                RegisterExpressionBuilder(webApp);
-
                 RegisterHttpModule(webApp);
-
-                RegisterHttpHandlerFactory(webApp);
+                RegisterRackHttpHandler(webApp);
 
                 /*Call Update and ApplyWebConfigModifications to save changes*/
                 webApp.Update();
@@ -66,21 +63,22 @@ namespace IronSharePoint.Features.IronSP_WebApp
             webApp.WebConfigModifications.Add(httpHandlerFacotry);
         }
 
-        private static void RegisterExpressionBuilder(SPWebApplication webApp)
+        private static void RegisterRackHttpHandler(SPWebApplication webApp)
         {
-            var expressionBuilderType = typeof(IronExpressionBuilder);
-            SPWebConfigModification expressionBuilderMod = new SPWebConfigModification();
-            expressionBuilderMod.Path = "configuration/system.web/compilation/expressionBuilders";
-            expressionBuilderMod.Name = String.Format("add[@expressionPrefix='Iron'][@type='{0}']", expressionBuilderType.AssemblyQualifiedName);
-            expressionBuilderMod.Sequence = 0;
-            expressionBuilderMod.Owner = modificationOwner;
-            expressionBuilderMod.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
-            expressionBuilderMod.Value = String.Format("<add expressionPrefix='Iron' type='{0}' />", expressionBuilderType.AssemblyQualifiedName);
-            webApp.WebConfigModifications.Add(expressionBuilderMod);
+            var httpHandlerType = typeof(RackHttpHandler);
+            var mod = new SPWebConfigModification
+                {
+                    Path = "configuration/system.webServer/handlers",
+                    Name = String.Format("add[@type='{0}']", httpHandlerType.AssemblyQualifiedName),
+                    Sequence = 0,
+                    Owner = modificationOwner,
+                    Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode,
+                    Value =
+                        String.Format("<add  name='RackHttpHandler' path='_iron/*' verb='GET' type='{0}' />",
+                                      httpHandlerType.AssemblyQualifiedName)
+                };
+            webApp.WebConfigModifications.Add(mod);
         }
-
-
-        // Uncomment the method below to handle the event raised before a feature is deactivated.
 
         public override void FeatureDeactivating(SPFeatureReceiverProperties properties)
         {

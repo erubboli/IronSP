@@ -38,7 +38,6 @@ namespace IronSharePoint.Hives
         {
             var fullPath = GetFullPath(path);
 
-            Console.WriteLine(fullPath);
             return Directory.Exists(fullPath);
         }
 

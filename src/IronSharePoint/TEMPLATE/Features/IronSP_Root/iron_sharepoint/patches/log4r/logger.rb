@@ -3,5 +3,9 @@ module Log4r
     def inspect
       self.to_s
     end
+
+    def flush
+      @outputters.each{|x| x.flush}
+    end
   end
 end

@@ -21,8 +21,6 @@ namespace IronSharePoint
 
         private readonly Guid _siteId;
         private readonly Guid _id;
-        private IronConsole.IronConsole _console;
-        private ScriptRuntime _scriptRuntime;
 
         private IronRuntime(Guid siteId)
         {
@@ -31,9 +29,9 @@ namespace IronSharePoint
 
             DynamicTypeRegistry = new Dictionary<string, Object>();
             DynamicFunctionRegistry = new Dictionary<string, Object>();
-            Engines = new Dictionary<string, IronEngine>();
 
-            Initialize();
+            CreateScriptRuntime();
+            Console = new IronConsole(ScriptRuntime);
         }
 
         internal static Dictionary<Guid, IronRuntime> LivingRuntimes
@@ -41,25 +39,22 @@ namespace IronSharePoint
             get { return _staticLivingRuntimes; }
         }
 
-        internal Dictionary<String, IronEngine> Engines { get; private set; }
-
-        public IronConsole.IronConsole IronConsole
-        {
-            get
-            {
-                return _console ??
-                       (_console = IronSharePoint.IronConsole.IronConsole.GetConsoleForRuntime(this));
-            }
-        }
-
-        public ScriptRuntime ScriptRuntime
-        {
-            get { return _scriptRuntime; }
-        }
+        public IronConsole Console { get; private set; }
+        public ScriptRuntime ScriptRuntime { get; private set; }
 
         public IronScriptHost ScripHost
         {
             get { return (IronScriptHost) ScriptRuntime.Host; }
+        }
+
+        public IronPlatformAdaptationLayer PlatformAdaptationLayer
+        {
+            get { return ScripHost.IronPlatformAdaptationLayer; }
+        }
+
+        public ScriptEngine RubyEngine
+        {
+            get { return ScriptRuntime.GetEngine(IronConstant.RubyLanguageName); }
         }
 
         public IHive Hive
@@ -115,25 +110,19 @@ namespace IronSharePoint
             if (!IsDisposed)
             {
                 IsDisposed = true;
-                if (_console != null)
-                {
-                    _console.Dispose();
-                    _console = null;
-                }
                 ScripHost.Dispose();
-
                 LivingRuntimes.Remove(_siteId);
             }
         }
 
         #endregion
 
-        private void Initialize()
+        private void CreateScriptRuntime()
         {
             var setup = new ScriptRuntimeSetup();
             var languageSetup = new LanguageSetup(
                 "IronRuby.Runtime.RubyContext, IronRuby, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1",
-                IronConstant.IronRubyLanguageName,
+                IronConstant.RubyLanguageName,
                 new[] {"IronRuby", "Ruby", "rb"},
                 new[] {".rb"});
             setup.LanguageSetups.Add(languageSetup);
@@ -141,18 +130,21 @@ namespace IronSharePoint
             setup.HostArguments = new object[] {_siteId};
             setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Debug;
 
-            _scriptRuntime = new ScriptRuntime(setup);
+            ScriptRuntime = new ScriptRuntime(setup);
+            ScriptRuntime.LoadAssembly(typeof (IronRuntime).Assembly); // IronSharePoint
+            ScriptRuntime.LoadAssembly(typeof (SPSite).Assembly); // Microsoft.SharePoint
+            ScriptRuntime.LoadAssembly(typeof (IHttpHandler).Assembly); // System.Web
 
-            _scriptRuntime.LoadAssembly(typeof (IronRuntime).Assembly); // IronSharePoint
-            _scriptRuntime.LoadAssembly(typeof (SPSite).Assembly); // Microsoft.SharePoint
-            _scriptRuntime.LoadAssembly(typeof (IHttpHandler).Assembly); // System.Web
+            InitializeScriptEngines();
+        }
 
-            using (new SPMonitoredScope("Creating IronEngine(s)"))
+        private void InitializeScriptEngines()
+        {
+            using (new SPMonitoredScope("Initializing IronEngine(s)"))
             {
                 SPSecurity.RunWithElevatedPrivileges(PrivilegedInitialize);
 
-                ScriptEngine rubyEngine = _scriptRuntime.GetEngineByFileExtension(".rb");
-                rubyEngine.SetSearchPaths(new List<String>
+                RubyEngine.SetSearchPaths(new List<String>
                     {
                         Path.Combine(IronConstant.IronRubyRootDirectory, @"ironruby"),
                         Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\1.9.1"),
@@ -160,32 +152,11 @@ namespace IronSharePoint
                         Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\site_ruby\1.9.1")
                     });
 
-                var ironRubyEngine = new IronEngine(this, rubyEngine);
-                Engines[".rb"] = ironRubyEngine;
 
-                ScriptScope scope = rubyEngine.CreateScope();
+                ScriptScope scope = RubyEngine.CreateScope();
                 scope.SetVariable("iron_runtime", this);
-                scope.SetVariable("ruby_engine", ironRubyEngine);
-                scope.SetVariable("iron_root", IronConstant.IronRubyRootDirectory);
-                scope.SetVariable("iron_env",
-                                  IronConstant.IronEnv == IronEnvironment.Debug
-                                      ? "development"
-                                      : IronConstant.IronEnv.ToString().ToLower());
-                rubyEngine.Execute(
-                    "$RUNTIME = iron_runtime; " +
-                    "RUBY_ENGINE = ruby_engine;" +
-                    "IRON_ROOT = RAILS_ROOT = iron_root;" +
-                    "IRON_ENV = RAILS_ENV = iron_env",
-                    scope);
-                rubyEngine.Execute(@"
-require 'rubygems'
-
-begin
-    require 'iron_sharepoint'
-    require 'application'
-rescue Exception => ex
-    IRON_DEFAULT_LOGGER.error ex
-end");
+                RubyEngine.Execute("$RUNTIME = iron_runtime", scope);
+                RubyEngine.Execute(@"require 'rubygems'; #require 'application'");
             }
         }
 
@@ -236,21 +207,6 @@ end");
                 runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
             }
             return runtime != null;
-        }
-
-        public IronEngine GetEngineByExtension(string extension)
-        {
-            IronEngine ironEngine = null;
-
-            if (!Engines.TryGetValue(extension, out ironEngine))
-            {
-                string error = String.Format("Error occured while getting engine for extension {0}", extension);
-                var ex = new ArgumentException(error, "extension");
-                LogError(error, ex);
-                throw ex;
-            }
-
-            return ironEngine;
         }
 
         public void RegisterDynamicType(string name, object type)

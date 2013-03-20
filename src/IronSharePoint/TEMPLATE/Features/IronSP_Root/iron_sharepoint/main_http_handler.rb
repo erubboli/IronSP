@@ -17,7 +17,7 @@ module IronSharePoint::HttpHandlers
 
     def ProcessRequest(context)
       path = context.Request.Path
-      _, handler = IronSharePoint::HttpHandlers.routes.select {|k,v| k.match(path) }.last
+      _, handler = IronSharePoint::HttpHandlers.routes.select {|k,v| k.match(path) }.to_a.last
 
       unless handler.nil?
         handler.new.ProcessRequest(context)

@@ -107,18 +107,16 @@
     <Compile Include="IIronControl.cs" />
     <Compile Include="IIronDataStore.cs" />
     <Compile Include="IronCompositeControl.cs" />
-    <Compile Include="IronConsole\Hooks\IIronConsoleHook.cs" />
-    <Compile Include="IronConsole\Hooks\IronConsoleHookBase.cs" />
-    <Compile Include="IronConsole\Hooks\RubyConsoleHook.cs" />
-    <Compile Include="IronConsole\IronConsole.cs" />
-    <Compile Include="IronConsole\IronConsoleResult.cs" />
-    <Compile Include="IronConsole\IronConsoleTask.cs" />
+    <Compile Include="Console\Hooks\IHook.cs" />
+    <Compile Include="Console\Hooks\HookBase.cs" />
+    <Compile Include="Console\Hooks\RubyHook.cs" />
+    <Compile Include="IronConsole.cs" />
+    <Compile Include="Console\ScriptResult.cs" />
     <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeId.cs" />
     <Compile Include="IronControl.cs" />
     <Compile Include="IronEngine.cs" />
     <Compile Include="IronEnvironment.cs" />
-    <Compile Include="IronExpressionBuilder.cs" />
     <Compile Include="FieldHelper.cs" />
     <Compile Include="IronHttpHandler.cs" />
     <Compile Include="IronHttpModule.cs" />
@@ -131,9 +129,11 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RackHttpHandler.cs" />
     <Compile Include="Util\BlockingQueue.cs" />
     <Compile Include="Util\EnumerableExtensions.cs" />
     <Compile Include="Util\IBlockingQueue.cs" />
+    <Compile Include="Util\ScriptEngineExtensions.cs" />
     <Compile Include="Util\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +142,10 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
