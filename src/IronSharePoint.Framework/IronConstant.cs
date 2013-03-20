@@ -18,7 +18,7 @@ namespace IronSharePoint
 
         public const string IronPrefix = "IronSP_";
 
-        public const string IronRubyLanguageName = "IronRuby";
+        public const string RubyLanguageName = "ruby";
         public const string IronRuntimeKey = IronPrefix + "Runtime";
 
         public static string IronSPRootDirectory =

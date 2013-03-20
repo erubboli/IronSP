@@ -1,23 +1,6 @@
 module IronSharePoint
   module Console
     module Utils
-      def puts obj
-        out_buffer << obj.to_s
-        return nil
-      end
-
-      def p obj
-        inspected = obj.inspect
-        puts inspected
-        inspected
-      end
-
-      def out seperator = '\n', clear = true
-        response = out_buffer.join seperator
-        out_buffer.clear
-        response
-      end
-
       def pm obj, *options
         methods = obj.methods
         methods -= Object.methods unless options.include? :more
@@ -53,15 +36,8 @@ module IronSharePoint
       def print_log n = 10
         Log4r::Outputter["iron_default"].print_log n
       end
-
-      private
-
-      def out_buffer
-        $out_buffer ||= []
-      end
     end
   end
 end
 
 include IronSharePoint::Console::Utils
-puts self

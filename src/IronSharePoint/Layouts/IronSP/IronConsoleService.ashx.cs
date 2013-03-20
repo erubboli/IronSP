@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using IronSharePoint.Administration;
-using IronSharePoint.IronConsole;
+using IronSharePoint.Console;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.WebControls;
 using System.Web;
@@ -19,56 +19,53 @@ namespace IronSharePoint
 
         public void ProcessRequest(HttpContext context)
         {
-            var response = new IronConsoleResult();
-            var jsonResponse = string.Empty;
+            var result = new ScriptResult();
+            string jsonResponse;
 
             try
             {
                 var site = SPContext.Current.Site;
                 var web = SPContext.Current.Web;
+
                 if (!web.CurrentUser.IsSiteAdmin)
                 {
-                    context.Response.Write("Only Site Admins are allowed to use the Console");
-                    return;
-                }
-
-                //HiveRegistry.Local.IsTrusted(site.ID);
-
-                //var ironRuntime = IronRuntime.GetIronRuntime(site, site.ID);
-                var ironRuntime = IronRuntime.GetDefaultIronRuntime(site);
-                var extension = HttpContext.Current.Request["ext"];
-                var expression = HttpContext.Current.Request["expression"];
-
-                if (expression == "_ = (kill);_.inspect")
-                {
-                    ironRuntime.Dispose();
-                    response.Output = "Runtime disposed.";
-                }
-                else if(expression == "_ = (sp_status);_.inspect")
-                {
-
+                    result.Error = "Only Site Admins are allowed to use the Console";
                 }
                 else
                 {
-                    response = ironRuntime.IronConsole.Execute(expression, extension);
+
+                }
+                var ironRuntime = IronRuntime.GetDefaultIronRuntime(site);
+                var languageName = HttpContext.Current.Request["lang"];
+                var script = HttpContext.Current.Request["script"];
+
+                if (script == "kill")
+                {
+                    ironRuntime.Dispose();
+                    result.Output = "Runtime disposed.";
+                }
+                else
+                {
+                    result = ironRuntime.Console.Execute(script, languageName).Result;
                 }
             }
             catch (Exception ex)
             {
-                response.Error = ex.Message;
-                response.StackTrace = ex.StackTrace;
+                result.Error = ex.Message;
+                result.StackTrace = ex.StackTrace;
             }
             finally
             {
-                if (response == null)
+                if (result == null)
                 {
-                    response = new IronConsoleResult();
-                    response.Error = "Request timed out";
+                    result = new ScriptResult {Error = "Request timed out"};
                 }
 
-                jsonResponse = response.ToJson();
+                jsonResponse = result.ToJson();
             }
 
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "application/json";
             context.Response.Write(jsonResponse);
         }
     }

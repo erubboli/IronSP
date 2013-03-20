@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace IronSharePoint.IronConsole {
+namespace IronSharePoint {
     
     
     public partial class IronConsoleUserControl {

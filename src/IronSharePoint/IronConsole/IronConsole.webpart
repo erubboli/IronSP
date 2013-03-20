@@ -2,7 +2,7 @@
 <webParts>
   <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
     <metaData>
-      <type name="IronSharePoint.IronConsole.IronConsoleWebPart, $SharePoint.Project.AssemblyFullName$" />
+      <type name="IronSharePoint.IronConsoleWebPart, $SharePoint.Project.AssemblyFullName$" />
       <importErrorMessage>$Resources:core,ImportErrorMessage;</importErrorMessage>
     </metaData>
     <data>

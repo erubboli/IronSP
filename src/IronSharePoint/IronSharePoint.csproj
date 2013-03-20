@@ -45,6 +45,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <ProjectMode>SharePointCustomization</ProjectMode>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,6 +56,41 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestEnsures>False</CodeContractsSuggestEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -190,12 +226,19 @@
       <DependentUpon>Package.package</DependentUpon>
     </None>
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\application.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\console\utils.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\kernel.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_logs_outputter.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_memory_outputter.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\rack.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\rack\handlers\iis.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\file_stat.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\hives\directory_hive.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\hives\hive_composite.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\hives\sp_document_hive.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\hives\system_hive.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_composite_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_view.rb" />
@@ -267,7 +310,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Layouts\IronSP\503.html" />
-    <Content Include="Layouts\IronSP\IronConsole.js" />
+    <Content Include="Layouts\IronSP\IronConsole.js">
+      <DependentUpon>IronConsole.coffee</DependentUpon>
+    </Content>
     <Content Include="Layouts\IronSP\jquery.js" />
     <Content Include="Layouts\IronSP\mustache.js" />
     <Content Include="Lists\IronHive\EditDlg.htm" />

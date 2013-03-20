@@ -10,51 +10,59 @@ namespace IronSharePoint
     public class IronJob : SPJobDefinition
     {
         [Persisted]
-        private string script;
+        private string _script;
 
         public string Script
         {
-            get { return script; }
-            set { script = value; }
+            get { return _script; }
+            set { _script = value; }
         }
 
         [Persisted]
-        private Guid hiveId;
+        private Guid _siteId;
 
-        public Guid HiveId
+        public Guid SiteId
         {
-            get { return hiveId; }
-            set { hiveId = value; }
+            get { return _siteId; }
+            set { _siteId = value; }
         }
 
         [Persisted]
-        private string data;
+        private string _data;
 
         public string Data
         {
-            get { return data; }
-            set { data = value; }
+            get { return _data; }
+            set { _data = value; }
         }
 
+        [Persisted]
+        private string _languageName;
+
+        public string LanguageName
+        {
+            get { return _languageName; }
+            set { _languageName = value; }
+        }
 
         public IronJob() : base(){} 
         
-        public IronJob(string jobName, SPWebApplication webApplication, SPServer server, SPJobLockType lockType, Guid hiveId) : base(jobName, webApplication, SPServer.Local, lockType) 
+        public IronJob(string jobName, SPWebApplication webApplication, SPServer server, SPJobLockType lockType, Guid siteId) : base(jobName, webApplication, SPServer.Local, lockType) 
         {
             this.Title = jobName;
-            this.HiveId = hiveId;
+            this.SiteId = siteId;
             this.Script = String.Empty;
         } 
         
         public override void Execute(Guid targetInstanceId) 
         { 
-            using(SPSite site = new SPSite(HiveId))
+            using(SPSite site = new SPSite(SiteId))
             {
                 var runtime = IronRuntime.GetDefaultIronRuntime(site);
                
                 if (String.IsNullOrEmpty(Script))
                 {
-                    runtime.IronConsole.Execute(Script, ".rb", true);
+                    runtime.Console.Execute(Script, LanguageName).Wait();
                 }
             }
         } 

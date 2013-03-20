@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.IO;
+using System.Text;
+using FluentAssertions;
 using IronSharePoint.Util;
 using NUnit.Framework;
 

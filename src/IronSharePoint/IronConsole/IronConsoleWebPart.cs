@@ -2,7 +2,7 @@
 using System.Web.UI;
 using System.Web.UI.WebControls.WebParts;
 
-namespace IronSharePoint.IronConsole
+namespace IronSharePoint
 {
     [ToolboxItem(false)]
     public class IronConsoleWebPart : WebPart

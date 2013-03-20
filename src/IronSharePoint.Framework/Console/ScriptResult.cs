@@ -1,14 +1,17 @@
 using System;
 using Newtonsoft.Json;
 
-namespace IronSharePoint.IronConsole
+namespace IronSharePoint.Console
 {
-    public class IronConsoleResult
+    public class ScriptResult
     {
         public string Output { get; set; }
-        public string Result { get; set; }
+        [JsonIgnore]
+        public dynamic ReturnValue { get; set; }
+        public string ReturnString { get; set; }
         public string Error { get; set; }
         public string StackTrace { get; set; }
+        public long ExecutionTime { get; set; }
 
         public bool HasError
         {
@@ -25,9 +28,9 @@ namespace IronSharePoint.IronConsole
             JsonConvert.PopulateObject(json, this);
         }
 
-        public static IronConsoleResult FromJson(string json)
+        public static ScriptResult FromJson(string json)
         {
-            return JsonConvert.DeserializeObject<IronConsoleResult>(json);
+            return JsonConvert.DeserializeObject<ScriptResult>(json);
         }
     }
 }

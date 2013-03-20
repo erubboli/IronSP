@@ -5,6 +5,7 @@ class IronConsole
     @successCallbacks = []
     @errorCallbacks = []
 
+
   execute: (expression) ->
     @addToHistory expression
     wrapped = @wrapExpression(expression)
@@ -13,11 +14,11 @@ class IronConsole
     $.ajax
       type: 'POST'
       dataType: 'text'
-      data: { expression: wrapped }
+      data: { script: wrapped }
       url: @serviceUrl + url_params
       success: (json) =>
         result = $.parseJSON(json)
-        unless result["Error"]?
+        unless result["HasError"]
           cb(result) for cb in @successCallbacks
         else
           cb(result["Error"], result["StackTrace"]) for cb in @errorCallbacks
@@ -39,7 +40,7 @@ class IronConsole
 
   wrapExpression : (expression) =>
     if @lastResultVariable?
-      "#{@lastResultVariable} = (#{expression});#{@lastResultVariable}.inspect"
+      expression
     else
       expression
 
@@ -65,8 +66,8 @@ class IronConsoleView
 
   registerEventHandlers: =>
     @console.onExecuteSuccess (response) =>
-      @append "output", @outputPrefix, response["Output"] if response["Output"]?
-      @append "result", @resultPrefix, response["Result"]
+      @append "output", @outputPrefix, response["Output"] if response["Output"]
+      @append "result", @resultPrefix, "[" + response["ExecutionTime"] + "ms] " + response["ReturnString"]
       @showExecuting false
     @console.onExecuteError (error, stackTrace) =>
       @append "error", '', error
@@ -146,3 +147,7 @@ class IronConsoleView
       @$input.addClass 'ironSP-console-executing'
     else
       @$input.removeClass 'ironSP-console-executing'
+
+
+window.IronConsole = IronConsole
+window.IronConsoleView = IronConsoleView
