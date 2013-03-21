@@ -1,6 +1,7 @@
 ﻿using System;
 using IronSharePoint.Util;
 using Microsoft.Scripting.Hosting;
+using Moq;
 using NUnit.Framework;
 
 namespace IronSharePoint.Framework.Test.Util
@@ -8,14 +9,12 @@ namespace IronSharePoint.Framework.Test.Util
     [TestFixture]
     public class ScriptEngineExtensions_Fixture
     {
-        public ScriptRuntime ScriptRuntime;
         public ScriptEngine Sut;
 
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
-            ScriptRuntime = TestHelper.CreateRubyRuntime();
-            Sut = ScriptRuntime.GetEngine(IronConstant.RubyLanguageName);
+            Sut = TestHelper.CreateRubyEngine();
         }
 
         [Test]

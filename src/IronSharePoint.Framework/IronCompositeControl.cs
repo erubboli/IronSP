@@ -10,7 +10,6 @@ namespace IronSharePoint
 {
     public class IronCompositeControl : CompositeControl, IIronControl
     {
-        public IronEngine Engine { get; set; }
         public WebPart WebPart { get; set; }
         public IIronDataStore DataStore { get; set; }
 

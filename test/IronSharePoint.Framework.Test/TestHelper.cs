@@ -9,7 +9,7 @@ namespace IronSharePoint.Framework.Test
             var setup = new ScriptRuntimeSetup();
             var languageSetup = new LanguageSetup(
                 "IronRuby.Runtime.RubyContext, IronRuby, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1",
-                IronConstant.RubyLanguageName,
+                IronRuntime.RubyEngineName,
                 new[] { "IronRuby", "Ruby", "rb" },
                 new[] { ".rb" });
             setup.LanguageSetups.Add(languageSetup);
@@ -17,6 +17,22 @@ namespace IronSharePoint.Framework.Test
             setup.DebugMode = true;
 
             return new ScriptRuntime(setup);
+        }
+
+        public static ScriptEngine CreateRubyEngine()
+        {
+            var setup = new ScriptRuntimeSetup();
+            var languageSetup = new LanguageSetup(
+                "IronRuby.Runtime.RubyContext, IronRuby, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1",
+                IronRuntime.RubyEngineName,
+                new[] { "IronRuby", "Ruby", "rb" },
+                new[] { ".rb" });
+            setup.LanguageSetups.Add(languageSetup);
+            setup.HostType = typeof(ScriptHost);
+            setup.DebugMode = true;
+
+            var scriptRuntime = new ScriptRuntime(setup);
+            return scriptRuntime.GetEngine(IronRuntime.RubyEngineName);
         }
     }
 }

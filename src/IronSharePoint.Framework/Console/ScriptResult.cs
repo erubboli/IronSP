@@ -6,9 +6,7 @@ namespace IronSharePoint.Console
     public class ScriptResult
     {
         public string Output { get; set; }
-        [JsonIgnore]
-        public dynamic ReturnValue { get; set; }
-        public string ReturnString { get; set; }
+        public string ReturnValue { get; set; }
         public string Error { get; set; }
         public string StackTrace { get; set; }
         public long ExecutionTime { get; set; }

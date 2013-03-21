@@ -1,8 +1,9 @@
 ﻿using FluentAssertions;
+using IronSharePoint.Console;
 using Microsoft.Scripting.Hosting;
 using NUnit.Framework;
 
-namespace IronSharePoint.Framework.Test
+namespace IronSharePoint.Framework.Test.Console
 {
     [TestFixture]
     public class IOCapture_Fixture

@@ -106,19 +106,15 @@
     <Compile Include="IHive.cs" />
     <Compile Include="IIronControl.cs" />
     <Compile Include="IIronDataStore.cs" />
+    <Compile Include="Console\IOCapture.cs" />
     <Compile Include="IronCompositeControl.cs" />
-    <Compile Include="Console\Hooks\IHook.cs" />
-    <Compile Include="Console\Hooks\HookBase.cs" />
-    <Compile Include="Console\Hooks\RubyHook.cs" />
     <Compile Include="IronConsole.cs" />
     <Compile Include="Console\ScriptResult.cs" />
     <Compile Include="IronConstant.cs" />
     <Compile Include="IronContentTypeId.cs" />
     <Compile Include="IronControl.cs" />
-    <Compile Include="IronEngine.cs" />
     <Compile Include="IronEnvironment.cs" />
     <Compile Include="FieldHelper.cs" />
-    <Compile Include="IronHttpHandler.cs" />
     <Compile Include="IronHttpModule.cs" />
     <Compile Include="IronJob.cs" />
     <Compile Include="IronPlatformAdaptationLayer.cs" />
@@ -134,6 +130,7 @@
     <Compile Include="Util\EnumerableExtensions.cs" />
     <Compile Include="Util\IBlockingQueue.cs" />
     <Compile Include="Util\ScriptEngineExtensions.cs" />
+    <Compile Include="Util\ScriptRuntimeExtensions.cs" />
     <Compile Include="Util\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

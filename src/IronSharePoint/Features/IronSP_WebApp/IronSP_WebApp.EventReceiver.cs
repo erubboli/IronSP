@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using Microsoft.SharePoint;
@@ -34,33 +36,21 @@ namespace IronSharePoint.Features.IronSP_WebApp
                 webApp.Update();
                 webApp.Farm.Services.GetValue<SPWebService>().ApplyWebConfigModifications();
             });
-
         }
 
         private static void RegisterHttpModule(SPWebApplication webApp)
         {
             var httpModuleType = typeof(IronHttpModule);
-            SPWebConfigModification httpModuleMod = new SPWebConfigModification();
-            httpModuleMod.Path = "configuration/system.webServer/modules";
-            httpModuleMod.Name = String.Format("add[@name='IronHttpModule'][@type='{0}']", httpModuleType.AssemblyQualifiedName);
-            httpModuleMod.Sequence = 0;
-            httpModuleMod.Owner = modificationOwner;
-            httpModuleMod.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
-            httpModuleMod.Value = String.Format("<add name='IronHttpModule' type='{0}' />", httpModuleType.AssemblyQualifiedName);
-            webApp.WebConfigModifications.Add(httpModuleMod);
-        }
-
-        private static void RegisterHttpHandlerFactory(SPWebApplication webApp)
-        {
-            var httpHandlerType = typeof(IronHttpHandler);
-            SPWebConfigModification httpHandlerFacotry = new SPWebConfigModification();
-            httpHandlerFacotry.Path = "configuration/system.webServer/handlers";
-            httpHandlerFacotry.Name = String.Format("add[@type='{0}']", httpHandlerType.AssemblyQualifiedName);
-            httpHandlerFacotry.Sequence = 0;
-            httpHandlerFacotry.Owner = modificationOwner;
-            httpHandlerFacotry.Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode;
-            httpHandlerFacotry.Value = String.Format("<add  name='IronHttpHandler' path='_iron/*' verb='*' type='{0}' />", httpHandlerType.AssemblyQualifiedName);
-            webApp.WebConfigModifications.Add(httpHandlerFacotry);
+            var mod = new SPWebConfigModification
+                {
+                    Path = "configuration/system.webServer/modules",
+                    Name = String.Format("add[@name='IronHttpModule'][@type='{0}']", httpModuleType.AssemblyQualifiedName),
+                    Sequence = 0,
+                    Owner = modificationOwner,
+                    Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode,
+                    Value = String.Format("<add name='IronHttpModule' type='{0}' />", httpModuleType.AssemblyQualifiedName)
+                };
+            webApp.WebConfigModifications.Add(mod);
         }
 
         private static void RegisterRackHttpHandler(SPWebApplication webApp)
@@ -82,38 +72,25 @@ namespace IronSharePoint.Features.IronSP_WebApp
 
         public override void FeatureDeactivating(SPFeatureReceiverProperties properties)
         {
-            SPSecurity.RunWithElevatedPrivileges(() => {
-
+            SPSecurity.RunWithElevatedPrivileges(() =>
+            {
                 var webApplication = properties.Feature.Parent as SPWebApplication;
                 var webMods = webApplication.WebConfigModifications;
-                var modsToRemove = new List<SPWebConfigModification>();
-
-                foreach(var mod in webMods)
-                {
-                    if (mod.Owner == modificationOwner)
-                    {
-                        modsToRemove.Add(mod);
-                    }
-                }
-
+                var modsToRemove = webMods.Where(mod => mod.Owner == modificationOwner).ToList();
                 modsToRemove.ForEach(m => webMods.Remove(m));
 
                 // Remove it and save the change to the configuration database  
                 webApplication.Update();
-
                 // Reapply all the configuration modifications
                 webApplication.Farm.Services.GetValue<SPWebService>().ApplyWebConfigModifications();
-
             });
         }
-
 
         // Uncomment the method below to handle the event raised after a feature has been installed.
 
         //public override void FeatureInstalled(SPFeatureReceiverProperties properties)
         //{
         //}
-
 
         // Uncomment the method below to handle the event raised before a feature is uninstalled.
 

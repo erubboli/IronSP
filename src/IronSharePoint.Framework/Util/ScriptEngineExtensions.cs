@@ -26,20 +26,16 @@ namespace IronSharePoint.Util
         {
             Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(typeName));
 
-            if (scriptEngine.Setup.DisplayName == IronConstant.RubyLanguageName)
+            // TODO better way?
+            try
             {
-                // TODO better way?
-                try
-                {
-                    var type = scriptEngine.Execute(typeName);
-                    return scriptEngine.Operations.CreateInstance(type, parameters);
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentException(string.Format("{0} not found", typeName), "typeName", ex);
-                }
+                var type = scriptEngine.Execute(typeName);
+                return scriptEngine.Operations.CreateInstance(type, parameters);
             }
-            return null;
+            catch (Exception ex)
+            {
+                throw new ArgumentException(string.Format("{0} not found", typeName), "typeName", ex);
+            }
         }
     }
 }

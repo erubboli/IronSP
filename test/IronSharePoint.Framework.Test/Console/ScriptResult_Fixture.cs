@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.IO;
+using FluentAssertions;
 using IronSharePoint.Console;
 using NUnit.Framework;
 
@@ -10,17 +11,19 @@ namespace IronSharePoint.Framework.Test.Console
         public ScriptResult Sut;
 
         [Test]
-        public void ToJson_IgnoresReturnValue()
+        public void ToJson()
         {
             Sut = new ScriptResult
                 {
-                    Output = "foo",
-                    ReturnValue = "ReturnValue"
+                    Error = "Error",
+                    Output = "Output",
+                    ReturnValue = "ReturnValue",
+                    ExecutionTime = 1,
+                    StackTrace = "StackTrace"
                 };
 
             System.Console.WriteLine(Sut.ToJson());
-            Sut.ToJson().Should().NotContain("ReturnValue");
+            Sut.ToJson().Should().Be(File.ReadAllText("./_assets/script_result.json"));
         }
-         
     }
 }

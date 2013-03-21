@@ -102,11 +102,10 @@
     <Compile Include="Administration\HiveSetupCollection_Fixture.cs" />
     <Compile Include="Administration\HiveSetup_Fixture.cs" />
     <Compile Include="Administration\HiveRegistry_Fixture.cs" />
-    <Compile Include="Console\Hooks\RubyHook_Fixture.cs" />
     <Compile Include="Hive\HiveComposite_Fixture.cs" />
     <Compile Include="Hive\DirectoryHive_Fixture.cs" />
     <Compile Include="Hive\SPDocumentHive_Fixture.cs" />
-    <Compile Include="IOCapture_Fixture.cs" />
+    <Compile Include="Console\IOCapture_Fixture.cs" />
     <Compile Include="IronConsole_Fixture.cs" />
     <Compile Include="IronPlatformAdaptionLayer_Fixture.cs" />
     <Compile Include="IronScriptHost_Fixture.cs" />
@@ -115,11 +114,15 @@
     <Compile Include="TestHelper.cs" />
     <Compile Include="Util\EnumerableExtensions_Fixture.cs" />
     <Compile Include="Util\ScriptEngineExtensions_Fixture.cs" />
+    <Compile Include="Util\ScriptRuntimeExtensions_Fixture.cs" />
     <Compile Include="Util\StringExtensions_Fixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="key.snk" />
     <None Include="packages.config" />
+    <None Include="_assets\script_result.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

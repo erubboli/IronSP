@@ -13,6 +13,7 @@ using IronSharePoint.Util;
 
 namespace IronSharePoint.IronPart
 {
+    // TODO fix
     [ToolboxItemAttribute(false)]
     public class IronPart : WebPart, IIronDataStore
     {
@@ -40,9 +41,6 @@ namespace IronSharePoint.IronPart
 
         protected override void OnInit(EventArgs e)
         {
-            Guid hiveId = String.IsNullOrEmpty(ScriptHiveId) ? Guid.Empty : new Guid(ScriptHiveId);
-
-            //ironRuntime = IronRuntime.GetIronRuntime(SPContext.Current.Site, hiveId);
             ironRuntime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
 
             if (String.IsNullOrEmpty(ScriptClass))
@@ -61,10 +59,6 @@ namespace IronSharePoint.IronPart
                 {
                     var engine = ironRuntime.ScriptRuntime.GetEngineByFileExtension(Path.GetExtension(ScriptName));
                     ctrl = engine.CreateInstance(ScriptClass) as Control;
-                }
-                else
-                {
-                    ctrl = ironRuntime.CreateDynamicInstance(ScriptClass) as Control;
                 }
 
                 DynamicControl = ctrl as IIronControl;

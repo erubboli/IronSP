@@ -215,9 +215,6 @@
     <None Include="Lists\IronHive\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{880960ed-55af-46cc-a291-3bc601bddf46}</SharePointProjectItemId>
     </None>
-    <None Include="Lists\IronLogs\SharePointProjectItem.spdata">
-      <SharePointProjectItemId>{8d33b9b0-7a01-4eb4-93be-57e5ae318020}</SharePointProjectItemId>
-    </None>
     <None Include="packages.config" />
     <None Include="Package\Package.package">
       <PackageId>{aacb7026-8941-4faa-b4bb-04562e317e53}</PackageId>
@@ -322,7 +319,6 @@
     <Content Include="Lists\IronHive\Repair.aspx" />
     <Content Include="Lists\IronHive\Schema.xml" />
     <Content Include="Lists\IronHive\Upload.aspx" />
-    <Content Include="Lists\IronLogs\Elements.xml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -10,7 +10,6 @@ namespace IronSharePoint
     public static class IronConstant
     {
         public const string IronHiveLibraryPath = "_catalogs/IronHive";
-        public const string IronLogsListPath = "Lists/IronLogs";
 
         public const string IronSiteFeatureId = "a1752f91-1403-40c1-a257-69eddf8976cf";
         public const string IronHiveSiteFeatureId = "354ee774-7d04-4ad6-91f9-1bc433a70bee";
@@ -18,7 +17,6 @@ namespace IronSharePoint
 
         public const string IronPrefix = "IronSP_";
 
-        public const string RubyLanguageName = "ruby";
         public const string IronRuntimeKey = IronPrefix + "Runtime";
 
         public static string IronSPRootDirectory =

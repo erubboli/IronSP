@@ -169,7 +169,7 @@
         if (response["Output"]) {
           _this.append("output", _this.outputPrefix, response["Output"]);
         }
-        _this.append("result", _this.resultPrefix, "[" + response["ExecutionTime"] + "ms] " + response["ReturnString"]);
+        _this.append("result", _this.resultPrefix, "[" + response["ExecutionTime"] + "ms] " + response["ReturnValue"]);
         return _this.showExecuting(false);
       });
       this.console.onExecuteError(function(error, stackTrace) {

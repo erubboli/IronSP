@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Web.Script.Serialization;
-using IronSharePoint.Administration;
+using System.Web;
 using IronSharePoint.Console;
 using Microsoft.SharePoint;
-using Microsoft.SharePoint.WebControls;
-using System.Web;
-using System.Linq;
 
 namespace IronSharePoint
 {
-    public partial class IronConsoleService : IHttpHandler
+    public class IronConsoleService : IHttpHandler
     {
         public bool IsReusable
         {
@@ -24,8 +19,8 @@ namespace IronSharePoint
 
             try
             {
-                var site = SPContext.Current.Site;
-                var web = SPContext.Current.Web;
+                SPSite site = SPContext.Current.Site;
+                SPWeb web = SPContext.Current.Web;
 
                 if (!web.CurrentUser.IsSiteAdmin)
                 {
@@ -33,20 +28,18 @@ namespace IronSharePoint
                 }
                 else
                 {
+                    IronRuntime ironRuntime = IronRuntime.GetDefaultIronRuntime(site);
+                    string script = HttpContext.Current.Request["script"];
 
-                }
-                var ironRuntime = IronRuntime.GetDefaultIronRuntime(site);
-                var languageName = HttpContext.Current.Request["lang"];
-                var script = HttpContext.Current.Request["script"];
-
-                if (script == "kill")
-                {
-                    ironRuntime.Dispose();
-                    result.Output = "Runtime disposed.";
-                }
-                else
-                {
-                    result = ironRuntime.Console.Execute(script, languageName).Result;
+                    if (script == "kill")
+                    {
+                        ironRuntime.Dispose();
+                        result.Output = "Runtime disposed.";
+                    }
+                    else
+                    {
+                        result = ironRuntime.Console.Execute(script).Result;
+                    }
                 }
             }
             catch (Exception ex)

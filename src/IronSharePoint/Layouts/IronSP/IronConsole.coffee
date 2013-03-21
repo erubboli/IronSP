@@ -67,7 +67,7 @@ class IronConsoleView
   registerEventHandlers: =>
     @console.onExecuteSuccess (response) =>
       @append "output", @outputPrefix, response["Output"] if response["Output"]
-      @append "result", @resultPrefix, "[" + response["ExecutionTime"] + "ms] " + response["ReturnString"]
+      @append "result", @resultPrefix, "[" + response["ExecutionTime"] + "ms] " + response["ReturnValue"]
       @showExecuting false
     @console.onExecuteError (error, stackTrace) =>
       @append "error", '', error

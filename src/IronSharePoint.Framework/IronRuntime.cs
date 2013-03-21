@@ -13,6 +13,8 @@ namespace IronSharePoint
 {
     public class IronRuntime : IDisposable
     {
+        public const string RubyEngineName = "IronRuby";
+
         // SiteId -> Runtime
         private static readonly Dictionary<Guid, IronRuntime> _staticLivingRuntimes =
             new Dictionary<Guid, IronRuntime>();
@@ -54,7 +56,7 @@ namespace IronSharePoint
 
         public ScriptEngine RubyEngine
         {
-            get { return ScriptRuntime.GetEngine(IronConstant.RubyLanguageName); }
+            get { return ScriptRuntime.GetEngine(RubyEngineName); }
         }
 
         public IHive Hive
@@ -122,7 +124,7 @@ namespace IronSharePoint
             var setup = new ScriptRuntimeSetup();
             var languageSetup = new LanguageSetup(
                 "IronRuby.Runtime.RubyContext, IronRuby, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1",
-                IronConstant.RubyLanguageName,
+                RubyEngineName,
                 new[] {"IronRuby", "Ruby", "rb"},
                 new[] {".rb"});
             setup.LanguageSetups.Add(languageSetup);
@@ -156,7 +158,7 @@ namespace IronSharePoint
                 ScriptScope scope = RubyEngine.CreateScope();
                 scope.SetVariable("iron_runtime", this);
                 RubyEngine.Execute("$RUNTIME = iron_runtime", scope);
-                RubyEngine.Execute(@"require 'rubygems'; #require 'application'");
+                RubyEngine.Execute(@"require 'rubygems'; #require 'application'", ScriptRuntime.Globals);
             }
         }
 
@@ -182,15 +184,17 @@ namespace IronSharePoint
                 IronRuntime runtime;
                 if (!TryGetExistingRuntime(targetId, out runtime))
                 {
-                    lock (_sync)
+                    using (new SPMonitoredScope("Creating IronRuntime"))
                     {
-                        if (!TryGetExistingRuntime(targetId, out runtime))
+                        try
                         {
-                            using (new SPMonitoredScope("Creating IronRuntime"))
-                            {
-                                runtime = new IronRuntime(targetId);
-                                LivingRuntimes[targetId] = runtime;
-                            }
+                            runtime = new IronRuntime(targetId);
+                            LivingRuntimes[targetId] = runtime;
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError("Error creating IronRuntime", ex);
+                            throw;
                         }
                     }
                 }
@@ -204,39 +208,15 @@ namespace IronSharePoint
         {
             if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
             {
-                runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
+                lock (_sync)
+                {
+                    if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
+                    {
+                        runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
+                    }
+                }
             }
             return runtime != null;
-        }
-
-        public void RegisterDynamicType(string name, object type)
-        {
-            if (!DynamicTypeRegistry.ContainsKey(name))
-            {
-                DynamicTypeRegistry.Add(name, type);
-            }
-        }
-
-        public void RegisterDynamicFunction(string name, object type)
-        {
-            DynamicFunctionRegistry[name] = type;
-        }
-
-        public object CreateDynamicInstance(string className, params object[] args)
-        {
-            object obj = null;
-
-            object dynamicType = DynamicTypeRegistry[className];
-            if (args != null && args.Length > 0)
-            {
-                obj = ScriptRuntime.Operations.CreateInstance(dynamicType, args);
-            }
-            else
-            {
-                obj = ScriptRuntime.Operations.CreateInstance(dynamicType);
-            }
-
-            return obj;
         }
 
         public static void LogError(string msg, Exception ex)
@@ -251,13 +231,6 @@ namespace IronSharePoint
         {
             IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Core],
                                                     TraceSeverity.Verbose, String.Format("{0}.", msg));
-        }
-
-        private static void ShowUnavailable()
-        {
-            HttpContext.Current.Response.StatusCode = 503;
-            HttpContext.Current.Response.WriteFile(SPUtility.GetGenericSetupPath(@"TEMPLATE\LAYOUTS\IronSP\503.html"));
-            HttpContext.Current.Response.End();
         }
     }
 }

@@ -56,13 +56,13 @@ namespace IronSharePoint
         
         public override void Execute(Guid targetInstanceId) 
         { 
-            using(SPSite site = new SPSite(SiteId))
+            using(var site = new SPSite(SiteId))
             {
                 var runtime = IronRuntime.GetDefaultIronRuntime(site);
                
                 if (String.IsNullOrEmpty(Script))
                 {
-                    runtime.Console.Execute(Script, LanguageName).Wait();
+                    runtime.Console.Execute(Script).Wait();
                 }
             }
         } 
