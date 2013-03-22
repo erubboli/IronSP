@@ -56,7 +56,7 @@
             _results1 = [];
             for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
               cb = _ref1[_j];
-              _results1.push(cb(result["Error"], result["StackTrace"]));
+              _results1.push(cb(result["Error"]));
             }
             return _results1;
           }
@@ -174,7 +174,6 @@
       });
       this.console.onExecuteError(function(error, stackTrace) {
         _this.append("error", '', error);
-        _this.append("stackTrace", '', stackTrace);
         return _this.showExecuting(false);
       });
       this.$input || (this.$input = $("#ironSP-console-input"));

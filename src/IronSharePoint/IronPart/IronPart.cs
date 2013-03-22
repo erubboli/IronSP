@@ -1,130 +1,22 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Web;
+using System.Diagnostics.Contracts;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
-using Microsoft.SharePoint;
-using Microsoft.SharePoint.WebControls;
-using System.Collections.Generic;
-using Microsoft.Scripting.Hosting;
-using System.IO;
+using IronSharePoint.Diagnostics;
 using IronSharePoint.Util;
+using Microsoft.SharePoint;
 
 namespace IronSharePoint.IronPart
 {
-    // TODO fix
-    [ToolboxItemAttribute(false)]
-    public class IronPart : WebPart, IIronDataStore
+    [ToolboxItem(false)]
+    public class IronPart : WebPart, IIronDataStore, IWrapperControl
     {
-        [WebBrowsable(true)]
-        [Category("IronPart")]
-        [Personalizable(PersonalizationScope.Shared)]
-        public string ScriptName { get; set; }
-
-        [WebBrowsable(true)]
-        [Category("IronPart")]
-        [Personalizable(PersonalizationScope.Shared)]
-        public string ScriptClass { get; set; }
-
-        [WebBrowsable(false)]
-        [Category("IronPart")]
-        [Personalizable(PersonalizationScope.Shared)]
-        public String ScriptHiveId { get; set; }
+        protected Exception Exception;
+        protected Control InnerControl;
 
         [Personalizable(PersonalizationScope.Shared)]
         public string Data { get; set; }
-
-        protected Exception Exception {get; set;}
-        protected IIronControl DynamicControl{get; private set;}
-        private IronRuntime ironRuntime;
-
-        protected override void OnInit(EventArgs e)
-        {
-            ironRuntime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-
-            if (String.IsNullOrEmpty(ScriptClass))
-            {
-                Exception = new InvalidEnumArgumentException("Property ScriptClass is empty!");
-            }
-
-            if (Exception != null)
-                return;
-
-            try
-            {
-
-                Control ctrl = null;
-                if (!String.IsNullOrEmpty(ScriptName))
-                {
-                    var engine = ironRuntime.ScriptRuntime.GetEngineByFileExtension(Path.GetExtension(ScriptName));
-                    ctrl = engine.CreateInstance(ScriptClass) as Control;
-                }
-
-                DynamicControl = ctrl as IIronControl;
-                if (DynamicControl != null)
-                {
-                    DynamicControl.WebPart = this;
-                    DynamicControl.DataStore = this;
-                }
-
-
-                this.Controls.Add(ctrl);
-
-                base.OnInit(e);
-            }
-            catch (Exception ex)
-            {
-                Exception = ex;
-                IronRuntime.LogError("IronWebPart Error", Exception);
-            }
-        }
-
-        public new void SetPersonalizationDirty(){
-            base.SetPersonalizationDirty();
-        }
-
-        protected override void Render(HtmlTextWriter writer)
-        {
-            if (Exception != null)
-            {
-                if (SPContext.Current.Web.UserIsSiteAdmin)
-                {
-                    IronRuntime.LogError(String.Format("Script: {0}, Error: {1}", ScriptName, Exception.Message),
-                                         Exception);
-
-                    writer.Write(Exception.Message);
-                }
-                else
-                {
-                    writer.Write("Error occured.");
-                }
-            }
-            else
-            {
-                try
-                {
-                    base.Render(writer);
-                }
-                catch (Exception ex)
-                {
-                    writer.Write(ex.Message);
-                    IronRuntime.LogError("Error", ex);
-                }
-            }
-        }
-
-        
-        public override EditorPartCollection CreateEditorParts()
-        {
-            if (DynamicControl != null)
-            {
-                 return new EditorPartCollection(base.CreateEditorParts(),DynamicControl.CreateEditorParts());
-            }
-
-            return base.CreateEditorParts();
-        }
-       
 
         public void SaveData(string data)
         {
@@ -137,6 +29,77 @@ namespace IronSharePoint.IronPart
             return Data;
         }
 
-        public string PathScriptName { get; set; }
+        [WebBrowsable(true)]
+        [Category("IronPart")]
+        [Personalizable(PersonalizationScope.Shared)]
+        public string ControlName { get; set; }
+
+        public Exception InstantiationException { get; set; }
+
+        protected override void OnInit(EventArgs e)
+        {
+            Contract.Requires<InvalidOperationException>(!String.IsNullOrWhiteSpace(ControlName), "ControlName not set");
+
+            if (!this.TryCreateDynamicControl(out InnerControl))
+            {
+                if (InnerControl is IIronControl)
+                {
+                    var ironControl = InnerControl as IIronControl;
+                    ironControl.WebPart = this;
+                    ironControl.DataStore = this;
+                }
+            }
+            Controls.Add(InnerControl);
+            base.OnInit(e);
+        }
+
+        public new void SetPersonalizationDirty()
+        {
+            base.SetPersonalizationDirty();
+        }
+
+        protected override void Render(HtmlTextWriter writer)
+        {
+            if (InstantiationException != null)
+            {
+                HandleException(InstantiationException, writer);
+            }
+            else
+            {
+                try
+                {
+                    InnerControl.RenderControl(writer);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, writer);
+                }
+            }
+        }
+
+        private void HandleException(Exception ex, HtmlTextWriter writer)
+        {
+            string output = IronULSLogger.Local.Error("Error in IronWrapperControl", ex,
+                                                      IronCategoryDiagnosticsId.WebParts);
+            if (!SPContext.Current.Web.UserIsSiteAdmin)
+            {
+                writer.Write("An error occured.");
+            }
+            else
+            {
+                writer.Write(output);
+            }
+        }
+
+        public override EditorPartCollection CreateEditorParts()
+        {
+            if (InnerControl is IIronControl)
+            {
+                var ironControl = InnerControl as IIronControl;
+                return new EditorPartCollection(base.CreateEditorParts(), ironControl.CreateEditorParts());
+            }
+
+            return base.CreateEditorParts();
+        }
     }
 }

@@ -1,5 +1,4 @@
 require 'iron_sharepoint/mixins/logging'
-require 'iron_sharepoint/mixins/type_registration'
 
 module IronSharePoint::HttpHandlers
   def self.routes
@@ -9,7 +8,6 @@ module IronSharePoint::HttpHandlers
   class MainHttpHandler
     include System::Web::IHttpHandler
     include IronSharePoint::Mixins::Logging
-    include IronSharePoint::Mixins::TypeRegistration
 
     def IsReusable
       false

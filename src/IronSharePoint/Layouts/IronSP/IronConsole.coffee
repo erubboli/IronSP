@@ -21,7 +21,7 @@ class IronConsole
         unless result["HasError"]
           cb(result) for cb in @successCallbacks
         else
-          cb(result["Error"], result["StackTrace"]) for cb in @errorCallbacks
+          cb(result["Error"]) for cb in @errorCallbacks
       error: (args...) => cb(args...) for cb in @errorCallbacks
 
   getExpressionFromHistory: (index) ->
@@ -71,7 +71,6 @@ class IronConsoleView
       @showExecuting false
     @console.onExecuteError (error, stackTrace) =>
       @append "error", '', error
-      @append "stackTrace", '', stackTrace
       @showExecuting false
 
     @$input ||= $("#ironSP-console-input")

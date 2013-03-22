@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IronSharePoint.Exceptions;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
@@ -32,9 +33,13 @@ namespace IronSharePoint.Util
                 var type = scriptEngine.Execute(typeName);
                 return scriptEngine.Operations.CreateInstance(type, parameters);
             }
+            catch (MemberAccessException ex)
+            {
+                throw new DynamicInstanceInitializationException(string.Format("Type '{0}' not found", typeName), ex);
+            }
             catch (Exception ex)
             {
-                throw new ArgumentException(string.Format("{0} not found", typeName), "typeName", ex);
+                throw new DynamicInstanceInitializationException(string.Format("Could not create instance of type '{0}'", typeName), ex);
             }
         }
     }

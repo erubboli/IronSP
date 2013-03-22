@@ -19,7 +19,6 @@ namespace IronSharePoint.Framework.Test.Console
                     Output = "Output",
                     ReturnValue = "ReturnValue",
                     ExecutionTime = 1,
-                    StackTrace = "StackTrace"
                 };
 
             System.Console.WriteLine(Sut.ToJson());

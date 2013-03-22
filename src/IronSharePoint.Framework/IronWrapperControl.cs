@@ -1,49 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics.Contracts;
 using System.Web.UI;
+using System.Web.UI.WebControls;
+using IronSharePoint.Diagnostics;
+using IronSharePoint.Util;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
-using System.IO;
-using System.Web.UI.WebControls;
-using Microsoft.Scripting.Hosting.Providers;
-using IronSharePoint.Diagnostics;
-using Microsoft.SharePoint.Administration;
-using System.Web.Caching;
-using System.Web;
-using System.ComponentModel;
 
 namespace IronSharePoint
 {
-    public class IronWrapperControl : CompositeControl
+    public class IronWrapperControl : CompositeControl, IWrapperControl
     {
-        public string ControlName { get; set; }
-        private ScriptEngine _engine;
         private Control _control;
-        private Exception Exception { get; set; }
+        public string ControlName { get; set; }
+        public Exception InstantiationException { get; set; }
 
         protected override void OnInit(EventArgs e)
         {
-            if (String.IsNullOrWhiteSpace(ControlName))
-            {
-                Exception = new InvalidOperationException("ControlName not set");
-                return;
-            }
+            Contract.Requires<InvalidOperationException>(!String.IsNullOrWhiteSpace(ControlName), "ControlName not set");
 
-            try
+            if (this.TryCreateDynamicControl(out _control))
             {
-                IronRuntime ironRuntime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-                _engine = ironRuntime.RubyEngine;
-                var scope = _engine.CreateScope();
-                var controlClass = scope.GetVariable("ControlName");
-                _control = controlClass.@new();
-
-                this.Controls.Add(_control);
-            }
-            catch (Exception ex)
-            {
-                Exception = ex;
+                Controls.Add(_control);
             }
 
             base.OnInit(e);
@@ -51,33 +29,35 @@ namespace IronSharePoint
 
         protected override void Render(HtmlTextWriter writer)
         {
-            // Todo better error handling
-            if (Exception != null)
+            if (InstantiationException != null)
             {
-                string errorMessage = null;
-                if (SPContext.Current.Web.UserIsSiteAdmin)
-                {
-                    var eo = _engine.GetService<ExceptionOperations>();
-                    errorMessage = eo.FormatException(Exception);
-                    IronRuntime.LogError(String.Format("Error creating control: {0}", ControlName), Exception);
-                }
-                else
-                {
-                    errorMessage = "An Error occured.";
-                }
-                writer.Write(errorMessage);
-                return;
+                HandleException(InstantiationException, writer);
             }
+            else
+            {
+                try
+                {
+                    _control.RenderControl(writer);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, writer);
+                }
+            }
+        }
 
-            try
+        private void HandleException(Exception ex, HtmlTextWriter writer)
+        {
+            string output = IronULSLogger.Local.Error("Error in IronWrapperControl", ex,
+                                                      IronCategoryDiagnosticsId.Controls);
+            if (!SPContext.Current.Web.UserIsSiteAdmin)
             {
-                _control.RenderControl(writer);
+                writer.Write("An error occured.");
             }
-            catch (Exception ex)
+            else
             {
-                writer.Write(ex.Message);
-                IronRuntime.LogError("Error while rendering " + GetType().AssemblyQualifiedName, ex);
+                writer.Write(output);
             }
-        }     
+        }
     }
 }

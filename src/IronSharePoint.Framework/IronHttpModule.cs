@@ -1,50 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web;
-using Microsoft.SharePoint;
-using Microsoft.Scripting.Hosting;
+using IronSharePoint.Diagnostics;
 
 namespace IronSharePoint
 {
-    public class IronHttpModule:IHttpModule
+    public class IronHttpModule : IHttpModule
     {
         public void Init(HttpApplication application)
         {
-            application.EndRequest += new EventHandler(EndRequest);
-            application.Error += new EventHandler(Error);
+            application.EndRequest += EndRequest;
+            application.Error += Error;
         }
 
-        void Error(object sender, EventArgs e)
+        public void Dispose()
+        {
+        }
+
+        private void Error(object sender, EventArgs e)
         {
             var application = sender as HttpApplication;
 
-            if (SPContext.Current != null)
-            {
-                var runtime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-                var engine = runtime.RubyEngine;
-                var exception = application.Server.GetLastError();
-
-                var eo = engine.GetService<ExceptionOperations>();
-                string error = eo.FormatException(exception);
-
-                IronRuntime.LogError(error, exception);
-            }
+            IronULSLogger.Local.Error("Error in HttpModule", application.Server.GetLastError(), IronCategoryDiagnosticsId.Core);
         }
-        
-        void EndRequest(object sender, EventArgs e)
+
+        private void EndRequest(object sender, EventArgs e)
         {
             var application = sender as HttpApplication;
 
-            CleanUp(application);      
+            CleanUp(application);
         }
 
         private static void CleanUp(HttpApplication application)
         {
             var ironObjectsToDispose = new List<IDisposable>();
 
-            foreach (var key in application.Context.Items.Keys.OfType<String>())
+            foreach (string key in application.Context.Items.Keys.OfType<String>())
             {
                 if (key.StartsWith(IronConstant.IronPrefix))
                 {
@@ -58,7 +50,5 @@ namespace IronSharePoint
 
             ironObjectsToDispose.ForEach(o => o.Dispose());
         }
-
-        public void Dispose() { }
     }
 }

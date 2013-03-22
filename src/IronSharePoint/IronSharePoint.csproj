@@ -245,13 +245,14 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\parent_attributes.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\short_term_memory.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\sp_context_accessors.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\type_registration.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\view_helpers.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\object.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\regexp.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\string.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\digest\md5.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\hike\index.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\log4r\logger.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\system\date_time.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\rescues\template_error.haml" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\rescues\template_not_found.haml" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\variation.rb" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using IronSharePoint.Diagnostics;
+using IronSharePoint.Exceptions;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Administration;
@@ -24,13 +25,13 @@ namespace IronSharePoint
         private readonly Guid _siteId;
         private readonly Guid _id;
 
+        public IronULSLogger ULSLogger { get; private set; }
+
         private IronRuntime(Guid siteId)
         {
             _siteId = siteId;
             _id = Guid.NewGuid();
-
-            DynamicTypeRegistry = new Dictionary<string, Object>();
-            DynamicFunctionRegistry = new Dictionary<string, Object>();
+            ULSLogger = new IronULSLogger();
 
             CreateScriptRuntime();
             Console = new IronConsole(ScriptRuntime);
@@ -64,10 +65,6 @@ namespace IronSharePoint
             get { return ScripHost.Hive; }
         }
 
-        public Dictionary<string, Object> DynamicTypeRegistry { get; private set; }
-        public Dictionary<string, Object> DynamicFunctionRegistry { get; private set; }
-
-        public string HttpHandlerClass { get; set; }
         public bool IsDisposed { get; private set; }
 
         public Guid SiteId
@@ -78,31 +75,6 @@ namespace IronSharePoint
         public Guid Id
         {
             get { return _id; }
-        }
-
-        public SPSite Site
-        {
-            get
-            {
-                var key = IronConstant.GetPrefixed("Site_" + Id);
-                var httpContext = HttpContext.Current;
-                SPSite site;
-
-                if (httpContext != null)
-                {
-                    if (!httpContext.Items.Contains(key))
-                    {
-                        httpContext.Items[key] = new SPSite(Id, SPUserToken.SystemAccount);
-                    }
-                    site = httpContext.Items[key] as SPSite;
-                }
-                else
-                {
-                    site = new SPSite(Id, SPUserToken.SystemAccount);
-                }
-
-                return site;
-            }
         }
 
         #region IDisposable Members
@@ -158,7 +130,6 @@ namespace IronSharePoint
                 ScriptScope scope = RubyEngine.CreateScope();
                 scope.SetVariable("iron_runtime", this);
                 RubyEngine.Execute("$RUNTIME = iron_runtime", scope);
-                RubyEngine.Execute(@"require 'rubygems'; #require 'application'", ScriptRuntime.Globals);
             }
         }
 
@@ -176,6 +147,18 @@ namespace IronSharePoint
             Directory.SetCurrentDirectory(IronConstant.IronRubyRootDirectory);
         }
 
+        private void LoadRubyFramework()
+        {
+            try
+            {
+                RubyEngine.Execute(@"require 'rubygems'; require 'iron_sharepoint'; require 'application'", ScriptRuntime.Globals);
+            }
+            catch (Exception ex)
+            {
+                throw new RubyFrameworkInitializationException("Error loading ruby framework", ex);
+            }
+        }
+
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
         {
             using (new SPMonitoredScope("Retrieving IronRuntime"))
@@ -190,11 +173,16 @@ namespace IronSharePoint
                         {
                             runtime = new IronRuntime(targetId);
                             LivingRuntimes[targetId] = runtime;
+                            runtime.LoadRubyFramework();
+                        }
+                        catch (RubyFrameworkInitializationException ex)
+                        {
+                            IronULSLogger.Local.Error(string.Format("Could not initialize ruby framework for SPSite '{0}'", targetId), ex, IronCategoryDiagnosticsId.Core);
                         }
                         catch (Exception ex)
                         {
-                            LogError("Error creating IronRuntime", ex);
-                            throw;
+                            IronULSLogger.Local.Error(string.Format("Could not create IronRuntime for SPSite '{0}'", targetId), ex, IronCategoryDiagnosticsId.Core);
+                            throw new IronRuntimeAccesssException("Cannot access IronRuntime", ex){SiteId = targetId};
                         }
                     }
                 }
@@ -217,20 +205,6 @@ namespace IronSharePoint
                 }
             }
             return runtime != null;
-        }
-
-        public static void LogError(string msg, Exception ex)
-        {
-            IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Core],
-                                                    TraceSeverity.Unexpected,
-                                                    String.Format("{0}\nError:{1}\nStack:{2}", msg, ex.Message,
-                                                                  ex.StackTrace));
-        }
-
-        public static void LogVerbose(string msg)
-        {
-            IronDiagnosticsService.Local.WriteTrace(1, IronDiagnosticsService.Local[IronCategoryDiagnosticsId.Core],
-                                                    TraceSeverity.Verbose, String.Format("{0}.", msg));
         }
     }
 }

@@ -25,6 +25,13 @@ namespace IronSharePoint.Util
             return enumerable.Where(x => !Equals(x, default(T)));
         }
 
+        /// <summary>
+        /// Calls ToString() on all items in the <paramref name="enumerable"/> and joins the strings with the given <paramref name="seperator"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <param name="seperator"></param>
+        /// <returns></returns>
         public static string StringJoin<T>(this IEnumerable<T> enumerable, string seperator = ", ")
         {
             var values = enumerable.Select(x => x == null ? "null" : x.ToString());

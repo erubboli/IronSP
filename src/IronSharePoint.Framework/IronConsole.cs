@@ -54,7 +54,6 @@ namespace IronSharePoint
             catch (Exception ex)
             {
                 result.Error = ex.Message;
-                result.StackTrace = ex.StackTrace;
             }
             sw.Stop();
             result.ExecutionTime = sw.ElapsedMilliseconds;

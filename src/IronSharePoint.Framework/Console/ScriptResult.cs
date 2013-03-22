@@ -8,7 +8,6 @@ namespace IronSharePoint.Console
         public string Output { get; set; }
         public string ReturnValue { get; set; }
         public string Error { get; set; }
-        public string StackTrace { get; set; }
         public long ExecutionTime { get; set; }
 
         public bool HasError

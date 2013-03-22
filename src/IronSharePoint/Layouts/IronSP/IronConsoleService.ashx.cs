@@ -19,8 +19,8 @@ namespace IronSharePoint
 
             try
             {
-                SPSite site = SPContext.Current.Site;
-                SPWeb web = SPContext.Current.Web;
+                var site = SPContext.Current.Site;
+                var web = SPContext.Current.Web;
 
                 if (!web.CurrentUser.IsSiteAdmin)
                 {
@@ -44,8 +44,7 @@ namespace IronSharePoint
             }
             catch (Exception ex)
             {
-                result.Error = ex.Message;
-                result.StackTrace = ex.StackTrace;
+                result.Error = ex.ToString();
             }
             finally
             {
