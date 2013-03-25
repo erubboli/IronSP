@@ -9,7 +9,7 @@ module Hike
     end
 
     def trim path
-      $RUNTIME.platform_adaption_layer.trim_path(path).to_s
+      $RUNTIME.platform_adaptation_layer.trim_path(path.to_s).to_s
     end
   end
 end

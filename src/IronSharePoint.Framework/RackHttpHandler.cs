@@ -11,7 +11,7 @@ using Microsoft.SharePoint;
 
 namespace IronSharePoint
 {
-    class RackHttpHandler : IHttpHandler
+    public class RackHttpHandler : IHttpHandler
     {
         public void ProcessRequest(HttpContext ctx)
         {
@@ -20,7 +20,7 @@ namespace IronSharePoint
 
             var scope = rubyEngine.CreateScope();
             scope.SetVariable("ctx", ctx);
-            rubyEngine.Execute("Rack::Handler::IIS.process(ctx)", scope);
+            rubyEngine.Execute("IronSharePoint.application.rack_handler.process(ctx)", scope);
         }
 
         public bool IsReusable { get { return true; } }

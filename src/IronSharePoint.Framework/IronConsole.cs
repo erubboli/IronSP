@@ -28,6 +28,11 @@ namespace IronSharePoint
             get { return _runtime.GetRubyEngine(); }
         }
 
+        public ExceptionOperations ExceptionOperations
+        {
+            get { return Engine.GetService<ExceptionOperations>(); }
+        }
+
         public bool IsDisposed { get; private set; }
 
         public async Task<ScriptResult> Execute(string script)
@@ -53,7 +58,7 @@ namespace IronSharePoint
             }
             catch (Exception ex)
             {
-                result.Error = ex.Message;
+                result.Error = ExceptionOperations.FormatException(ex);
             }
             sw.Stop();
             result.ExecutionTime = sw.ElapsedMilliseconds;

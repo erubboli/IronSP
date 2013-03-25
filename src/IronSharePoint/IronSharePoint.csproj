@@ -230,7 +230,7 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_logs_outputter.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_memory_outputter.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\rack.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\rack\handlers\iis.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\rack\handlers\iron_sp.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\file_stat.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\hives\directory_hive.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\hives\hive_composite.rb" />
@@ -239,7 +239,6 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_composite_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_view.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\main_http_handler.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\control_view.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\logging.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\parent_attributes.rb" />

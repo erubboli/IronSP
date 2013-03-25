@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web;
 using IronSharePoint.Diagnostics;
 using IronSharePoint.Exceptions;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
-using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint.Utilities;
-using System.Linq;
 
 namespace IronSharePoint
 {
@@ -16,16 +15,15 @@ namespace IronSharePoint
     {
         public const string RubyEngineName = "IronRuby";
 
-        // SiteId -> Runtime
-        private static readonly Dictionary<Guid, IronRuntime> _staticLivingRuntimes =
-            new Dictionary<Guid, IronRuntime>();
-
         private static readonly object _sync = new Object();
 
-        private readonly Guid _siteId;
         private readonly Guid _id;
+        private readonly Guid _siteId;
 
-        public IronULSLogger ULSLogger { get; private set; }
+        static IronRuntime()
+        {
+            LivingRuntimes = new Dictionary<Guid, IronRuntime>();
+        }
 
         private IronRuntime(Guid siteId)
         {
@@ -37,10 +35,11 @@ namespace IronSharePoint
             Console = new IronConsole(ScriptRuntime);
         }
 
-        internal static Dictionary<Guid, IronRuntime> LivingRuntimes
-        {
-            get { return _staticLivingRuntimes; }
-        }
+        public IronULSLogger ULSLogger { get; private set; }
+
+        public Exception InitializationException { get; private set; }
+
+        internal static Dictionary<Guid, IronRuntime> LivingRuntimes { get; private set; }
 
         public IronConsole Console { get; private set; }
         public ScriptRuntime ScriptRuntime { get; private set; }
@@ -116,7 +115,7 @@ namespace IronSharePoint
         {
             using (new SPMonitoredScope("Initializing IronEngine(s)"))
             {
-                SPSecurity.RunWithElevatedPrivileges(PrivilegedInitialize);
+                SPSecurity.RunWithElevatedPrivileges(EnsureGemPath);
 
                 RubyEngine.SetSearchPaths(new List<String>
                     {
@@ -133,30 +132,41 @@ namespace IronSharePoint
             }
         }
 
-        private void PrivilegedInitialize()
+        private void EnsureGemPath()
         {
             string gemDir = Path.Combine(IronConstant.IronRubyRootDirectory, "ruby", "gems", "1.9.1");
 
-            var gemPath = (Environment.GetEnvironmentVariable("GEM_PATH") ?? "").Split(new[]{';'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> gemPath =
+                (Environment.GetEnvironmentVariable("GEM_PATH") ?? "").Split(new[] {';'},
+                                                                             StringSplitOptions.RemoveEmptyEntries)
+                                                                      .ToList();
             if (!gemPath.Contains(gemDir))
             {
                 gemPath.Add(gemDir);
             }
             Environment.SetEnvironmentVariable("GEM_PATH", String.Join(";", gemPath));
-
-            Directory.SetCurrentDirectory(IronConstant.IronRubyRootDirectory);
         }
 
-        private void LoadRubyFramework()
+        private void InitializeRubyFramework()
         {
             try
             {
-                RubyEngine.Execute(@"require 'rubygems'; require 'iron_sharepoint'; require 'application'", ScriptRuntime.Globals);
+                RubyEngine.Execute(@"require 'rubygems'; require 'iron_sharepoint'; require 'application'",
+                                   ScriptRuntime.Globals);
             }
             catch (Exception ex)
             {
+                InitializationException = ex;
                 throw new RubyFrameworkInitializationException("Error loading ruby framework", ex);
             }
+        }
+
+        public static IronRuntime Create(SPSite targetSite)
+        {
+            Guid targetId = targetSite.ID;
+            var runtime = new IronRuntime(targetId);
+            runtime.InitializeRubyFramework();
+            return runtime;
         }
 
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
@@ -171,18 +181,20 @@ namespace IronSharePoint
                     {
                         try
                         {
-                            runtime = new IronRuntime(targetId);
-                            LivingRuntimes[targetId] = runtime;
-                            runtime.LoadRubyFramework();
+                            runtime = Create(targetSite);
                         }
                         catch (RubyFrameworkInitializationException ex)
                         {
-                            IronULSLogger.Local.Error(string.Format("Could not initialize ruby framework for SPSite '{0}'", targetId), ex, IronCategoryDiagnosticsId.Core);
+                            IronULSLogger.Local.Error(
+                                string.Format("Could not initialize ruby framework for SPSite '{0}'", targetId),
+                                ex.InnerException, IronCategoryDiagnosticsId.Core);
                         }
                         catch (Exception ex)
                         {
-                            IronULSLogger.Local.Error(string.Format("Could not create IronRuntime for SPSite '{0}'", targetId), ex, IronCategoryDiagnosticsId.Core);
-                            throw new IronRuntimeAccesssException("Cannot access IronRuntime", ex){SiteId = targetId};
+                            IronULSLogger.Local.Error(
+                                string.Format("Could not create IronRuntime for SPSite '{0}'", targetId), ex,
+                                IronCategoryDiagnosticsId.Core);
+                            throw new IronRuntimeAccesssException("Cannot access IronRuntime", ex) {SiteId = targetId};
                         }
                     }
                 }

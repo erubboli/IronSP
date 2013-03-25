@@ -56,18 +56,28 @@ namespace IronSharePoint.Features.IronSP_WebApp
         private static void RegisterRackHttpHandler(SPWebApplication webApp)
         {
             var httpHandlerType = typeof(RackHttpHandler);
-            var mod = new SPWebConfigModification
+            var rackMod = new SPWebConfigModification
                 {
                     Path = "configuration/system.webServer/handlers",
-                    Name = String.Format("add[@type='{0}']", httpHandlerType.AssemblyQualifiedName),
+                    Name = String.Format("add[@name='RackHttpHandler'][@type='{0}']", httpHandlerType.AssemblyQualifiedName),
                     Sequence = 0,
                     Owner = modificationOwner,
                     Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode,
-                    Value =
-                        String.Format("<add  name='RackHttpHandler' path='_iron/*' verb='GET' type='{0}' />",
-                                      httpHandlerType.AssemblyQualifiedName)
+                    Value = String.Format("<add name='RackHttpHandler' path='_iron/*' verb='*' type='{0}' /> ",
+                        httpHandlerType.AssemblyQualifiedName)
                 };
-            webApp.WebConfigModifications.Add(mod);
+            var assetsMod = new SPWebConfigModification
+            {
+                Path = "configuration/system.webServer/handlers",
+                Name = String.Format("add[@name='AssetsHttpHandler'][@type='{0}']", httpHandlerType.AssemblyQualifiedName),
+                Sequence = 0,
+                Owner = modificationOwner,
+                Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode,
+                Value = String.Format("<add name='AssetsHttpHandler' path='assets/*' verb='*' type='{0}' />",
+                    httpHandlerType.AssemblyQualifiedName)
+            };
+            webApp.WebConfigModifications.Add(rackMod);
+            webApp.WebConfigModifications.Add(assetsMod);
         }
 
         public override void FeatureDeactivating(SPFeatureReceiverProperties properties)

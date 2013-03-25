@@ -1,8 +1,11 @@
 require 'rack'
+require 'iron_sharepoint/mixins/logging'
 
 module Rack
   module Handlers
-    class IIS
+    class IronSP
+      include IronSharePoint::Mixins::Logging
+
       attr_reader :app, :started
 
       alias_method :started?, :started
@@ -10,6 +13,7 @@ module Rack
       def self.run app, options = {}
         @server = self.new app
         @server.start
+        @server
       end
 
       def initialize app
@@ -22,6 +26,7 @@ module Rack
           res = ctx.response
 
           env = build_env req
+          log_env env
 
           result = @app.call env
 
@@ -53,7 +58,7 @@ module Rack
         }
 
         req.server_variables.all_keys.each do |key|
-          env[key] = trim_iron(req.server_variables[key])
+          env[key] = truncate_path(key, req.server_variables[key])
         end
 
         return env
@@ -77,9 +82,31 @@ module Rack
         end
       end
 
-      def trim_iron(s)
-        match = /_iron(\/.*)$/.match s
-        match.nil? ? s : match[1]
+      def truncate_path(key, value)
+        case key
+        when "PATH_INFO"
+          if (match = /\/assets\/.*$/.match(value))
+            match[0]
+          elsif (match = /_iron(\/.*)$/.match(value))
+            match[1]
+          else
+            value
+          end
+        when "SCRIPT_NAME"
+          if value =~ /\/assets\//
+            "/assets"
+          else
+            match = /_iron(\/[^\/]+)/.match(value)
+            match.nil? ? value : match[1]
+          end
+        else
+          value
+        end
+      end
+
+      def log_env env
+        env = env.sort.map {|k,v| "#{k} => #{v}"}.join("\n")
+        logger.debug "Processing rack request:\n#{env}"
       end
     end
   end

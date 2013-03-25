@@ -7,5 +7,7 @@ module Log4r
     def flush
       @outputters.each{|x| x.flush}
     end
+
+    public :puts
   end
 end
