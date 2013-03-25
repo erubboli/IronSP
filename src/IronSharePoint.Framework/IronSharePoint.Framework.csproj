@@ -129,10 +129,8 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RackHttpHandler.cs" />
-    <Compile Include="Util\BlockingQueue.cs" />
     <Compile Include="Util\WrapperControlExtensions.cs" />
     <Compile Include="Util\EnumerableExtensions.cs" />
-    <Compile Include="Util\IBlockingQueue.cs" />
     <Compile Include="Util\ScriptEngineExtensions.cs" />
     <Compile Include="Util\ScriptRuntimeExtensions.cs" />
     <Compile Include="Util\StringExtensions.cs" />
