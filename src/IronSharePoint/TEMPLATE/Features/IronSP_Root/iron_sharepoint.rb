@@ -1,6 +1,5 @@
 require 'active_support/core_ext'
-require 'iron_sharepoint/ext/log4r'
-require 'iron_sharepoint/ext/rack'
+require 'iron_sharepoint/ext/all'
 
 module IronSharePoint
   Dir["iron_sharepoint/**/*.rb"].each do |file|

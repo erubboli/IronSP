@@ -35,12 +35,10 @@ namespace IronSharePoint
             Console = new IronConsole(ScriptRuntime);
         }
 
-        public IronULSLogger ULSLogger { get; private set; }
-
-        public Exception InitializationException { get; private set; }
-
         internal static Dictionary<Guid, IronRuntime> LivingRuntimes { get; private set; }
 
+        public IronULSLogger ULSLogger { get; private set; }
+        public Exception InitializationException { get; private set; }
         public IronConsole Console { get; private set; }
         public ScriptRuntime ScriptRuntime { get; private set; }
 

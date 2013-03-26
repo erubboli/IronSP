@@ -45,7 +45,7 @@ module IronSharePoint
         use Rack::ContentLength
         use Rack::ShowExceptions
 
-        map '/assets' do
+        map '/_assets' do
           run assets
         end
 

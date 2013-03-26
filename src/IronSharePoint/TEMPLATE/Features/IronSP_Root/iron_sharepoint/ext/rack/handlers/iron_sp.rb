@@ -85,7 +85,7 @@ module Rack
       def truncate_path(key, value)
         case key
         when "PATH_INFO"
-          if (match = /\/assets\/.*$/.match(value))
+          if (match = /\/_assets\/.*$/.match(value))
             match[0]
           elsif (match = /_iron(\/.*)$/.match(value))
             match[1]
@@ -93,8 +93,8 @@ module Rack
             value
           end
         when "SCRIPT_NAME"
-          if value =~ /\/assets\//
-            "/assets"
+          if value =~ /\/_assets\//
+            "/_assets"
           else
             match = /_iron(\/[^\/]+)/.match(value)
             match.nil? ? value : match[1]

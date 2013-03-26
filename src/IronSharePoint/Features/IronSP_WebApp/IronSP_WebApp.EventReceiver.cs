@@ -21,7 +21,7 @@ namespace IronSharePoint.Features.IronSP_WebApp
     [Guid("62d325a0-90f5-4b80-a484-4681c4b7de5d")]
     public class IronSP_WebAppEventReceiver : SPFeatureReceiver
     {
-        private static readonly string modificationOwner = IronConstant.GetPrefixed("WebAppEventReceiver");
+        private static readonly string ModificationOwner = IronConstant.GetPrefixed("WebAppEventReceiver");
 
         public override void FeatureActivated(SPFeatureReceiverProperties properties)
         {
@@ -46,7 +46,7 @@ namespace IronSharePoint.Features.IronSP_WebApp
                     Path = "configuration/system.webServer/modules",
                     Name = String.Format("add[@name='IronHttpModule'][@type='{0}']", httpModuleType.AssemblyQualifiedName),
                     Sequence = 0,
-                    Owner = modificationOwner,
+                    Owner = ModificationOwner,
                     Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode,
                     Value = String.Format("<add name='IronHttpModule' type='{0}' />", httpModuleType.AssemblyQualifiedName)
                 };
@@ -61,7 +61,7 @@ namespace IronSharePoint.Features.IronSP_WebApp
                     Path = "configuration/system.webServer/handlers",
                     Name = String.Format("add[@name='RackHttpHandler'][@type='{0}']", httpHandlerType.AssemblyQualifiedName),
                     Sequence = 0,
-                    Owner = modificationOwner,
+                    Owner = ModificationOwner,
                     Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode,
                     Value = String.Format("<add name='RackHttpHandler' path='_iron/*' verb='*' type='{0}' /> ",
                         httpHandlerType.AssemblyQualifiedName)
@@ -71,9 +71,9 @@ namespace IronSharePoint.Features.IronSP_WebApp
                 Path = "configuration/system.webServer/handlers",
                 Name = String.Format("add[@name='AssetsHttpHandler'][@type='{0}']", httpHandlerType.AssemblyQualifiedName),
                 Sequence = 0,
-                Owner = modificationOwner,
+                Owner = ModificationOwner,
                 Type = SPWebConfigModification.SPWebConfigModificationType.EnsureChildNode,
-                Value = String.Format("<add name='AssetsHttpHandler' path='assets/*' verb='*' type='{0}' />",
+                Value = String.Format("<add name='AssetsHttpHandler' path='_assets/*' verb='GET' type='{0}' />",
                     httpHandlerType.AssemblyQualifiedName)
             };
             webApp.WebConfigModifications.Add(rackMod);
@@ -86,7 +86,7 @@ namespace IronSharePoint.Features.IronSP_WebApp
             {
                 var webApplication = properties.Feature.Parent as SPWebApplication;
                 var webMods = webApplication.WebConfigModifications;
-                var modsToRemove = webMods.Where(mod => mod.Owner == modificationOwner).ToList();
+                var modsToRemove = webMods.Where(mod => mod.Owner == ModificationOwner).ToList();
                 modsToRemove.ForEach(m => webMods.Remove(m));
 
                 // Remove it and save the change to the configuration database  
