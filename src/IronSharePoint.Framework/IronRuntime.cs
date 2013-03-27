@@ -179,7 +179,9 @@ namespace IronSharePoint
                     {
                         try
                         {
-                            runtime = Create(targetSite);
+                            runtime = new IronRuntime(targetId);
+                            LivingRuntimes[targetId] = runtime;
+                            runtime.InitializeRubyFramework();
                         }
                         catch (RubyFrameworkInitializationException ex)
                         {
