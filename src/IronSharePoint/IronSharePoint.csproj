@@ -164,6 +164,10 @@
     </Compile>
     <Compile Include="IronConsole\IronConsoleWebPart.cs" />
     <Compile Include="IronPart\IronPart.cs" />
+    <Compile Include="IronWrapperControl.cs" />
+    <Compile Include="IronWrapperUserControl.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Layouts\IronSP\IronConsoleService.ashx.cs">
       <DependentUpon>IronConsoleService.ashx</DependentUpon>
     </Compile>

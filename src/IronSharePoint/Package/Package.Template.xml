@@ -4,7 +4,7 @@
     <Assembly Location="IronSharePoint.dll" DeploymentTarget="GlobalAssemblyCache">
       <SafeControls>
         <SafeControl Assembly="IronSharePoint, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6f476c86fea3892b" Namespace="IronSharePoint" TypeName="*" />
-      </SafeControls>
+</SafeControls>
     </Assembly>
   </Assemblies>
 </Solution>

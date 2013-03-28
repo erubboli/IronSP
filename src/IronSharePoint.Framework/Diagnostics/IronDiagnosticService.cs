@@ -60,6 +60,7 @@ namespace IronSharePoint.Diagnostics
         bool IsRubyException(Exception ex)
         {
             return ex.TargetSite != null
+                   && ex.TargetSite.DeclaringType != null
                    && ex.TargetSite.DeclaringType.FullName.StartsWith("Microsoft.Scripting.Interpreter");
         }
 

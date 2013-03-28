@@ -17,8 +17,21 @@ namespace IronSharePoint
 
         public string TemplatePath { get; set; }
         public string Config { get; set; }
-        public string ControlName { get; set; }
+        private string _controlName;
+
+        public string ControlName
+        {
+            get
+            {
+                return _controlName ?? ScriptClass.Replace(".", "::");
+            }
+            set
+            {
+                _controlName = value;
+            }
+        }
         public Exception InstantiationException { get; set; }
+        public string ScriptClass { get; set; }
 
         protected override void OnInit(EventArgs e)
         {
