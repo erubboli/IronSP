@@ -103,7 +103,6 @@
     <Compile Include="Administration\HiveRegistry.cs" />
     <Compile Include="Administration\HiveSetupCollection.cs" />
     <Compile Include="AssetPipeline\Asset.cs" />
-    <Compile Include="AssetPipeline\AssetConfiguration.cs" />
     <Compile Include="AssetPipeline\AssetScriptHost.cs" />
     <Compile Include="AssetPipeline\AssetRuntime.cs" />
     <Compile Include="Diagnostics\IronCategoryDiagnosticsId.cs" />

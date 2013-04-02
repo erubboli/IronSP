@@ -15,12 +15,10 @@ namespace IronSharePoint.AssetPipeline
             var script = new StringBuilder()
                 .AppendLine("require 'iron_sharepoint'")
                 .AppendLine("require 'sprockets'")
-                .AppendFormat("$ASSET_ENV = Sprockets::Environment.new '{0}'", IronConstant.HiveWorkingDirectory.Replace('\\', '/')).AppendLine();
-            foreach (var path in AssetConfiguration.Local.Paths)
-            {
-                script.AppendFormat("$ASSET_ENV.append_path 'Style Library/{0}'", path).AppendLine();
-            }
-            System.Console.WriteLine(script);
+                .AppendFormat("$ASSET_ENV = Sprockets::Environment.new '{0}'",
+                              IronConstant.HiveWorkingDirectory.Replace('\\', '/')).AppendLine()
+                .AppendLine("$ASSET_ENV.append_path '.'");
+            
             RubyEngine.Execute(script.ToString());
         }
     }
