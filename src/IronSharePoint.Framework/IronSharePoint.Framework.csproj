@@ -100,7 +100,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Administration\HiveSetup.cs" />
-    <Compile Include="Administration\HiveRegistry.cs" />
+    <Compile Include="Administration\IronRegistry.cs" />
+    <Compile Include="Administration\RuntimeSetup.cs" />
+    <Compile Include="Administration\SetupBase.cs" />
+    <Compile Include="Administration\SetupCollection.cs" />
     <Compile Include="AssetPipeline\Asset.cs" />
     <Compile Include="AssetPipeline\AssetRuntime.cs" />
     <Compile Include="Diagnostics\IronCategoryDiagnosticsId.cs" />
