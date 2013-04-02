@@ -8,6 +8,7 @@ using IronSharePoint.Exceptions;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Utilities;
+using IronSharePoint.Util;
 
 namespace IronSharePoint
 {
@@ -200,12 +201,11 @@ namespace IronSharePoint
 
                 RubyEngine.SetSearchPaths(new List<String>
                     {
-                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ironruby"),
-                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\1.9.1"),
-                        IronConstant.HiveWorkingDirectory,
-                        Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\site_ruby\1.9.1")
+                        Path.Combine(IronConstant.IronRubyDirectory, @"ironruby"),
+                        Path.Combine(IronConstant.IronRubyDirectory, @"ruby\1.9.1"),
+                        Path.Combine(IronConstant.IronRubyDirectory, @"ruby\site_ruby\1.9.1"),
+                        IronConstant.HiveWorkingDirectory
                     });
-
 
                 ScriptScope scope = RubyEngine.CreateScope();
                 scope.SetVariable("iron_runtime", this);
@@ -215,17 +215,14 @@ namespace IronSharePoint
 
         private void EnsureGemPath()
         {
-            string gemDir = Path.Combine(IronConstant.IronRubyRootDirectory, "ruby", "gems", "1.9.1");
-
-            List<string> gemPath =
-                (Environment.GetEnvironmentVariable("GEM_PATH") ?? "").Split(new[] {';'},
-                                                                             StringSplitOptions.RemoveEmptyEntries)
-                                                                      .ToList();
-            if (!gemPath.Contains(gemDir))
+            var gemPaths = new List<string>();
+            var gemPathEnv = Environment.GetEnvironmentVariable("GEM_PATH");
+            if (!string.IsNullOrWhiteSpace(gemPathEnv))
             {
-                gemPath.Add(gemDir);
+                gemPaths.AddRange(gemPathEnv.Split(new[]{";"}, StringSplitOptions.RemoveEmptyEntries));
             }
-            Environment.SetEnvironmentVariable("GEM_PATH", String.Join(";", gemPath));
+            gemPaths.Add(IronConstant.GemsDirectory);
+            Environment.SetEnvironmentVariable("GEM_PATH", gemPaths.Distinct().StringJoin(";"));
         }
 
         protected virtual void Initialize()
