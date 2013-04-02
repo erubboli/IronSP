@@ -81,7 +81,7 @@ namespace IronSharePoint.Administration
         /// <param name="site"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public HiveSetupCollection Resolve(SPSite site)
+        public SetupCollection<HiveSetup> Resolve(SPSite site)
         {
             return Resolve(site.ID);
         }
@@ -92,9 +92,9 @@ namespace IronSharePoint.Administration
         /// <param name="siteId"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public HiveSetupCollection Resolve(Guid siteId)
+        public SetupCollection<HiveSetup> Resolve(Guid siteId)
         {
-            HiveSetupCollection hiveSetups;
+            SetupCollection<HiveSetup> hiveSetups;
             if (!TryResolve(siteId, out hiveSetups))
             {
                 throw new ArgumentOutOfRangeException("siteId", siteId, "No mapped hive setups found for SPSite");
@@ -108,7 +108,7 @@ namespace IronSharePoint.Administration
         /// <param name="site"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public bool TryResolve(SPSite site, out HiveSetupCollection hiveSetups)
+        public bool TryResolve(SPSite site, out SetupCollection<HiveSetup> hiveSetups)
         {
             return TryResolve(site.ID, out hiveSetups);
         }
@@ -120,10 +120,10 @@ namespace IronSharePoint.Administration
         /// <param name="siteId"></param>
         /// <param name="hiveSetups"></param>
         /// <returns></returns>
-        public bool TryResolve(Guid siteId, out HiveSetupCollection hiveSetups)
+        public bool TryResolve(Guid siteId, out SetupCollection<HiveSetup> hiveSetups)
         {
-            hiveSetups = new HiveSetupCollection(){Registry = this};
-            HiveSetupCollection localSetups = hiveSetups; // Needed b/c of delegate
+            hiveSetups = new SetupCollection<HiveSetup>();
+            SetupCollection<HiveSetup> localSetups = hiveSetups; // Needed b/c of delegate
             SPSecurity.RunWithElevatedPrivileges(() =>
                 {
                     using (var site = new SPSite(siteId))
@@ -141,13 +141,13 @@ namespace IronSharePoint.Administration
                             List<HiveSetup> idSetups;
                             if (_mappedHives.TryGetValue(id, out idSetups))
                             {
-                                localSetups.AddRange(idSetups);
+                                //localSetups.AddRange(idSetups);
                             }
                         }
                     }
                 });
 
-            return hiveSetups.Count > 0;
+            return hiveSetups.Any();
         }
 
         private static Guid GetTargetId(object target)

@@ -101,9 +101,7 @@
   <ItemGroup>
     <Compile Include="Administration\HiveSetup.cs" />
     <Compile Include="Administration\HiveRegistry.cs" />
-    <Compile Include="Administration\HiveSetupCollection.cs" />
     <Compile Include="AssetPipeline\Asset.cs" />
-    <Compile Include="AssetPipeline\AssetScriptHost.cs" />
     <Compile Include="AssetPipeline\AssetRuntime.cs" />
     <Compile Include="Diagnostics\IronCategoryDiagnosticsId.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
@@ -111,6 +109,7 @@
     <Compile Include="Hives\HiveComposite.cs" />
     <Compile Include="Hives\DirectoryHive.cs" />
     <Compile Include="Hives\SPDocumentHive.cs" />
+    <Compile Include="IronRuntimeBase.cs" />
     <Compile Include="IWrapperControl.cs" />
     <Compile Include="IHive.cs" />
     <Compile Include="IIronControl.cs" />

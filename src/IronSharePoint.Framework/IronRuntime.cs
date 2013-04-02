@@ -1,29 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
+using IronSharePoint.Administration;
 using IronSharePoint.Diagnostics;
 using IronSharePoint.Exceptions;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Utilities;
-using IronSharePoint.Util;
 
 namespace IronSharePoint
 {
-    public class IronRuntime : IronRuntime<IronScriptHost>
+    public class IronRuntime : IronRuntimeBase
     {
         private static readonly object Lock = new Object();
+        private readonly string _name;
+        private readonly HiveSetup[] _hiveSetups;
+        private readonly string[] _gemPaths;
 
         static IronRuntime()
         {
             LivingRuntimes = new Dictionary<Guid, IronRuntime>();
         }
 
-        public IronRuntime(Guid siteId)
-            : base(siteId, new object[] {siteId})
+        public IronRuntime(RuntimeSetup runtimeSetup)
+            : base(runtimeSetup.Id)
         {
+            _name = runtimeSetup.DisplayName;
+            _hiveSetups = runtimeSetup.Hives.ToArray();
+            _gemPaths = runtimeSetup.GemPaths.ToArray();
         }
 
         internal static Dictionary<Guid, IronRuntime> LivingRuntimes { get; private set; }
@@ -34,20 +40,21 @@ namespace IronSharePoint
             {
                 Guid targetId = targetSite.ID;
                 IronRuntime runtime;
-                if (!TryGetExistingRuntime(targetId, out runtime))
+                if (!TryGetLivingRuntime(targetId, out runtime))
                 {
                     using (new SPMonitoredScope("Creating IronRuntime"))
                     {
                         try
                         {
-                            runtime = new IronRuntime(targetId);
+                            var runtimeSetup = IronRegistry.Local.ResolveRuntime(targetSite);
+                            runtime = new IronRuntime(runtimeSetup);
+                            runtime.Initialize();
                         }
                         catch (Exception ex)
                         {
-                            IronULSLogger.Local.Error(
-                                string.Format("Could not create IronRuntime for SPSite '{0}'", targetId), ex,
-                                IronCategoryDiagnosticsId.Core);
-                            throw new IronRuntimeAccesssException("Cannot access IronRuntime", ex) {SiteId = targetId};
+                            var message = string.Format("Could not create IronRuntime for SPSite '{0}'", targetId);
+                            IronULSLogger.Local.Error(message, ex,IronCategoryDiagnosticsId.Core);
+                            throw new IronRuntimeAccesssException(message, ex) {SiteId = targetId};
                         }
                         finally
                         {
@@ -61,7 +68,7 @@ namespace IronSharePoint
             }
         }
 
-        private static bool TryGetExistingRuntime(Guid targetId, out IronRuntime runtime)
+        private static bool TryGetLivingRuntime(Guid targetId, out IronRuntime runtime)
         {
             if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
             {
@@ -76,158 +83,43 @@ namespace IronSharePoint
             return runtime != null;
         }
 
+        public override string Name
+        {
+            get { return _name; }
+        }
+
         public override void Dispose()
         {
             base.Dispose();
-            LivingRuntimes.Remove(SiteId);
-        }
+            var toRemove = LivingRuntimes
+                .Where(x => x.Value.Id == Id)
+                .Select(x => x.Key)
+                .ToArray();
 
-        protected override void Initialize()
-        {
-            base.Initialize();
-            RubyEngine.Execute(@"require 'rubygems'; require 'iron_sharepoint'; require 'application'",
-                               ScriptRuntime.Globals);
-        }
-    }
-
-    public class IronRuntime<TScriptHost> : IDisposable
-        where TScriptHost : IronScriptHostBase
-    {
-        public const string RubyEngineName = "IronRuby";
-
-        private readonly object[] _hostArguments;
-        private readonly Guid _id;
-        private readonly Guid _siteId;
-
-        protected IronRuntime(Guid siteId, object[] hostArguments)
-        {
-            _siteId = siteId;
-            _id = Guid.NewGuid();
-            _hostArguments = hostArguments;
-
-            ULSLogger = new IronULSLogger();
-
-            CreateScriptRuntime();
-            Console = new IronConsole(ScriptRuntime);
-            try
+            foreach (var guid in toRemove)
             {
-                Initialize();
-            }
-            catch (Exception ex)
-            {
-                InitializationException = ex;
-                IronULSLogger.Local.Error(
-                    string.Format("Could not initialize ruby framework for SPSite '{0}'", SiteId),
-                    ex, IronCategoryDiagnosticsId.Core);
+                LivingRuntimes.Remove(guid);
             }
         }
 
-        public IronULSLogger ULSLogger { get; private set; }
-        public Exception InitializationException { get; protected set; }
-        public IronConsole Console { get; private set; }
-        public ScriptRuntime ScriptRuntime { get; private set; }
-
-        public TScriptHost ScriptHost
+        protected override IEnumerable<HiveSetup> GetHiveSetups()
         {
-            get { return (TScriptHost) ScriptRuntime.Host; }
+            return _hiveSetups;
         }
 
-        public IronPlatformAdaptationLayer PlatformAdaptationLayer
+        protected override IEnumerable<string> GetGemPaths()
         {
-            get { return ScriptHost.IronPlatformAdaptationLayer; }
+            return _gemPaths;
         }
 
-        public ScriptEngine RubyEngine
+        protected override void InitializeScriptEngine(ScriptEngine scriptEngine)
         {
-            get { return ScriptRuntime.GetEngine(RubyEngineName); }
-        }
+            base.InitializeScriptEngine(scriptEngine);
+            var script = new StringBuilder()
+                .AppendLine("require 'iron_sharepoint'")
+                .AppendLine("require 'application' if File.exists? 'application.rb'");
 
-        public IHive Hive
-        {
-            get { return ScriptHost.Hive; }
-        }
-
-        public bool IsDisposed { get; private set; }
-
-        public Guid SiteId
-        {
-            get { return _siteId; }
-        }
-
-        public Guid Id
-        {
-            get { return _id; }
-        }
-
-        #region IDisposable Members
-
-        public virtual void Dispose()
-        {
-            if (!IsDisposed)
-            {
-                IsDisposed = true;
-                if (ScriptHost != null) ScriptHost.Dispose();
-            }
-        }
-
-        #endregion
-
-        private void CreateScriptRuntime()
-        {
-            var setup = new ScriptRuntimeSetup();
-            var languageSetup = new LanguageSetup(
-                "IronRuby.Runtime.RubyContext, IronRuby, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1",
-                RubyEngineName,
-                new[] {"IronRuby", "Ruby", "rb"},
-                new[] {".rb"});
-            setup.LanguageSetups.Add(languageSetup);
-            setup.HostType = typeof (TScriptHost);
-            setup.HostArguments = _hostArguments;
-            setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Debug;
-
-            ScriptRuntime = new ScriptRuntime(setup);
-            ScriptRuntime.LoadAssembly(typeof (IronRuntime).Assembly); // IronSharePoint
-            ScriptRuntime.LoadAssembly(typeof (SPSite).Assembly); // Microsoft.SharePoint
-            ScriptRuntime.LoadAssembly(typeof (IHttpHandler).Assembly); // System.Web
-
-            InitializeScriptEngines();
-        }
-
-        private void InitializeScriptEngines()
-        {
-            using (new SPMonitoredScope("Initializing IronEngine(s)"))
-            {
-                SPSecurity.RunWithElevatedPrivileges(EnsureGemPath);
-
-                RubyEngine.SetSearchPaths(new List<String>
-                    {
-                        Path.Combine(IronConstant.IronRubyDirectory, @"ironruby"),
-                        Path.Combine(IronConstant.IronRubyDirectory, @"ruby\1.9.1"),
-                        Path.Combine(IronConstant.IronRubyDirectory, @"ruby\site_ruby\1.9.1"),
-                        IronConstant.HiveWorkingDirectory
-                    });
-
-                ScriptScope scope = RubyEngine.CreateScope();
-                scope.SetVariable("iron_runtime", this);
-                RubyEngine.Execute("$RUNTIME = iron_runtime", scope);
-            }
-        }
-
-        private void EnsureGemPath()
-        {
-            var gemPaths = new List<string>();
-            var gemPathEnv = Environment.GetEnvironmentVariable("GEM_PATH");
-            if (!string.IsNullOrWhiteSpace(gemPathEnv))
-            {
-                gemPaths.AddRange(gemPathEnv.Split(new[]{";"}, StringSplitOptions.RemoveEmptyEntries));
-            }
-            gemPaths.Add(IronConstant.GemsDirectory);
-            Environment.SetEnvironmentVariable("GEM_PATH", gemPaths.Distinct().StringJoin(";"));
-        }
-
-        protected virtual void Initialize()
-        {
-            RubyEngine.Execute(@"require 'rubygems'");
+            scriptEngine.Execute(script.ToString());
         }
     }
 }
