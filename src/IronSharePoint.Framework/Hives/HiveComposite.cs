@@ -67,7 +67,7 @@ namespace IronSharePoint.Hives
         public string GetFullPath(string path)
         {
             var handler = FindHandler(path);
-            if (handler == null) return Path.GetFullPath(path);
+            if (handler == null) return null;
 
             return handler.GetFullPath(path);
         }

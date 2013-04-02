@@ -1,49 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using IronSharePoint.Administration;
 using IronSharePoint.Hives;
 using IronSharePoint.Util;
 using Microsoft.Scripting.Hosting;
-using Microsoft.SharePoint;
-using Microsoft.SharePoint.Administration;
 
 namespace IronSharePoint
 {
-    public class IronScriptHost : ScriptHost, IDisposable
+    public abstract class IronScriptHostBase : ScriptHost, IDisposable
     {
-        private readonly IronPlatformAdaptationLayer _ironPlatformAdaptationLayer;
-        private readonly Guid _siteId;
-        private readonly HiveComposite _hive;
-
-        public event EventHandler<SPItemEventProperties> ItemAdded;
-        public event EventHandler<SPItemEventProperties> ItemUpdated;
-        public event EventHandler<SPItemEventProperties> ItemDeleted;
-        public event EventHandler<SPItemEventProperties> ItemFileMoved;
-        public event EventHandler<SPItemEventProperties> ItemCheckedIn;
-        public event EventHandler<SPItemEventProperties> ItemAdding;
-        public event EventHandler<SPItemEventProperties> ItemUpdating;
-        public event EventHandler<SPItemEventProperties> ItemDeleting;
-        public event EventHandler<SPItemEventProperties> ItemFileMoving;
-        public event EventHandler<SPItemEventProperties> ItemCheckingIn;
-        public event EventHandler<SPItemEventProperties> ItemCheckingOut;
-
-        public HiveComposite Hive
-        {
-            get { return _hive; }
-        }
-
-        public IronScriptHost(Guid siteId)
-        {
-            _siteId = siteId;
-            _hive = CreateHive();
-            _ironPlatformAdaptationLayer = new IronPlatformAdaptationLayer(Hive);
-        }
+        private readonly Lazy<IHive> _hive;
+        private readonly Lazy<IronPlatformAdaptationLayer> _ironPlatformAdaptationLayer;
 
         public IronPlatformAdaptationLayer IronPlatformAdaptationLayer
         {
-            get { return _ironPlatformAdaptationLayer; }
+            get { return _ironPlatformAdaptationLayer.Value; }
         }
 
         public override Microsoft.Scripting.PlatformAdaptationLayer PlatformAdaptationLayer
@@ -51,7 +23,51 @@ namespace IronSharePoint
             get { return IronPlatformAdaptationLayer; }
         }
 
-        private HiveComposite CreateHive()
+        public IHive Hive
+        {
+            get { return _hive.Value; }
+        }
+
+        protected IronScriptHostBase()
+        {
+            _hive = new Lazy<IHive>(CreateHive);
+            _ironPlatformAdaptationLayer =
+                new Lazy<IronPlatformAdaptationLayer>(() => new IronPlatformAdaptationLayer(Hive));
+        }
+
+        protected abstract IHive CreateHive();
+
+        public void Dispose()
+        {
+            if (_hive.IsValueCreated)
+            {
+                Hive.Dispose();
+            }
+        }
+    }
+
+    public class IronScriptHost : IronScriptHostBase
+    {
+        private readonly Guid _siteId;
+
+        //public event EventHandler<SPItemEventProperties> ItemAdded;
+        //public event EventHandler<SPItemEventProperties> ItemUpdated;
+        //public event EventHandler<SPItemEventProperties> ItemDeleted;
+        //public event EventHandler<SPItemEventProperties> ItemFileMoved;
+        //public event EventHandler<SPItemEventProperties> ItemCheckedIn;
+        //public event EventHandler<SPItemEventProperties> ItemAdding;
+        //public event EventHandler<SPItemEventProperties> ItemUpdating;
+        //public event EventHandler<SPItemEventProperties> ItemDeleting;
+        //public event EventHandler<SPItemEventProperties> ItemFileMoving;
+        //public event EventHandler<SPItemEventProperties> ItemCheckingIn;
+        //public event EventHandler<SPItemEventProperties> ItemCheckingOut;
+
+        public IronScriptHost(Guid siteId)
+        {
+            _siteId = siteId;
+        }
+
+        protected override IHive CreateHive()
         {
             var hives = GetHiveSetups().Select(x =>
                 {
@@ -64,7 +80,6 @@ namespace IronSharePoint
                 }).Compact().ToArray();
 
             var composite = new HiveComposite(hives);
-            composite.Append(new SystemHive());
 
             return composite;
         }
@@ -80,12 +95,5 @@ namespace IronSharePoint
             return setups;
         }
 
-        public void Dispose()
-        {
-            if (_hive != null)
-            {
-                _hive.Dispose();
-            }
-        }
     }
 }

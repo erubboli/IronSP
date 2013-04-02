@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <!-- Parent ContentType: Item (0x01) -->
+  <ContentType ID="0x01004076C89F19854074B023E1DF178902A7" Name="Iron Asset" Group="IronSP" Description="Item processed by the Iron SharePoint Asset Pipeline" Inherits="TRUE" Version="0">
+    <FieldRefs>
+      <FieldRef ID="{FD08839D-BBEE-41E9-AEE9-DCD4A2E187DA}" DisplayName="Error" Name="IronErrorFlag" ReadOnly="TRUE" />
+      <FieldRef ID="{C1183929-9B30-4773-B3B4-F3098079AAA6}" DisplayName="Output" Name="IronOutput" ReadOnly="TRUE" />
+    </FieldRefs>
+  </ContentType>
+</Elements>

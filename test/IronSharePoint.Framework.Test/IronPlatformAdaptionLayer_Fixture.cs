@@ -33,7 +33,7 @@ namespace IronSharePoint.Framework.Test
         {
             Sut = new IronPlatformAdaptationLayer(null);
 
-            string path = IronConstant.FakeHiveDirectory + "foo";
+            string path = IronConstant.HiveWorkingDirectory + "foo";
             Sut.TrimPath(path).Should().Be("foo");
             Sut.TrimPath(path.Replace('\\','/')).Should().Be("foo");
         }

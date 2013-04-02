@@ -24,14 +24,14 @@ namespace IronSharePoint
         bool DirectoryExists(string path);
 
         /// <summary>
-        /// Opens a stream of the file at <paramref name="path"/> with write permissions
+        /// Opens a stream of the file at <paramref name="path"/> with read permissions
         /// </summary>
         /// <param name="path"></param>
         /// <returns>A stream of the file with write permissions</returns>
         Stream OpenInputFileStream(string path);
 
         /// <summary>
-        /// Opens a stream of the file at <paramref name="path"/> with read permissions.
+        /// Opens or creates a stream of the file at <paramref name="path"/> with write permissions.
         /// </summary>
         /// <param name="path"></param>
         /// <returns>A stream of the file with read permissions</returns>

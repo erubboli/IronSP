@@ -11,45 +11,129 @@ using Microsoft.SharePoint.Utilities;
 
 namespace IronSharePoint
 {
-    public class IronRuntime : IDisposable
+    public class IronRuntime : IronRuntime<IronScriptHost>
     {
-        public const string RubyEngineName = "IronRuby";
-
-        private static readonly object _sync = new Object();
-
-        private readonly Guid _id;
-        private readonly Guid _siteId;
+        private static readonly object Lock = new Object();
 
         static IronRuntime()
         {
             LivingRuntimes = new Dictionary<Guid, IronRuntime>();
         }
 
-        private IronRuntime(Guid siteId)
+        public IronRuntime(Guid siteId)
+            : base(siteId, new object[] {siteId})
         {
-            _siteId = siteId;
-            _id = Guid.NewGuid();
-            ULSLogger = new IronULSLogger();
-
-            CreateScriptRuntime();
-            Console = new IronConsole(ScriptRuntime);
         }
 
         internal static Dictionary<Guid, IronRuntime> LivingRuntimes { get; private set; }
 
+        public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
+        {
+            using (new SPMonitoredScope("Retrieving IronRuntime"))
+            {
+                Guid targetId = targetSite.ID;
+                IronRuntime runtime;
+                if (!TryGetExistingRuntime(targetId, out runtime))
+                {
+                    using (new SPMonitoredScope("Creating IronRuntime"))
+                    {
+                        try
+                        {
+                            runtime = new IronRuntime(targetId);
+                        }
+                        catch (Exception ex)
+                        {
+                            IronULSLogger.Local.Error(
+                                string.Format("Could not create IronRuntime for SPSite '{0}'", targetId), ex,
+                                IronCategoryDiagnosticsId.Core);
+                            throw new IronRuntimeAccesssException("Cannot access IronRuntime", ex) {SiteId = targetId};
+                        }
+                        finally
+                        {
+                            LivingRuntimes[targetId] = runtime;
+                        }
+                    }
+                }
+                if (HttpContext.Current != null) HttpContext.Current.Items[IronConstant.IronRuntimeKey] = runtime;
+
+                return runtime;
+            }
+        }
+
+        private static bool TryGetExistingRuntime(Guid targetId, out IronRuntime runtime)
+        {
+            if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
+            {
+                lock (Lock)
+                {
+                    if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
+                    {
+                        runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
+                    }
+                }
+            }
+            return runtime != null;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            LivingRuntimes.Remove(SiteId);
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+            RubyEngine.Execute(@"require 'rubygems'; require 'iron_sharepoint'; require 'application'",
+                               ScriptRuntime.Globals);
+        }
+    }
+
+    public class IronRuntime<TScriptHost> : IDisposable
+        where TScriptHost : IronScriptHostBase
+    {
+        public const string RubyEngineName = "IronRuby";
+
+        private readonly object[] _hostArguments;
+        private readonly Guid _id;
+        private readonly Guid _siteId;
+
+        protected IronRuntime(Guid siteId, object[] hostArguments)
+        {
+            _siteId = siteId;
+            _id = Guid.NewGuid();
+            _hostArguments = hostArguments;
+
+            ULSLogger = new IronULSLogger();
+
+            CreateScriptRuntime();
+            Console = new IronConsole(ScriptRuntime);
+            try
+            {
+                Initialize();
+            }
+            catch (Exception ex)
+            {
+                InitializationException = ex;
+                IronULSLogger.Local.Error(
+                    string.Format("Could not initialize ruby framework for SPSite '{0}'", SiteId),
+                    ex, IronCategoryDiagnosticsId.Core);
+            }
+        }
+
         public IronULSLogger ULSLogger { get; private set; }
-        public Exception InitializationException { get; private set; }
+        public Exception InitializationException { get; protected set; }
         public IronConsole Console { get; private set; }
         public ScriptRuntime ScriptRuntime { get; private set; }
 
-        public IronScriptHost ScripHost
+        public TScriptHost ScriptHost
         {
-            get { return (IronScriptHost) ScriptRuntime.Host; }
+            get { return (TScriptHost) ScriptRuntime.Host; }
         }
 
         public IronPlatformAdaptationLayer PlatformAdaptationLayer
         {
-            get { return ScripHost.IronPlatformAdaptationLayer; }
+            get { return ScriptHost.IronPlatformAdaptationLayer; }
         }
 
         public ScriptEngine RubyEngine
@@ -59,7 +143,7 @@ namespace IronSharePoint
 
         public IHive Hive
         {
-            get { return ScripHost.Hive; }
+            get { return ScriptHost.Hive; }
         }
 
         public bool IsDisposed { get; private set; }
@@ -76,13 +160,12 @@ namespace IronSharePoint
 
         #region IDisposable Members
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (!IsDisposed)
             {
                 IsDisposed = true;
-                ScripHost.Dispose();
-                LivingRuntimes.Remove(_siteId);
+                if (ScriptHost != null) ScriptHost.Dispose();
             }
         }
 
@@ -97,8 +180,8 @@ namespace IronSharePoint
                 new[] {"IronRuby", "Ruby", "rb"},
                 new[] {".rb"});
             setup.LanguageSetups.Add(languageSetup);
-            setup.HostType = typeof (IronScriptHost);
-            setup.HostArguments = new object[] {_siteId};
+            setup.HostType = typeof (TScriptHost);
+            setup.HostArguments = _hostArguments;
             setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Debug;
 
             ScriptRuntime = new ScriptRuntime(setup);
@@ -119,7 +202,7 @@ namespace IronSharePoint
                     {
                         Path.Combine(IronConstant.IronRubyRootDirectory, @"ironruby"),
                         Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\1.9.1"),
-                        IronConstant.FakeHiveDirectory,
+                        IronConstant.HiveWorkingDirectory,
                         Path.Combine(IronConstant.IronRubyRootDirectory, @"ruby\site_ruby\1.9.1")
                     });
 
@@ -145,78 +228,9 @@ namespace IronSharePoint
             Environment.SetEnvironmentVariable("GEM_PATH", String.Join(";", gemPath));
         }
 
-        private void InitializeRubyFramework()
+        protected virtual void Initialize()
         {
-            try
-            {
-                RubyEngine.Execute(@"require 'rubygems'; require 'iron_sharepoint'; require 'application'",
-                                   ScriptRuntime.Globals);
-            }
-            catch (Exception ex)
-            {
-                InitializationException = ex;
-                throw new RubyFrameworkInitializationException("Error loading ruby framework", ex);
-            }
-        }
-
-        public static IronRuntime Create(SPSite targetSite)
-        {
-            Guid targetId = targetSite.ID;
-            var runtime = new IronRuntime(targetId);
-            runtime.InitializeRubyFramework();
-            return runtime;
-        }
-
-        public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
-        {
-            using (new SPMonitoredScope("Retrieving IronRuntime"))
-            {
-                Guid targetId = targetSite.ID;
-                IronRuntime runtime;
-                if (!TryGetExistingRuntime(targetId, out runtime))
-                {
-                    using (new SPMonitoredScope("Creating IronRuntime"))
-                    {
-                        try
-                        {
-                            runtime = new IronRuntime(targetId);
-                            LivingRuntimes[targetId] = runtime;
-                            runtime.InitializeRubyFramework();
-                        }
-                        catch (RubyFrameworkInitializationException ex)
-                        {
-                            IronULSLogger.Local.Error(
-                                string.Format("Could not initialize ruby framework for SPSite '{0}'", targetId),
-                                ex.InnerException, IronCategoryDiagnosticsId.Core);
-                        }
-                        catch (Exception ex)
-                        {
-                            IronULSLogger.Local.Error(
-                                string.Format("Could not create IronRuntime for SPSite '{0}'", targetId), ex,
-                                IronCategoryDiagnosticsId.Core);
-                            throw new IronRuntimeAccesssException("Cannot access IronRuntime", ex) {SiteId = targetId};
-                        }
-                    }
-                }
-                if (HttpContext.Current != null) HttpContext.Current.Items[IronConstant.IronRuntimeKey] = runtime;
-
-                return runtime;
-            }
-        }
-
-        private static bool TryGetExistingRuntime(Guid targetId, out IronRuntime runtime)
-        {
-            if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
-            {
-                lock (_sync)
-                {
-                    if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
-                    {
-                        runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
-                    }
-                }
-            }
-            return runtime != null;
+            RubyEngine.Execute(@"require 'rubygems'");
         }
     }
 }

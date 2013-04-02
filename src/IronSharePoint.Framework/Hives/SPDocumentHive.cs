@@ -21,11 +21,17 @@ namespace IronSharePoint.Hives
         private readonly string _hiveLibraryUrl;
 
         private readonly ThreadLocal<SPSite> _site;
+        private readonly ThreadLocal<SPWeb> _web;
         private readonly ThreadLocal<SPDocumentLibrary> _documentLibrary;
 
         public SPSite Site
         {
             get { return _site.Value; }
+        }
+
+        public SPWeb Web
+        {
+            get { return _web.Value; }
         }
 
         public SPDocumentLibrary DocumentLibrary
@@ -57,9 +63,9 @@ namespace IronSharePoint.Hives
             _hiveLibraryPath = hiveLibraryPath;
 
             _site = new ThreadLocal<SPSite>(() => new SPSite(_siteId, SPUserToken.SystemAccount), true);
-            _documentLibrary = new ThreadLocal<SPDocumentLibrary>(() => Site.RootWeb.GetFolder(_hiveLibraryPath).DocumentLibrary);
+            _web = new ThreadLocal<SPWeb>(() => Site.RootWeb);
+            _documentLibrary = new ThreadLocal<SPDocumentLibrary>(() => Web.GetFolder(_hiveLibraryPath).DocumentLibrary);
             _hiveLibraryUrl = CombinePath(Site.RootWeb.Url, _hiveLibraryPath);
-
             Reset();
         }
 
@@ -210,6 +216,7 @@ namespace IronSharePoint.Hives
             {
                 spSite.Dispose();
                 _site.Dispose();
+                _web.Dispose();
             }
             _documentLibrary.Dispose();
         }

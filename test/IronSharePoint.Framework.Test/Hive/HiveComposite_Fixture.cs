@@ -128,13 +128,13 @@ namespace IronSharePoint.Framework.Test.Hive
         }
 
         [Test]
-        public void GetFullPath_WhenPathNotInAnyHive_DefaultsToSystemMethod()
+        public void GetFullPath_WhenPathNotInAnyHive_ReturnsNull()
         {
             var path = "foo.txt";
             _hiveMock1.Setup(x => x.FileExists(path)).Returns(false);
             Sut = new HiveComposite(Hive1);
 
-            Sut.GetFullPath(path).Should().Be(Path.GetFullPath(path));
+            Sut.GetFullPath(path).Should().Be(null);
         }
 
         [Test]
@@ -286,6 +286,12 @@ namespace IronSharePoint.Framework.Test.Hive
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             _hiveMock1.VerifyAll();
+        }
+
+        [Test]
+        public void TEST()
+        {
+            System.Console.WriteLine(Path.IsPathRooted("foo.txt"));
         }
     }
 }

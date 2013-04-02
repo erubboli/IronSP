@@ -88,6 +88,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Web.Helpers\v4.0_2.0.0.0__31bf3856ad364e35\System.Web.Helpers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -98,10 +102,13 @@
     <Compile Include="Administration\HiveSetup.cs" />
     <Compile Include="Administration\HiveRegistry.cs" />
     <Compile Include="Administration\HiveSetupCollection.cs" />
+    <Compile Include="AssetPipeline\Asset.cs" />
+    <Compile Include="AssetPipeline\AssetConfiguration.cs" />
+    <Compile Include="AssetPipeline\AssetScriptHost.cs" />
+    <Compile Include="AssetPipeline\AssetRuntime.cs" />
     <Compile Include="Diagnostics\IronCategoryDiagnosticsId.cs" />
     <Compile Include="Diagnostics\IronDiagnosticService.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="Hives\SystemHive.cs" />
     <Compile Include="Hives\HiveComposite.cs" />
     <Compile Include="Hives\DirectoryHive.cs" />
     <Compile Include="Hives\SPDocumentHive.cs" />

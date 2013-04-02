@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Permissions;
+using IronSharePoint.Hives;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Security;
 using Microsoft.SharePoint.Utilities;

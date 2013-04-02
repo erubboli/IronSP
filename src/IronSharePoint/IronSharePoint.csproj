@@ -145,6 +145,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventReceivers\AssetPipelineEventReceiver.cs" />
+    <Compile Include="Features\IronSP_AssetPipeline\IronSP_AssetPipeline.EventReceiver.cs">
+      <DependentUpon>IronSP_AssetPipeline.feature</DependentUpon>
+    </Compile>
     <Compile Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.EventReceiver.cs">
       <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
     </Compile>
@@ -171,8 +175,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="ContentTypes\IronAsset\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{f6ee455d-eda4-4a88-aed8-a1aa08e72ba2}</SharePointProjectItemId>
+    </None>
     <None Include="DelegateControls\IronHiveScriptControl\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{f25008d4-c714-4b53-9241-da106544379a}</SharePointProjectItemId>
+    </None>
+    <None Include="Features\IronSP_AssetPipeline\IronSP_AssetPipeline.feature">
+      <FeatureId>{0ca1e89b-a958-4a03-a907-0dff2c0f53d8}</FeatureId>
     </None>
     <None Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.feature">
       <FeatureId>{cea2b887-e17d-4dbe-a477-4f7c8bdf03be}</FeatureId>
@@ -239,12 +249,14 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_composite_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_view.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\json\parser.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\control_view.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\logging.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\parent_attributes.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\short_term_memory.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\sp_context_accessors.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\view_helpers.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\json.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\object.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\regexp.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\string.rb" />
@@ -281,7 +293,11 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ContentTypes\IronAsset\Elements.xml" />
     <Content Include="DelegateControls\IronHiveScriptControl\Elements.xml" />
+    <Content Include="Features\IronSP_AssetPipeline\IronSP_AssetPipeline.Template.xml">
+      <DependentUpon>IronSP_AssetPipeline.feature</DependentUpon>
+    </Content>
     <Content Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.Template.xml">
       <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
     </Content>

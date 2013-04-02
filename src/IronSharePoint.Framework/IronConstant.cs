@@ -20,7 +20,7 @@ namespace IronSharePoint
         public const string IronRuntimeKey = IronPrefix + "Runtime";
 
         public static string IronSPRootDirectory =
-            @"C:\Program Files\Common Files\microsoft shared\Web Server Extensions\14\TEMPLATE\FEATURES\IronSP_Root";
+            @"C:\Program Files\Common Files\microsoft shared\Web Server Extensions\15\TEMPLATE\FEATURES\IronSP_Root";
         public static string IronRubyRootDirectory =
             @"C:\Program Files\Common Files\microsoft shared\Web Server Extensions\15\TEMPLATE\FEATURES\IronSP_IronRuby";
 
@@ -52,7 +52,7 @@ namespace IronSharePoint
             }
         }
 
-        public static string FakeHiveDirectory
+        public static string HiveWorkingDirectory
         {
             get
             {

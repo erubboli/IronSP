@@ -20,6 +20,7 @@ namespace IronSharePoint.Framework.Test.IronScriptHost_Fixture
         }
 
         public IronScriptHost Sut;
+        public HiveComposite Hive { get { return Sut.Hive as HiveComposite; } }
         public HiveRegistry HiveRegistry;
         public Guid SiteId;
 
@@ -41,12 +42,11 @@ namespace IronSharePoint.Framework.Test.IronScriptHost_Fixture
         }
 
         [Test]
-        public void Hive_ContainsOnlySystemHive()
+        public void Hive_IsEmpty()
         {
             Sut = new IronScriptHost(SiteId);
 
-            Sut.Hive.Should().Contain(hive => hive is SystemHive);
-            Sut.Hive.Count().Should().Be(1);
+            Hive.Count().Should().Be(0);
         }
     }
 
@@ -73,17 +73,9 @@ namespace IronSharePoint.Framework.Test.IronScriptHost_Fixture
         {
             Sut = new IronScriptHost(SiteId);
 
-            Sut.Hive.Should().Contain(hive => hive is DirectoryHive
+            Hive.Should().Contain(hive => hive is DirectoryHive
                                               && hive.Name == "Test Hive"
                                               && (hive as DirectoryHive).Root == "c:\\");
-        }
-
-        [Test]
-        public void Hive_SystemHiveIsLast()
-        {
-            Sut = new IronScriptHost(SiteId);
-
-            Sut.Hive.Last().Should().BeOfType<SystemHive>();
         }
     }
 }

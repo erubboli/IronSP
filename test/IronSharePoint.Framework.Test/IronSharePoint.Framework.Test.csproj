@@ -103,6 +103,7 @@
     <Compile Include="Administration\HiveSetupCollection_Fixture.cs" />
     <Compile Include="Administration\HiveSetup_Fixture.cs" />
     <Compile Include="Administration\HiveRegistry_Fixture.cs" />
+    <Compile Include="Asset_Fixture.cs" />
     <Compile Include="Hive\HiveComposite_Fixture.cs" />
     <Compile Include="Hive\DirectoryHive_Fixture.cs" />
     <Compile Include="Hive\SPDocumentHive_Fixture.cs" />
@@ -126,7 +127,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="obj\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\IronSharePoint.Framework\IronSharePoint.Framework.csproj">
       <Project>{73e78e79-90f3-4859-9ddf-2e33a92b65a1}</Project>

@@ -37,53 +37,77 @@ namespace IronSharePoint
 
         public override bool DirectoryExists(string path)
         {
-            path = TrimPath(path);
-
-            return _hive.DirectoryExists(path);
+            return _hive.DirectoryExists(TrimPath(path)) || Directory.Exists(path);
         }
 
         public override bool FileExists(string file)
         {
-            file = TrimPath(file);
-
-            return _hive.FileExists(file);
+            return _hive.FileExists(TrimPath(file)) || File.Exists(file);
         }
 
         public override string GetFullPath(string file)
         {
             file = TrimPath(file);
-
-            return _hive.GetFullPath(file);
+            var fullPath = _hive.GetFullPath(file);
+            if (fullPath == null)
+            {
+                if (!Path.IsPathRooted(file))
+                {
+                    file = file.ReplaceStart("./", string.Empty);
+                    fullPath = Path.Combine(IronConstant.HiveWorkingDirectory, file);
+                }
+                else
+                {
+                    fullPath = Path.GetFullPath(file);
+                }
+            }
+            return fullPath;
         }
 
         public override Stream OpenOutputFileStream(string path)
         {
-            path = TrimPath(path);
-
-            return _hive.OpenOutputFileStream(path);
+            Stream stream;
+            string trimmed = TrimPath(path);
+            try
+            {
+                stream = _hive.OpenInputFileStream(trimmed);
+            }
+            catch (FileNotFoundException)
+            {
+                stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+            }
+            return stream;
         }
 
         public override Stream OpenInputFileStream(string path)
         {
-            path = TrimPath(path);
-
-            return _hive.OpenInputFileStream(path);
+            return OpenInputFileStream(path, FileMode.Open, FileAccess.Read,FileShare.None);
         }
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share)
         {
-            return OpenInputFileStream(path);
+            Stream stream;
+            string trimmed = TrimPath(path);
+            try
+            {
+                stream = _hive.OpenInputFileStream(trimmed);
+            }
+            catch (FileNotFoundException)
+            {
+                stream = new FileStream(path, mode, access);
+            }
+            return stream;
         }
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share,
                                                    int bufferSize)
         {
-            return OpenInputFileStream(path);
+            return OpenInputFileStream(path, mode, access, share);
         }
 
         public string TrimPath(string path)
         {
-            var invalidPrefixes = new[] {".\\", IronConstant.FakeHiveDirectory};
+            var invalidPrefixes = new[] {".\\", IronConstant.HiveWorkingDirectory};
             foreach (string prefix in invalidPrefixes)
             {
                 path = path.ReplaceStart(prefix, string.Empty);
@@ -96,26 +120,6 @@ namespace IronSharePoint
         public T TrimPath<T>(string path, Func<string, T> func)
         {
             return func(TrimPath(path));
-        }
-
-        public override void CreateDirectory(string path)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override void DeleteDirectory(string path, bool recursive)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override void DeleteFile(string path, bool deleteReadOnly)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override void MoveFileSystemEntry(string sourcePath, string destinationPath)
-        {
-            throw new NotSupportedException();
         }
     }
 }
