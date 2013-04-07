@@ -1,4 +1,5 @@
 require 'log4r'
+require 'iron_sharepoint/patches/log4r/logger.rb'
 require 'iron_sharepoint/ext/log4r/outputter/iron_logs_outputter'
 require 'iron_sharepoint/ext/log4r/outputter/iron_memory_outputter'
 

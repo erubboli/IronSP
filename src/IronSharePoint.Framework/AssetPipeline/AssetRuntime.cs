@@ -45,8 +45,8 @@ namespace IronSharePoint.AssetPipeline
         {
             base.InitializeScriptEngine(scriptEngine);
             StringBuilder script = new StringBuilder()
-                .AppendLine("require 'iron_sharepoint'")
                 .AppendLine("require 'sprockets'")
+                .AppendLine("require 'iron_sharepoint/patches/sprockets'")
                 .AppendFormat("$ASSET_ENV = Sprockets::Environment.new '{0}'",
                               IronConstant.HiveWorkingDirectory.Replace('\\', '/')).AppendLine()
                 .AppendLine("$ASSET_ENV.append_path '.'");

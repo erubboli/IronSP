@@ -20,7 +20,7 @@ namespace IronSharePoint
 
             var scope = rubyEngine.CreateScope();
             scope.SetVariable("ctx", ctx);
-            rubyEngine.Execute("IronSharePoint.application.rack_handler.process(ctx)", scope);
+            rubyEngine.Execute("IronSP::Routes.process(ctx)", scope);
         }
 
         public bool IsReusable { get { return true; } }

@@ -1,18 +1,14 @@
+IronSP = IronSharePoint
+
 require 'active_support/core_ext'
 require 'iron_sharepoint/ext/all'
+require 'iron_sharepoint/patches/core'
 
-module IronSharePoint
+module IronSP
   def self.env
     @env ||= ActiveSupport::StringInquirer.new(IronConstant.IronEnv.to_s.downcase)
   end
 
-  Dir["iron_sharepoint/**/*.rb"].each do |file|
-    begin
-      require file
-    rescue Exception => ex
-      DEFAULT_LOGGER.error ex
-    end
-  end
+  autoload :Assets, 'iron_sharepoint/assets'
+  autoload :Routes, 'iron_sharepoint/routes'
 end
-
-IronSP = IronSharePoint
