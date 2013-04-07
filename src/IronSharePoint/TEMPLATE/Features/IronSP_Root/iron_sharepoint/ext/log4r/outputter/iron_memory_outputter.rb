@@ -19,7 +19,7 @@ module Log4r
     private
 
     def write data
-      logs << data
+      logs << data.encode
       @logs = logs[900...1000] if logs.size > 1000
       nil
     end

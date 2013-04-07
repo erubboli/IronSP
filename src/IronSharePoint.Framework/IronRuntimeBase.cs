@@ -152,6 +152,8 @@ namespace IronSharePoint
             var joinedPaths = GetGemPaths().Select(x => string.Format("'{0}'", x)).StringJoin(",");
             var script = new StringBuilder()
                 .AppendLine("require 'rubygems'")
+                .AppendLine("Encoding.default_internal = Encoding.UTF8")
+                .AppendLine("Encoding.default_external = Encoding.UTF8")
                 .AppendLine("Gem.clear_paths")
                 .AppendFormat("Gem.use_paths '', [{0}]", joinedPaths);
 
