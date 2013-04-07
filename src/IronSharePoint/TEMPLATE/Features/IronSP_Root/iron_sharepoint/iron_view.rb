@@ -1,3 +1,4 @@
+require 'tilt'
 require 'iron_sharepoint/mixins/logging'
 require 'iron_sharepoint/mixins/view_helpers'
 require 'active_support/core_ext/module/delegation'

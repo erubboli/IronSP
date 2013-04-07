@@ -1,6 +1,5 @@
 require 'singleton'
 require 'rack'
-require 'sprockets'
 
 module IronSharePoint
   class << self
@@ -30,9 +29,6 @@ module IronSharePoint
 
     def initialize!
       raise "Application has already been initialized." if @initialized
-
-      @assets = Sprockets::Environment.new IronSharePoint::IronConstant.HiveWorkingDirectory.to_s
-      @assets.append_path 'app/assets'
 
       @rack_handler = Rack::Handlers::IronSP.run(self.to_app @assets)
 

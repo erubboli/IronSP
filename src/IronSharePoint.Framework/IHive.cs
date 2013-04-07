@@ -87,6 +87,11 @@ namespace IronSharePoint
         /// <summary>
         /// Description for the hive
         /// </summary>
-        string Description { get; }
+        string Description { get; set; }
+
+        /// <summary>
+        /// Priority of the hive
+        /// </summary>
+        int Priority { get; set; }
     }
 }

@@ -21,14 +21,18 @@ namespace IronSharePoint.Administration
         [Persisted]
         private Dictionary<Guid,Guid> _targetToRuntimeAssociations = new Dictionary<Guid, Guid>();
 
-        private static readonly Lazy<IronRegistry> _local;
+        private static Lazy<IronRegistry> _local;
 
         static IronRegistry()
+        {
+            Reload();
+        }
+
+        public static void Reload()
         {
             _local = new Lazy<IronRegistry>(() => SPFarm.Local.GetObject(ObjectId) as IronRegistry ??
                                                   new IronRegistry("IronSharePoint.Administration.IronRegistry",
                                                                    SPFarm.Local, ObjectId), false);
-
         }
 
         protected IronRegistry(string name, SPPersistedObject parent)
@@ -165,6 +169,12 @@ namespace IronSharePoint.Administration
         {
             base.OnDeserialization();
             System.Console.WriteLine(this);
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            Reload();
         }
     }
 }

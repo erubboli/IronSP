@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using FluentAssertions;
 using IronSharePoint.Administration;
 using IronSharePoint.Hives;
@@ -85,104 +84,6 @@ namespace IronSharePoint.Framework.Test.Administration
             Sut.AddHive(setup.Id);
 
             Sut.Hives.Should().BeEquivalentTo(new object[] {setup});
-        }
-    }
-
-    [TestFixture]
-    public class SetupBase_Fixture
-    {
-        SetupBase Sut;
-
-        [Test]
-        public void Equals_WhenIdIsEqual_ReturnsTrue()
-        {
-            Sut = new SetupBase() {Id = Guid.NewGuid()};
-
-            Sut.Should().Be(new SetupBase {Id = Sut.Id});
-        } 
-    }
-
-    [TestFixture]
-    public class SetupCollection_Fixture
-    {
-        SetupCollection<SetupBase> Sut;
-
-        [SetUp]
-        public void SetUp()
-        {
-            Sut = new SetupCollection<SetupBase>();
-        }
-
-        [Test]
-        public void Add_CreatesSetupWithFreshId()
-        {
-            var setup = Sut.Add();
-
-            setup.Id.Should().NotBe(Guid.Empty);
-        }
-
-        [Test]
-        public void Add_AddsSetupToCellction()
-        {
-            Sut.Add();
-
-            Sut.Count().Should().Be(1);
-        }
-
-        [Test]
-        public void Remove_WithSetup_WhenSetupExists_RemovesIt()
-        {
-            var setup = Sut.Add();
-
-            var removed = Sut.Remove(setup);
-
-            removed.Should().Be(setup);
-            Sut.Count().Should().Be(0);
-        }
-
-        [Test]
-        public void Remove_WithSetup_WhenNotExists_ReturnsNull()
-        {
-            Sut.Add();
-
-            var removed = Sut.Remove(new SetupBase());
-
-            removed.Should().BeNull();
-            Sut.Count().Should().Be(1);
-        }
-
-        [Test]
-        public void Remove_WithGuid_WhenSetupExists_RemovesIt()
-        {
-            var setup = Sut.Add();
-
-            var removed = Sut.Remove(setup.Id);
-
-            removed.Should().Be(setup);
-            Sut.Count().Should().Be(0);
-        }
-
-        [Test]
-        public void Remove_WithGuid_WhenNotExists_ReturnsNull()
-        {
-            Sut.Add();
-
-            var removed = Sut.Remove(Guid.NewGuid());
-
-            removed.Should().BeNull();
-            Sut.Count().Should().Be(1);
-        }
-
-        [Test]
-        public void GetEnumerator_EnumeratesAllSetups()
-        {
-            var setups = new object[]
-                {
-                    Sut.Add(),
-                    Sut.Add()
-                };
-
-            Sut.Should().BeEquivalentTo(setups);
         }
     }
 }

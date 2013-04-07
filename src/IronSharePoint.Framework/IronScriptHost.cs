@@ -7,19 +7,20 @@ using IronSharePoint.Hives;
 using IronSharePoint.Util;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
+using IronSharePoint.Exceptions;
 
 namespace IronSharePoint
 {
     public class IronScriptHost : ScriptHost, IDisposable
     {
-        private readonly Lazy<IHive> _hive;
+        private readonly Lazy<HiveComposite> _hive;
         private readonly HiveSetup[] _hiveSetups;
         private readonly Lazy<IronPlatformAdaptationLayer> _ironPlatformAdaptationLayer;
 
         public IronScriptHost(params HiveSetup[] hiveSetups)
         {
             _hiveSetups = hiveSetups.ToArray();
-            _hive = new Lazy<IHive>(CreateHive);
+            _hive = new Lazy<HiveComposite>(CreateHive);
             _ironPlatformAdaptationLayer =
                 new Lazy<IronPlatformAdaptationLayer>(() => new IronPlatformAdaptationLayer(Hive));
         }
@@ -34,7 +35,7 @@ namespace IronSharePoint
             get { return IronPlatformAdaptationLayer; }
         }
 
-        public IHive Hive
+        public HiveComposite Hive
         {
             get { return _hive.Value; }
         }
@@ -47,17 +48,36 @@ namespace IronSharePoint
             }
         }
 
-        protected IHive CreateHive()
+        protected HiveComposite CreateHive()
         {
-            IHive[] hives = _hiveSetups.Select(x =>
-            {
-                Type[] argTypes = x.HiveArguments.Select(y => y.GetType()).ToArray();
-                ConstructorInfo ctor = x.HiveType.GetConstructor(argTypes);
-                IHive hive = ctor != null ? (IHive) ctor.Invoke(x.HiveArguments) : null;
-                if (hive != null) hive.Name = x.DisplayName;
+            IHive[] hives = _hiveSetups
+                .Select(x =>
+                {
+                    Type[] argTypes = x.HiveArguments == null || !x.HiveArguments.Any()
+                                          ? Type.EmptyTypes
+                                          : x.HiveArguments.Select(y => y.GetType()).ToArray();
+                    ConstructorInfo ctor = x.HiveType.GetConstructor(argTypes);
+                    if (ctor == null)
+                    {
+                        var argumentString = "null";
+                        if (x.HiveArguments != null)
+                        {
+                            argumentString = String.Format("[{0}]", x.HiveArguments.StringJoin(", "));
+                        }
+                        var message =
+                            string.Format("Could not instantiate Hive '{0}'. HiveType: {1}, HiveArguments: {2}",
+                                          x.DisplayName,
+                                          x.HiveType,
+                                          argumentString);
+                        throw new HiveInstantiationException(message);
+                    }
+                    var hive = (IHive) ctor.Invoke(x.HiveArguments);
+                    hive.Name = x.DisplayName;
+                    hive.Description = x.Description;
+                    hive.Priority = x.Priority;
 
-                return hive;
-            }).Compact().ToArray();
+                    return hive;
+                }).ToArray();
 
             var composite = new HiveComposite(hives);
 

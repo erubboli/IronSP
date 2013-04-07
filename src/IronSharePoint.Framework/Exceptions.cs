@@ -1,17 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using IronSharePoint.Administration;
 
 namespace IronSharePoint.Exceptions
 {
     [Serializable]
+    public class HiveInstantiationException : Exception
+    {
+        public HiveInstantiationException(string message, Exception innerException, HiveSetup hiveSetup)
+            : base(message, innerException)
+        {
+            HiveSetup = hiveSetup;
+        }
+
+        public HiveInstantiationException(string message, HiveSetup hiveSetup)
+            : base(message)
+        {
+            HiveSetup = hiveSetup;
+        }
+
+        public HiveInstantiationException(HiveSetup hiveSetup)
+        {
+            HiveSetup = hiveSetup;
+        }
+
+        protected HiveInstantiationException(SerializationInfo info, StreamingContext context, HiveSetup hiveSetup)
+            : base(info, context)
+        {
+            HiveSetup = hiveSetup;
+        }
+
+        public HiveInstantiationException() {}
+
+        public HiveInstantiationException(string message)
+            : base(message) {}
+
+        public HiveInstantiationException(string message, Exception inner)
+            : base(message, inner) {}
+
+        protected HiveInstantiationException(
+            SerializationInfo info,
+            StreamingContext context)
+            : base(info, context) {}
+
+        public HiveSetup HiveSetup { get; private set; }
+    }
+
+    [Serializable]
     public class IronRuntimeAccesssException : Exception
     {
-        public Guid SiteId { get; set; }
-
         public IronRuntimeAccesssException() {}
 
         public IronRuntimeAccesssException(string message)
@@ -24,6 +61,8 @@ namespace IronSharePoint.Exceptions
             SerializationInfo info,
             StreamingContext context)
             : base(info, context) {}
+
+        public Guid SiteId { get; set; }
     }
 
     [Serializable]

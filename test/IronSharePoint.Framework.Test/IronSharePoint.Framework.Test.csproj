@@ -100,9 +100,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Administration\HiveSetupCollection_Fixture.cs" />
+    <Compile Include="Administration\RuntimeSetup_Fixture.cs" />
     <Compile Include="Administration\HiveSetup_Fixture.cs" />
-    <Compile Include="Administration\HiveRegistry_Fixture.cs" />
+    <Compile Include="Administration\SetupBase_Fixture.cs" />
+    <Compile Include="Administration\SetupCollection_Fixture.cs" />
     <Compile Include="Asset_Fixture.cs" />
     <Compile Include="Hive\HiveComposite_Fixture.cs" />
     <Compile Include="Hive\DirectoryHive_Fixture.cs" />

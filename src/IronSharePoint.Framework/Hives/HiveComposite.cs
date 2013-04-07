@@ -21,7 +21,7 @@ namespace IronSharePoint.Hives
 
         public HiveComposite(params IHive[] hives)
         {
-            _hives = new List<IHive>(hives.Where(x => x != null));
+            _hives = new List<IHive>(hives.Compact().OrderBy(x => x.Priority));
         }
 
         public void Append(IHive hive)
@@ -101,15 +101,14 @@ namespace IronSharePoint.Hives
         }
 
         public string Name { get; set; }
+        public string Description { get; set; }
+        public int Priority { get; set; }
 
-        public string Description
+        public override string ToString()
         {
-            get
-            {
-                return string.Format("{0}({1}): [{2}]", GetType().Name,
-                                     this.Count(),
-                                     this.Any() ? this.Select(x => x.Description).StringJoin() : "none");
-            }
+            return string.Format("{0}({1}): [{2}]", GetType().Name,
+                                 this.Count(),
+                                 this.Any() ? this.StringJoin() : "none");
         }
 
         public IHive FindHandler(string path)

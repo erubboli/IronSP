@@ -21,7 +21,7 @@ namespace IronSharePoint
 
         static IronRuntime()
         {
-            LivingRuntimes = new Dictionary<Guid, IronRuntime>();
+            LivingRuntimes = new List<IronRuntime>();
         }
 
         public IronRuntime(RuntimeSetup runtimeSetup)
@@ -32,7 +32,7 @@ namespace IronSharePoint
             _gemPaths = runtimeSetup.GemPaths.ToArray();
         }
 
-        internal static Dictionary<Guid, IronRuntime> LivingRuntimes { get; private set; }
+        internal static List<IronRuntime> LivingRuntimes { get; private set; }
 
         public static IronRuntime GetDefaultIronRuntime(SPSite targetSite)
         {
@@ -40,7 +40,7 @@ namespace IronSharePoint
             {
                 Guid targetId = targetSite.ID;
                 IronRuntime runtime;
-                if (!TryGetLivingRuntime(targetId, out runtime))
+                if (!TryGetLivingRuntime(targetSite, out runtime))
                 {
                     using (new SPMonitoredScope("Creating IronRuntime"))
                     {
@@ -48,6 +48,7 @@ namespace IronSharePoint
                         {
                             var runtimeSetup = IronRegistry.Local.ResolveRuntime(targetSite);
                             runtime = new IronRuntime(runtimeSetup);
+                            LivingRuntimes.Add(runtime);
                             runtime.Initialize();
                         }
                         catch (Exception ex)
@@ -55,10 +56,6 @@ namespace IronSharePoint
                             var message = string.Format("Could not create IronRuntime for SPSite '{0}'", targetId);
                             IronULSLogger.Local.Error(message, ex,IronCategoryDiagnosticsId.Core);
                             throw new IronRuntimeAccesssException(message, ex) {SiteId = targetId};
-                        }
-                        finally
-                        {
-                            LivingRuntimes[targetId] = runtime;
                         }
                     }
                 }
@@ -68,18 +65,27 @@ namespace IronSharePoint
             }
         }
 
-        private static bool TryGetLivingRuntime(Guid targetId, out IronRuntime runtime)
+        private static bool TryGetLivingRuntime(SPSite site, out IronRuntime runtime)
         {
-            if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
+            runtime = null;
+            RuntimeSetup runtimeSetup;
+            if (!IronRegistry.Local.TryResolveRuntime(site, out runtimeSetup)) return false;
+
+            var runtimeId = runtimeSetup.Id;
+            if ((runtime = LivingRuntimes.SingleOrDefault(x => x.Id == runtimeId)) == null)
             {
                 lock (Lock)
                 {
-                    if (!LivingRuntimes.TryGetValue(targetId, out runtime) && HttpContext.Current != null)
+                    if ((runtime = LivingRuntimes.SingleOrDefault(x => x.Id == runtimeId)) == null)
                     {
-                        runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
+                        if (HttpContext.Current != null)
+                        {
+                            runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
+                        }
                     }
                 }
             }
+
             return runtime != null;
         }
 
@@ -91,15 +97,7 @@ namespace IronSharePoint
         public override void Dispose()
         {
             base.Dispose();
-            var toRemove = LivingRuntimes
-                .Where(x => x.Value.Id == Id)
-                .Select(x => x.Key)
-                .ToArray();
-
-            foreach (var guid in toRemove)
-            {
-                LivingRuntimes.Remove(guid);
-            }
+            LivingRuntimes.Remove(this);
         }
 
         protected override IEnumerable<HiveSetup> GetHiveSetups()
