@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Web;
+using IronSharePoint.Administration;
 using IronSharePoint.Console;
+using IronSharePoint.Hives;
 using Microsoft.SharePoint;
 
 namespace IronSharePoint
@@ -20,9 +23,8 @@ namespace IronSharePoint
             try
             {
                 var site = SPContext.Current.Site;
-                var web = SPContext.Current.Web;
 
-                if (!web.CurrentUser.IsSiteAdmin)
+                if (!IsValidConsoleSite(site))
                 {
                     result.Error = "Only Site Admins are allowed to use the Console";
                 }
@@ -59,6 +61,20 @@ namespace IronSharePoint
             context.Response.StatusCode = 200;
             context.Response.ContentType = "application/json";
             context.Response.Write(jsonResponse);
+        }
+
+        private bool IsValidConsoleSite(SPSite site)
+        {
+            RuntimeSetup runtimeSetup;
+            if (IronRegistry.Local.TryResolveRuntime(site, out runtimeSetup))
+            {
+                Func<bool> hasHive = () => runtimeSetup.Hives.Any(x => x.HiveType == typeof (SPDocumentHive) &&
+                    x.HiveArguments != null &&
+                    x.HiveArguments.FirstOrDefault() is Guid &&
+                    ((Guid) x.HiveArguments[0]) == site.ID);
+                return site.RootWeb.CurrentUser.IsSiteAdmin && hasHive();
+            }
+            return false;
         }
     }
 }
