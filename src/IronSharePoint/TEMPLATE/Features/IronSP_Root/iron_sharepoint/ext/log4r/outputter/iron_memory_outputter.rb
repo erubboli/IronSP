@@ -4,14 +4,23 @@ require "log4r/staticlogger"
 
 module Log4r
   class IronMemoryOutputter < Outputter
-    def initialize _name, runtime = $RUNTIME, hash = {}
-      super _name, hash
-      @runtime = runtime
+    def initialize _name, opts = {}
+      super _name, opts
     end
 
-    def print_log n=10
-      logs.last(n).each do |x|
-        puts x
+    def print opts = {}
+      opts = {
+        filter: //,
+        count: 10
+      }.merge opts
+
+      filter = opts[:filter]
+      filter = %r{#{filter}} unless filter.is_a? Regexp
+
+      logs.select do |entry|
+        (entry =~ filter) != nil
+      end.first(opts[:count]).each do |entry|
+        puts entry
       end
       nil
     end
@@ -20,7 +29,7 @@ module Log4r
 
     def write data
       logs << data.encode
-      @logs = logs[900...1000] if logs.size > 1000
+      @logs = logs.last 100 if logs.size > 100
       nil
     end
 

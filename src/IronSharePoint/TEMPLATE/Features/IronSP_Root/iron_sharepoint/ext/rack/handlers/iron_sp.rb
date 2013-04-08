@@ -1,5 +1,5 @@
 require 'rack'
-require 'iron_sharepoint/mixins/logging'
+require 'iron_sharepoint/ext/rack/log4r_adapters'
 
 module Rack
   module Handlers
@@ -25,12 +25,14 @@ module Rack
           req = ctx.request
           res = ctx.response
 
-          env = build_env req
-          log_env env
+          begin
+            env = build_env req
+            status, headers, body = @app.call env
 
-          result = @app.call env
-
-          write_response res, *result
+            write_response res, status, headers, body
+          ensure
+            body.close  if body.respond_to? :close
+          end
         else
           res.status_code = 404
           res.write "Not started"
@@ -49,7 +51,8 @@ module Rack
 
       def build_env req
         env = {
-          "rack.errors" => ::IronSharePoint::DEFAULT_LOGGER,
+          "rack.errors" => Rack::Log4rErrorStreamAdapter.new(::IronSP::RACK_LOGGER),
+          "rack.logger" => ::IronSP::RACK_LOGGER,
           "rack.multithread" => true,
           "rack.multiprocess" => false,
           "rack.run_once" => false,
@@ -102,11 +105,6 @@ module Rack
         else
           value
         end
-      end
-
-      def log_env env
-        env = env.sort.map {|k,v| "#{k} => #{v}"}.join("\n")
-        logger.debug "Processing rack request:\n#{env}"
       end
     end
   end

@@ -237,19 +237,21 @@
       <DependentUpon>Package.package</DependentUpon>
     </None>
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\application.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\assets.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\console\utils.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\all.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\kernel.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_logs_outputter.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\log4r\outputter\iron_memory_outputter.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\object.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\rack.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\rack\handlers\iron_sp.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\ext\rack\log4r_adapters.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_composite_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_control.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_view.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\loggers.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\all.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\control_view.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\logging.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\parent_attributes.rb" />
