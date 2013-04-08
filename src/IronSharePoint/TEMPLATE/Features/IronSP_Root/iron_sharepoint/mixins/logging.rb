@@ -16,7 +16,7 @@ module IronSharePoint::Mixins
     def logger
       @logger ||= begin
         name = self.is_a?(Module) ? self.name : self.class.name
-        Log4r::Logger[name] || (Log4r::Logger.new "#{IronSP::DEFAULT_LOGGER}::#{name}")
+        Log4r::Logger[name] || (Log4r::Logger.new "#{IronSP::DEFAULT_LOGGER.name}::#{name}")
       end
     end
   end

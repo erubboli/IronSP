@@ -12,8 +12,13 @@ module IronSharePoint
 
     def Render(writer)
       monitor "Render #{self.class.name}" do
-        self.view.context = view_context
-        writer.Write self.view.render
+        begin
+          self.view.context = view_context
+          writer.Write self.view.render
+        rescue Exception => ex
+          logger.error ex
+          raise ex
+        end
       end
     end
   end

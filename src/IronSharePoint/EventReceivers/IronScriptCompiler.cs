@@ -12,12 +12,10 @@ using IronSharePoint.Util;
 namespace IronSharePoint.EventReceivers
 {
     /// <summary>
-    /// List Item Events
+    /// Compiles created or updated IronScripts
     /// </summary>
-    public class IronScriptCompilerReceiver : SPItemEventReceiver
+    public class IronScriptCompiler : SPItemEventReceiver
     {
-        private ScriptEngine engine;
-
         public override void ItemAdded(SPItemEventProperties properties)
         {
             CompileScript(properties);
@@ -27,26 +25,18 @@ namespace IronSharePoint.EventReceivers
 
         private void CompileScript(SPItemEventProperties properties)
         {
-            
             if (!properties.ListItem.ContentTypeId.IsChildOf(new SPContentTypeId(IronContentTypeId.IronScript)))
                 return;
 
-            IronRuntime runtime = null;
-
+            var runtime = IronRuntime.GetDefaultIronRuntime(properties.Web.Site);
+            var engine = runtime.RubyEngine;
 
             try
             {
-                runtime = IronRuntime.GetDefaultIronRuntime(properties.Web.Site);
-                engine = runtime.ScriptRuntime.GetEngineByFileExtension(Path.GetExtension(properties.ListItem.File.Name));
-
                 EventFiringEnabled = false;
                 properties.ListItem[FieldHelper.IronOutput] = engine.ExecuteSPFile(properties.ListItem.File);
                 properties.ListItem[FieldHelper.IronErrorFlag] = false; 
                 properties.ListItem.SystemUpdate(false);
-
-                //cause compile bug??
-               // runtime.IronHive.ReloadFiles();
-
             }
             catch (Exception ex)
             {
@@ -60,11 +50,6 @@ namespace IronSharePoint.EventReceivers
             finally
             {
                 EventFiringEnabled = true;
-
-                if (runtime != null)
-                {
-                    //runtime.IronHive.Dispose();
-                }
             }
         }
 

@@ -69,7 +69,7 @@ module Rack
 
       def read_body req
         using(System::IO::StreamReader.new req.input_stream) do |reader|
-          reader.read_to_end
+          StringIO.new(reader.read_to_end)
         end
       end
 

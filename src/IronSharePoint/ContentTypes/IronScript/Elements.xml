@@ -15,31 +15,31 @@
 		  <XmlDocument NamespaceURI="http://schemas.microsoft.com/sharepoint/events">
 			  <Receivers xmlns:spe="http://schemas.microsoft.com/sharepoint/events">
 				  <Receiver>
-					  <Name>IronScriptCompilerReceiver_ItemAdded</Name>
+					  <Name>IronScriptCompiler_ItemAdded</Name>
 					  <Type>ItemAdded</Type>
 					  <SequenceNumber>10000</SequenceNumber>
 					  <Assembly>$SharePoint.Project.AssemblyFullName$</Assembly>
-					  <Class>IronSharePoint.EventReceivers.IronScriptCompilerReceiver</Class>
+					  <Class>IronSharePoint.EventReceivers.IronScriptCompiler</Class>
             <Synchronization>Synchronous</Synchronization>
 					  <Data></Data>
 					  <Filter></Filter>
 				  </Receiver>
 				  <Receiver>
-					  <Name>IronScriptCompilerReceiver_ItemUpdated</Name>
+					  <Name>IronScriptCompiler_ItemUpdated</Name>
 					  <Type>ItemUpdated</Type>
 					  <SequenceNumber>10000</SequenceNumber>
 					  <Assembly>$SharePoint.Project.AssemblyFullName$</Assembly>
-					  <Class>IronSharePoint.EventReceivers.IronScriptCompilerReceiver</Class>
+					  <Class>IronSharePoint.EventReceivers.IronScriptCompiler</Class>
             <Synchronization>Synchronous</Synchronization>
 					  <Data></Data>
 					  <Filter></Filter>
 				  </Receiver>
           <Receiver>
-            <Name>IronScriptCompilerReceiver_ItemDeleted</Name>
+            <Name>IronScriptCompiler_ItemDeleted</Name>
             <Type>ItemDeleted</Type>
             <SequenceNumber>10000</SequenceNumber>
             <Assembly>$SharePoint.Project.AssemblyFullName$</Assembly>
-            <Class>IronSharePoint.EventReceivers.IronScriptCompilerReceiver</Class>
+            <Class>IronSharePoint.EventReceivers.IronScriptCompiler</Class>
             <Synchronization>Synchronous</Synchronization>
             <Data></Data>
             <Filter></Filter>

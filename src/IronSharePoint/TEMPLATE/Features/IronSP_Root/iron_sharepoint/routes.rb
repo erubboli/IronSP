@@ -10,10 +10,12 @@ module IronSP
   class Routes < Sinatra::Base
     class << self
       def inherited base
-        raise "You cannot have more than one IronSP::Routes" unless IronSP.routes.nil?
+        #raise "You cannot have more than one IronSP::Routes" unless IronSP.routes.nil?
         super
-        IronSP.routes = base.new
-        @handler = Rack::Handlers::IronSP.run(IronSP.routes)
+        if IronSP.routes.nil?
+          IronSP.routes = base.new
+          @handler = Rack::Handlers::IronSP.run(IronSP.routes)
+        end
       end
 
       def process http_context
@@ -34,7 +36,7 @@ module IronSP
     use Rack::CommonLogger, Rack::Log4rCommonLoggerAdapter.new(::IronSP::RACK_LOGGER)
 
     set :logging, nil # Loggers are set by the handler
-    set :environment, IronSP.env.to_s
+    set :environment, IronSP.env.to_sym
 
     configure :development do
       enable :show_exceptions

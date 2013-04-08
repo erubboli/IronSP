@@ -16,3 +16,7 @@ require 'iron_sharepoint/ext/all'
 require 'iron_sharepoint/patches/core'
 require 'iron_sharepoint/loggers'
 require 'iron_sharepoint/version'
+
+require 'iron_sharepoint/iron_view'
+require 'iron_sharepoint/iron_control'
+require 'iron_sharepoint/iron_composite_control'

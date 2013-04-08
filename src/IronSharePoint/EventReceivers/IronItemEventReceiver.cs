@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.SharePoint;
+using IronSharePoint.Util;
 
 namespace IronSharePoint.EventReceivers
 {
@@ -104,7 +105,8 @@ namespace IronSharePoint.EventReceivers
 
         private void CallDynamicEventreceiver(SPItemEventProperties properties)
         {
-            var dynEventReceiver = IronRuntime.GetDefaultIronRuntime(properties.Web.Site).CreateDynamicInstance(properties.ReceiverData) as SPItemEventReceiver;
+            var runtime = IronRuntime.GetDefaultIronRuntime(properties.Web.Site);
+            var dynEventReceiver = runtime.RubyEngine.CreateInstance(properties.ReceiverData);
             
             switch (properties.EventType)
             {
@@ -128,7 +130,6 @@ namespace IronSharePoint.EventReceivers
                 case SPEventReceiverType.ItemAttachmentDeleting: dynEventReceiver.ItemAttachmentDeleting(properties); break;
                 case SPEventReceiverType.ItemFileConverted: dynEventReceiver.ItemFileConverted(properties); break;
             }
-            
         }
 
         public override void ItemAdded(SPItemEventProperties properties)

@@ -9,6 +9,6 @@ module Kernel
   end
 
   def monitor name = "Unnamed", &blk
-    using Microsoft::SharePoint::Utilities::SPMonitoredScope.new(name), &blk
+    using Microsoft::SharePoint::Utilities::SPMonitoredScope.new(name.to_clr_string), &blk
   end
 end
