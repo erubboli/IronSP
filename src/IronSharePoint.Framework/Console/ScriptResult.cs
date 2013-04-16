@@ -5,9 +5,15 @@ namespace IronSharePoint.Console
 {
     public class ScriptResult
     {
+        private string _error;
         public string Output { get; set; }
         public string ReturnValue { get; set; }
-        public string Error { get; set; }
+        public string Error
+        {
+            get { return _error; }
+            set { _error = (value ?? "").Replace(IronConstant.HiveWorkingDirectory + "/", string.Empty); }
+        }
+
         public long ExecutionTime { get; set; }
 
         public bool HasError
