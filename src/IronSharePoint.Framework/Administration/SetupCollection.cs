@@ -31,6 +31,11 @@ namespace IronSharePoint.Administration
             get { return _setups.ElementAt(index); }
         }
 
+        public TSetup this[string displayName]
+        {
+            get { return _setups.FirstOrDefault(x => x.DisplayName == displayName); }
+        }
+
         public TSetup Add()
         {
             var setup = new TSetup
