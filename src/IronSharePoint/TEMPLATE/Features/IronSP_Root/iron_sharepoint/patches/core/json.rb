@@ -1,4 +1,5 @@
 ﻿load_assembly 'System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
+require 'json'
 
 module IronSharePoint
   module JSON

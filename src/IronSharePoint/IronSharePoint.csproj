@@ -146,13 +146,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventReceivers\AssetPipelineEventReceiver.cs" />
+    <Compile Include="EventReceivers\IronItemEventReceiver.cs" />
     <Compile Include="Features\IronSP_AssetPipeline\IronSP_AssetPipeline.EventReceiver.cs">
       <DependentUpon>IronSP_AssetPipeline.feature</DependentUpon>
     </Compile>
     <Compile Include="Features\IronSP_Hive_Site\IronSP_Hive_Site.EventReceiver.cs">
       <DependentUpon>IronSP_Hive_Site.feature</DependentUpon>
     </Compile>
-    <Compile Include="EventReceivers\IronScriptCompilerReceiver.cs" />
+    <Compile Include="EventReceivers\IronScriptCompiler.cs" />
     <Compile Include="Features\IronSP_Farm\IronSP_Farm.EventReceiver.cs">
       <DependentUpon>IronSP_Farm.feature</DependentUpon>
     </Compile>
