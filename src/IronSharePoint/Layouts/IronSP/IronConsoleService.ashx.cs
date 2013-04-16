@@ -33,13 +33,15 @@ namespace IronSharePoint
                     IronRuntime ironRuntime = IronRuntime.GetDefaultIronRuntime(site);
                     string script = HttpContext.Current.Request["script"];
 
+                    if (script.StartsWith("print_log")) script = "IronSP." + script;
+
                     if (script == "kill")
                     {
                         ironRuntime.Dispose();
                         result.Output = "Runtime disposed.";
-                    }
+                    } 
                     else
-                    {
+                    { 
                         result = ironRuntime.Console.Execute(script).Result;
                     }
                 }
