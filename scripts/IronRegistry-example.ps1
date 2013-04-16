@@ -30,8 +30,8 @@ $myRT.Description = "Runtime for http://my-sharepoint and http://my-sharepoint/s
 $myRT.AddHive($hive);
 # $myRT.AddHive($sharedHive);
 
-$ir.Associate($rootSite, $sharecampRuntime); # Associate $rootSite to use IronControls on the Site
-$ir.Associate($hiveSite, $sharecampRuntime); # Associate $hiveSite to use an IronConsole on the Site
+$ir.Associate($rootSite, $myRT); # Associate $rootSite to use IronControls on the Site
+$ir.Associate($hiveSite, $myRT); # Associate $hiveSite to use an IronConsole on the Site
 
 $ir.Hives # Show all Hives
 $ir.Runtimes # Show all Runtimes
