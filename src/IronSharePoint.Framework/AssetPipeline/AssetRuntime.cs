@@ -23,17 +23,14 @@ namespace IronSharePoint.AssetPipeline
 
         protected override IEnumerable<HiveSetup> GetHiveSetups()
         {
-            return new[]
+            yield return new HiveSetup
                 {
-                    new HiveSetup
-                        {
-                            DisplayName = "Style Library",
-                            HiveArguments = new object[] {SiteId, "Style%20Library"},
-                            HiveType = typeof (SPDocumentHive),
-                            Priority = 1
-                        },
-                    HiveSetup.IronSPRoot
+                    DisplayName = "Style Library",
+                    HiveArguments = new object[] {SiteId, "Style%20Library"},
+                    HiveType = typeof (SPDocumentHive),
+                    Priority = 1
                 };
+            yield return HiveSetup.IronSPRoot;
         }
 
         protected override IEnumerable<string> GetGemPaths()
