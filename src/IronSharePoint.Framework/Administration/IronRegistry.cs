@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
+using IronSharePoint.Hives;
 using IronSharePoint.Util;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Administration;
@@ -174,7 +175,29 @@ namespace IronSharePoint.Administration
         public override void Update()
         {
             base.Update();
-            Reload();
+        }
+
+        public override void Update(bool ensure)
+        {
+            base.Update(ensure);
+            if (ensure)
+            {
+                SPSecurity.RunWithElevatedPrivileges(() =>
+                {
+                    foreach (var hive in Hives.Where(x => x.HiveType == typeof(SPDocumentHive)))
+                    {
+                        var hiveSiteId = hive.HiveArguments.FirstOrDefault();
+                        if (!(hiveSiteId is Guid)) continue;
+                        using (SPSite hiveSite = new SPSite((Guid)hiveSiteId))
+                        {
+                            if (hiveSite.Features[new Guid(IronConstant.IronHiveSiteFeatureId)] == null)
+                            {
+                                hiveSite.Features.Add(new Guid(IronConstant.IronHiveSiteFeatureId));
+                            }
+                        }
+                    }
+                });
+            }
         }
     }
 }
