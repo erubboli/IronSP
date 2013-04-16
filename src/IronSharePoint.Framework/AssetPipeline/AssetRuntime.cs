@@ -21,6 +21,11 @@ namespace IronSharePoint.AssetPipeline
             get { return "Asset Pipeline Runtime"; }
         }
 
+        public override IronEnvironment Environment
+        {
+            get { return IronEnvironment.Production; }
+        }
+
         protected override IEnumerable<HiveSetup> GetHiveSetups()
         {
             yield return new HiveSetup
