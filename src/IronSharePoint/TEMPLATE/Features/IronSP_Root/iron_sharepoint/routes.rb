@@ -37,7 +37,7 @@ module IronSP
 
     set :logging, nil # Loggers are set by the handler
     set :environment, IronSP.env.to_sym
-	set :views, File.join(IronSP::IronConstant.HiveWorkingDirectory, 'app/templates')
+    set :views, File.join(IronSP::IronConstant.HiveWorkingDirectory, 'app/templates')
 
     configure :development do
       enable :show_exceptions

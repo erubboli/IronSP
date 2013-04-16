@@ -1,8 +1,8 @@
 require 'log4r'
 
 module IronSP
-  formatter = Log4r::PatternFormatter.new(:pattern => "[%l] %d %c :: %M")
-  io_formatter = Log4r::PatternFormatter.new(:pattern => "[%l] %c :: %M")
+  formatter = Log4r::PatternFormatter.new(:pattern => "[%l] %d %C :: %M")
+  io_formatter = Log4r::PatternFormatter.new(:pattern => "[%l] %C :: %M")
 
   DEFAULT_LOGGER = ::IRON_DEFAULT_LOGGER = Log4r::Logger.new("Iron")
   DEFAULT_LOGGER.outputters << (Log4r::IronMemoryOutputter.new "iron_memory", :formatter => formatter)

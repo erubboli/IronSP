@@ -37,6 +37,9 @@ module Rack
           res.status_code = 404
           res.write "Not started"
         end
+      rescue Exception => ex
+        logger.error ex
+        res.status_code = 500
       end
 
       def start

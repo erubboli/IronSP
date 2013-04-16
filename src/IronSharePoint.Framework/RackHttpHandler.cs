@@ -16,11 +16,22 @@ namespace IronSharePoint
         public void ProcessRequest(HttpContext ctx)
         {
             var ironRuntime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-            var rubyEngine = ironRuntime.RubyEngine;
+            try
+            {
+                var rubyEngine = ironRuntime.RubyEngine;
 
-            var scope = rubyEngine.CreateScope();
-            scope.SetVariable("ctx", ctx);
-            rubyEngine.Execute("IronSP::Routes.process(ctx)", scope);
+                var scope = rubyEngine.CreateScope();
+                scope.SetVariable("ctx", ctx);
+                rubyEngine.Execute("IronSP::Routes.process(ctx)", scope);
+            }
+            catch (Exception ex)
+            {
+                ironRuntime.ULSLogger.Error("Error in RackHttpHandler", ex);
+            }
+            finally
+            {
+                //ctx.Response.End();
+            }
         }
 
         public bool IsReusable { get { return true; } }
