@@ -12,7 +12,7 @@ namespace IronSharePoint.Diagnostics
     {
         private readonly IronDiagnosticsService _service;
 
-        const string ErrorFormat = "Exception '{0}' - {1} at {2}";
+        const string ErrorFormat = "Exception '{0}' - {1}\n{2}";
 
         public IronULSLogger(IronDiagnosticsService service)
         {

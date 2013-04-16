@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Web;
 using System.Web.UI;
 using IronSharePoint.Diagnostics;
 using IronSharePoint.Util;
@@ -94,7 +96,15 @@ namespace IronSharePoint
             }
             else
             {
-                writer.Write(output);
+                var lines = output.Split('\n').Select(HttpUtility.HtmlEncode).ToArray();
+                var outputHtml = string.Format(@"
+                    <div class='ironsp-error' style='display: inline-block; max-height: 100px; max-width: 600px; overflow-y: scroll; overflow-x: hidden; border: 2px solid red; font-size: 10px;line-height: 110%; text-align: left;'>
+                      <p style='margin: 3px;'>{0}</p>
+                      <ul style='padding-left: 20px; margin-bottom: 0px;'>{1}</ul>
+                    </div>
+                ", lines.FirstOrDefault(), lines.Skip(1).Select(x => "<li>" + x + "</li>").StringJoin("\n"));
+
+                writer.Write(outputHtml);
             }
         }
     }
