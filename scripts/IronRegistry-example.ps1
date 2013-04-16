@@ -2,6 +2,7 @@ Add-PSSnapin "Microsoft.SharePoint.PowerShell" -ErrorAction SilentlyContinue
 [System.Reflection.Assembly]::LoadWithPartialName("IronSharePoint.Framework")
 
 $ir = [IronSharePoint.Administration.IronRegistry]::Local
+$ir.FarmEnvironment = [IronSharePoint.IronEnvironment]::Production # Default IronEnvironment
 
 $rootSite = Get-SPSite 'http://my-sharepoint'
 $hiveSite = Get-SPSite 'http://my-sharepoint/sites/IronHive'
@@ -23,6 +24,7 @@ $hive.Priority = 1; # Files in hives with higher priority have precendence in ca
 # $sharedHive.Priority = 20; # Lower priority s.t. the files can be overridden
 
 $myRT = $ir.Runtimes.Add();
+$myRT.Environment = [IronSharePoint.IronEnvironment]::Development # OPTIONAL: override default IronEnvironment for this runtime
 $myRT.DisplayName = "My Runtime";
 $myRT.Description = "Runtime for http://my-sharepoint and http://my-sharepoint/sites/IronHive"
 $myRT.AddHive($hive);
