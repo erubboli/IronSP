@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharePoint.Framework.Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{96052F85-EBD5-4525-8811-4E7795316440}"
 	ProjectSection(SolutionItems) = preProject
-		scripts\Get-IronHiveRegistry.ps1 = scripts\Get-IronHiveRegistry.ps1
+		scripts\IronRegistry-example.ps1 = scripts\IronRegistry-example.ps1
 	EndProjectSection
 EndProject
 Global
