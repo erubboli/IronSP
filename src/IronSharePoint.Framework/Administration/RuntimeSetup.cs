@@ -15,11 +15,22 @@ namespace IronSharePoint.Administration
     {
         [Persisted] private readonly List<Guid> _hiveIds;
         [Persisted] private readonly List<string> _gemPaths;
+        [Persisted] private IronEnvironment? _environment;
 
         public RuntimeSetup()
         {
             _hiveIds = new List<Guid> { HiveSetup.IronSPRoot.Id };
             _gemPaths = new List<string> { IronConstant.GemsDirectory };
+        }
+
+        /// <summary>
+        /// Get or set the <see cref="IronEnvironment"/> in which the runtime operates.
+        /// Defaults to <see cref="IronRegistry.FarmEnvironment"/>
+        /// </summary>
+        public IronEnvironment Environment
+        {
+            get { return _environment.HasValue ? _environment.Value : IronRegistry.Local.FarmEnvironment; }
+            set { _environment = value; }
         }
 
         /// <summary>

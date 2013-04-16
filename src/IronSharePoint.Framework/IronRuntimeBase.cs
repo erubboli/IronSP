@@ -74,6 +74,7 @@ namespace IronSharePoint
         public Guid Id { get; private set; }
 
         public abstract string Name { get; }
+        public abstract IronEnvironment Environment { get; }
 
         #region IDisposable Members
 
@@ -99,7 +100,7 @@ namespace IronSharePoint
             setup.LanguageSetups.Add(languageSetup);
             setup.HostType = typeof (IronScriptHost);
             setup.HostArguments = GetHiveSetups().ToArray();
-            setup.DebugMode = IronConstant.IronEnv == IronEnvironment.Debug;
+            setup.DebugMode = Environment == IronEnvironment.Debug;
 
             var scriptRuntime = new ScriptRuntime(setup);
             scriptRuntime.LoadAssembly(typeof (IronRuntime).Assembly); // IronSharePoint

@@ -22,6 +22,8 @@ namespace IronSharePoint.Administration
         [Persisted]
         private Dictionary<Guid,Guid> _targetToRuntimeAssociations = new Dictionary<Guid, Guid>();
 
+        [Persisted] private IronEnvironment? _farmEnvironment;
+
         private static Lazy<IronRegistry> _local;
 
         static IronRegistry()
@@ -54,6 +56,16 @@ namespace IronSharePoint.Administration
         {
             get { return _hives; }
             private set { _hives = value; }
+        }
+
+        /// <summary>
+        /// Get or set the default <see cref="IronEnvironment"/> for the SPFarm. 
+        /// Defaults to <see cref="IronEnvironment.Production"/>
+        /// </summary>
+        public IronEnvironment FarmEnvironment
+        {
+            get { return _farmEnvironment.HasValue ? _farmEnvironment.Value : IronEnvironment.Production; }
+            set { _farmEnvironment = value; }
         }
 
         public IronRegistry() {}

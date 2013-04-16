@@ -85,5 +85,11 @@ namespace IronSharePoint.Framework.Test.Administration
 
             Sut.Hives.Should().BeEquivalentTo(new object[] {setup});
         }
+
+        [Test]
+        public void Environment_DefaultsToFarmEnvironment()
+        {
+            Sut.Environment.Should().Be(IronRegistry.FarmEnvironment);
+        }
     }
 }

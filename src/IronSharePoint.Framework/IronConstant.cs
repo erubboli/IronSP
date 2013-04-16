@@ -31,29 +31,6 @@ namespace IronSharePoint
             return string.Format("{0}_{1}", IronPrefix, s);
         }
 
-        public static IronEnvironment IronEnv
-        {
-            get
-            {
-                var env = IronEnvironment.Production;
-
-                var environmentVariable = System.Environment.GetEnvironmentVariable("IRONSP_ENV");
-                if (!String.IsNullOrEmpty(environmentVariable))
-                {
-                    try
-                    {
-                        env = (IronEnvironment) Enum.Parse(typeof (IronEnvironment), environmentVariable, true);
-                    }
-                    catch(ArgumentException)
-                    {
-                        env = IronEnvironment.Production;
-                    }
-                }
-
-                return env;
-            }
-        }
-
         public static string HiveWorkingDirectory
         {
             get

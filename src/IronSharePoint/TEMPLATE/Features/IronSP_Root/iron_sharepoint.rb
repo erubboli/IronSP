@@ -2,7 +2,7 @@ IronSP = IronSharePoint
 
 module IronSP
   def self.env
-    @env ||= ActiveSupport::StringInquirer.new(IronConstant.IronEnv.to_s.downcase)
+    @env ||= ActiveSupport::StringInquirer.new($RUNTIME.environment.to_s.downcase)
   end
 
   autoload :Mixins, 'iron_sharepoint/mixins/all'

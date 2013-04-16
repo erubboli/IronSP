@@ -18,6 +18,7 @@ namespace IronSharePoint
         private readonly string _name;
         private readonly HiveSetup[] _hiveSetups;
         private readonly string[] _gemPaths;
+        private IronEnvironment _environment;
 
         static IronRuntime()
         {
@@ -30,6 +31,7 @@ namespace IronSharePoint
             _name = runtimeSetup.DisplayName;
             _hiveSetups = runtimeSetup.Hives.ToArray();
             _gemPaths = runtimeSetup.GemPaths.ToArray();
+            _environment = runtimeSetup.Environment;
         }
 
         internal static List<IronRuntime> LivingRuntimes { get; private set; }
@@ -92,6 +94,11 @@ namespace IronSharePoint
         public override string Name
         {
             get { return _name; }
+        }
+
+        public override IronEnvironment Environment
+        {
+            get { return _environment; }
         }
 
         public override void Dispose()
