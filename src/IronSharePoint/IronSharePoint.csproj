@@ -253,13 +253,13 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\iron_view.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\loggers.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\all.rb" />
-    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\control_view.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\logging.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\parent_attributes.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\short_term_memory.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\sp_context_accessors.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\mixins\view_helpers.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\hash.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\json.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\object.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\regexp.rb" />
