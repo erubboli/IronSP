@@ -107,7 +107,7 @@ namespace IronSharePoint
 
         public string TrimPath(string path)
         {
-            var invalidPrefixes = new[] {".\\", IronConstant.HiveWorkingDirectory};
+            var invalidPrefixes = new[] {".\\", IronConstant.HiveWorkingDirectory, Directory.GetCurrentDirectory()};
             foreach (string prefix in invalidPrefixes)
             {
                 path = path.ReplaceStart(prefix, string.Empty);

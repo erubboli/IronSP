@@ -1,20 +1,16 @@
-require 'iron_sharepoint/mixins/logging'
-require 'iron_sharepoint/mixins/control_view'
-require 'iron_sharepoint/mixins/parent_attributes'
-require 'iron_sharepoint/mixins/short_term_memory'
+require 'iron_sharepoint/iron_view'
 
 module IronSharePoint
   class IronControl
+    include IronView
     include Mixins::Logging
-    include Mixins::ControlView
     include Mixins::ParentAttributes
     extend Mixins::ShortTermMemory
 
     def Render(writer)
       monitor "Render #{self.class.name}" do
         begin
-          self.view.context = view_context
-          writer.Write self.view.render
+          writer.Write render_template
         rescue Exception => ex
           logger.error ex
           raise ex
