@@ -64,7 +64,8 @@ module Rack
         }
 
         req.server_variables.all_keys.each do |key|
-          env[key] = truncate_path(key, req.server_variables[key])
+          value = truncate_path(key, req.server_variables[key])
+          env[key.to_s] = value.nil? ? nil : value.to_s
         end
 
         return env
