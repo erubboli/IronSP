@@ -98,7 +98,7 @@ namespace IronSharePoint
             {
                 var lines = output.Split('\n').Select(HttpUtility.HtmlEncode).ToArray();
                 var outputHtml = string.Format(@"
-                    <div class='ironsp-error' style='display: inline-block; max-height: 100px; max-width: 600px; overflow-y: scroll; overflow-x: hidden; border: 2px solid red; font-size: 10px;line-height: 110%; text-align: left;'>
+                    <div class='ironsp-error' style='display: inline-block; max-height: 100px; width: 100%; max-width: 600px; overflow-y: scroll; overflow-x: hidden; border: 2px solid red; font-size: 10px;line-height: 110%; text-align: left;'>
                       <p style='margin: 3px;'>{0}</p>
                       <ul style='padding-left: 20px; margin-bottom: 0px;'>{1}</ul>
                     </div>
