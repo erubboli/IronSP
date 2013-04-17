@@ -1,6 +1,8 @@
 require 'sinatra/base'
 require 'iron_sharepoint/ext/rack/handlers/iron_sp'
 require 'rack/body_proxy'
+require 'iron_sharepoint/view_helpers/translation_helper'
+require 'iron_sharepoint/view_helpers/debug_helper'
 
 module IronSP
   class << self
@@ -50,5 +52,8 @@ module IronSP
       enable :dump_exceptions
       disable :raise_exceptions
     end
+
+    helpers ActionView::Helpers::TranslationHelper
+    helpers ActionView::Helpers::DebugHelper
   end
 end

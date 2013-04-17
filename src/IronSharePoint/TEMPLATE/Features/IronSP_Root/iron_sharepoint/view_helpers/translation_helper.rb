@@ -74,10 +74,12 @@ module ActionView
       private
         def scope_key_by_partial(key)
           if key.to_s.first == "."
-            if respond_to? :default_template
+            if @i18n_scope
+              @i18n_scope + key.to_s
+            elsif respond_to? :default_template
               default_template.to_s.gsub(%r{/_?}, ".") + key.to_s
             else
-              self.class.name.gsub("::", ".").underscore
+              raise "Cannot use t(#{key.inspect}) shortcut because path is not available"
             end
           else
             key
