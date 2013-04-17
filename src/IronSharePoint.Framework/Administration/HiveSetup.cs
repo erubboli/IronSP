@@ -51,24 +51,5 @@ namespace IronSharePoint.Administration
                 _hiveType = value;
             }
         }
-
-        /// <summary>
-        /// Hive Setup for the IronSP Ruby Framework
-        /// </summary>
-        public static HiveSetup IronSPRoot
-        {
-            get
-            {
-                return new HiveSetup
-                    {
-                        Id = new Guid("56631301-08ED-4BDA-A1DD-0571308A55B4"),
-                        DisplayName = "IronSP Root",
-                        Description = "Contains the Ruby part of the IronSP Framework",
-                        HiveArguments = new object[] {IronConstant.IronSPRootDirectory},
-                        HiveType = typeof (DirectoryHive),
-                        Priority = 1000
-                    };
-            }
-        }
     }
 }

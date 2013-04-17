@@ -18,7 +18,7 @@ namespace IronSharePoint.Administration
         [Persisted]
         private SetupCollection<RuntimeSetup> _runtimes = new SetupCollection<RuntimeSetup>();
         [Persisted] 
-        private SetupCollection<HiveSetup> _hives = new SetupCollection<HiveSetup>(HiveSetup.IronSPRoot);
+        private SetupCollection<HiveSetup> _hives = new SetupCollection<HiveSetup>();
         [Persisted]
         private Dictionary<Guid,Guid> _targetToRuntimeAssociations = new Dictionary<Guid, Guid>();
 

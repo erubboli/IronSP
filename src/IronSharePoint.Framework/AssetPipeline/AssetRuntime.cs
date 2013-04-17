@@ -35,7 +35,6 @@ namespace IronSharePoint.AssetPipeline
                     HiveType = typeof (SPDocumentHive),
                     Priority = 1
                 };
-            yield return HiveSetup.IronSPRoot;
         }
 
         protected override IEnumerable<string> GetGemPaths()

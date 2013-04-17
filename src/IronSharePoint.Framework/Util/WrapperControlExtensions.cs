@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI;
 using IronSharePoint.Diagnostics;
+using IronSharePoint.Exceptions;
 using Microsoft.Scripting.Hosting;
 using Microsoft.SharePoint;
 
@@ -12,8 +13,7 @@ namespace IronSharePoint.Util
         {
             IronRuntime runtime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
             ScriptEngine engine = runtime.RubyEngine;
-            dynamic controlClass = engine.Execute(control.ControlName, runtime.ScriptRuntime.Globals);
-            return (Control) engine.Operations.CreateInstance(controlClass);
+            return (Control) engine.CreateInstance(control.ControlName);
         }
 
         public static bool TryCreateDynamicControl(this IWrapperControl control, out Control dynamicControl)

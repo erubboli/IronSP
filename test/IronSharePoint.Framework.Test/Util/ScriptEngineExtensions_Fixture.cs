@@ -27,7 +27,7 @@ namespace IronSharePoint.Framework.Test.Util
             Assert.AreEqual(instance, "foo");
         }
 
-        [Test, ExpectedException(typeof (DynamicInstanceInitializationException))]
+        [Test, ExpectedException(typeof (DynamicInstantiationException))]
         public void CreateInstance_WithUnknownType_ThrowsArgumentException()
         {
             Sut.CreateInstance("FOO", "foo");

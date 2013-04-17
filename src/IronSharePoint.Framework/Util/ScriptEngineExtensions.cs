@@ -35,11 +35,11 @@ namespace IronSharePoint.Util
             }
             catch (MemberAccessException ex)
             {
-                throw new DynamicInstanceInitializationException(string.Format("Type '{0}' not found", typeName), ex);
+                throw new DynamicInstantiationException(string.Format("Type '{0}' not found", typeName), ex);
             }
             catch (Exception ex)
             {
-                throw new DynamicInstanceInitializationException(string.Format("Could not create instance of type '{0}'", typeName), ex);
+                throw new DynamicInstantiationException(string.Format("Could not create instance of type '{0}'", typeName), ex);
             }
         }
     }

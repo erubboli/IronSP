@@ -31,20 +31,6 @@ namespace IronSharePoint.Framework.Test.Administration
         }
 
         [Test]
-        public void IronSPRoot_HiveArgument_ReturnIronSPRootDirectory()
-        {
-            HiveSetup.IronSPRoot.HiveArguments.Should().ContainInOrder(new[] {IronConstant.IronSPRootDirectory});
-
-        }
-
-        [Test]
-        public void IronSPRoot_HiveType_IsPysicalHive()
-        {
-            HiveSetup.IronSPRoot.HiveType.Should().Be(typeof (DirectoryHive));
-
-        }
-
-        [Test]
         public void Equals_WhenHiveTypeAndHiveArgumentAreEqual_ReturnsTrue()
         {
             var hiveSetup = new HiveSetup

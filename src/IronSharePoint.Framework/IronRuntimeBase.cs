@@ -137,7 +137,8 @@ namespace IronSharePoint
                         Path.Combine(IronConstant.IronRubyDirectory, @"ironruby"),
                         Path.Combine(IronConstant.IronRubyDirectory, @"ruby\1.9.1"),
                         Path.Combine(IronConstant.IronRubyDirectory, @"ruby\site_ruby\1.9.1"),
-                        IronConstant.HiveWorkingDirectory
+                        IronConstant.HiveWorkingDirectory,
+                        IronConstant.IronSPRootDirectory
                     });
 
                 ScriptScope scope = scriptEngine.CreateScope();

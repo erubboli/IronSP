@@ -83,17 +83,17 @@ namespace IronSharePoint.Exceptions
     }
 
     [Serializable]
-    public class DynamicInstanceInitializationException : Exception
+    public class DynamicInstantiationException : Exception
     {
-        public DynamicInstanceInitializationException() {}
+        public DynamicInstantiationException() {}
 
-        public DynamicInstanceInitializationException(string message)
+        public DynamicInstantiationException(string message)
             : base(message) {}
 
-        public DynamicInstanceInitializationException(string message, Exception inner)
+        public DynamicInstantiationException(string message, Exception inner)
             : base(message, inner) {}
 
-        protected DynamicInstanceInitializationException(
+        protected DynamicInstantiationException(
             SerializationInfo info,
             StreamingContext context)
             : base(info, context) {}

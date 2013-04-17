@@ -19,7 +19,7 @@ namespace IronSharePoint.Administration
 
         public RuntimeSetup()
         {
-            _hiveIds = new List<Guid> { HiveSetup.IronSPRoot.Id };
+            _hiveIds = new List<Guid>();
             _gemPaths = new List<string> { IronConstant.GemsDirectory };
         }
 

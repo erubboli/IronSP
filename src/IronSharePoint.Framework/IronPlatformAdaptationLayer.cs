@@ -22,6 +22,10 @@ namespace IronSharePoint
         {
             path = TrimPath(path);
 
+            if (IsAbsolutePath(path))
+            {
+                return base.GetFileSystemEntries(path, searchPattern, includeFiles, includeDirectories);
+            }
             var entries = new List<string>();
             if (includeFiles)
             {
