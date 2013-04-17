@@ -33,7 +33,7 @@ module IronSP
 
       def template_cache
         @template_cache ||= Tilt::Cache.new
-        @template_cache.clear unless settings.cache
+        @template_cache.clear if settings.reload_templates
         @template_cache
       end
 
@@ -135,5 +135,5 @@ module IronSP
 
   IronView.set :views, File.join(IronSP::IronConstant.HiveWorkingDirectory, 'app/templates')
   IronView.set :default_encoding, 'utf-8'
-  IronView.disable :cache
+  IronView.set :reload_templates, Proc.new { !IronSP.env.production? }
 end
