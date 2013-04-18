@@ -17,5 +17,9 @@ module IronSharePoint
         end
       end
     end
+
+    def Render writer
+      super
+    end
   end
 end
