@@ -105,16 +105,16 @@ if String.method_defined?(:encode)
         Builder::XChar::PREDEFINED.keys.pack('U*').force_encoding('utf-8') +
       ']')
   
-      INVALID_XML_CHAR = Regexp.new('[^'+
-        Builder::XChar::VALID.map { |item|
-          case item
-          when Fixnum
-            [item].pack('U').force_encoding('utf-8')
-          when Range
-            [item.first, '-'.ord, item.last].pack('UUU').force_encoding('utf-8')
-          end
-        }.join +
-      ']')
+      #INVALID_XML_CHAR = Regexp.new('[^'+
+      #  Builder::XChar::VALID.map { |item|
+      #    case item
+      #    when Fixnum
+      #      [item].pack('U').force_encoding('utf-8')
+      #    when Range
+      #      [item.first, '-'.ord, item.last].pack('UUU').force_encoding('utf-8')
+      #    end
+      #  }.join +
+      #']')
   
       ENCODING_BINARY = Encoding.find('BINARY')
       ENCODING_UTF8   = Encoding.find('UTF-8')
@@ -151,7 +151,7 @@ if String.method_defined?(:encode)
       def XChar.encode(string)
         unicode(string).
           tr(CP1252_DIFFERENCES, UNICODE_EQUIVALENT).
-          gsub(INVALID_XML_CHAR, REPLACEMENT_CHAR).
+          #gsub(INVALID_XML_CHAR, REPLACEMENT_CHAR).
           gsub(XML_PREDEFINED) {|c| PREDEFINED[c.ord]}
       end
     end
