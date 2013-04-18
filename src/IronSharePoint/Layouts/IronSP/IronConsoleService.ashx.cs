@@ -24,9 +24,10 @@ namespace IronSharePoint
             {
                 var site = SPContext.Current.Site;
 
-                if (!IsValidConsoleSite(site))
+                string error;
+                if (!IsValidConsoleSite(site, out error))
                 {
-                    result.Error = "Only Site Admins are allowed to use the Console";
+                    result.Error = error;
                 }
                 else
                 {
@@ -65,18 +66,31 @@ namespace IronSharePoint
             context.Response.Write(jsonResponse);
         }
 
-        private bool IsValidConsoleSite(SPSite site)
+        private bool IsValidConsoleSite(SPSite site, out string error)
         {
             RuntimeSetup runtimeSetup;
+            error = null;
             if (IronRegistry.Local.TryResolveRuntime(site, out runtimeSetup))
             {
+                if (site.RootWeb.CurrentUser == null
+                    || !site.RootWeb.CurrentUser.IsSiteAdmin)
+                {
+                    error = "You do not have sufficient rights to use the IronConsole";
+                }
+
                 Func<bool> hasHive = () => runtimeSetup.Hives.Any(x => x.HiveType == typeof (SPDocumentHive) &&
-                    x.HiveArguments != null &&
-                    x.HiveArguments.FirstOrDefault() is Guid &&
-                    ((Guid) x.HiveArguments[0]) == site.ID);
-                return site.RootWeb.CurrentUser.IsSiteAdmin && hasHive();
+                                                                       x.HiveArguments != null &&
+                                                                       ((Guid) x.HiveArguments[0]) == site.ID);
+                if (!hasHive())
+                {
+                    error = "Site is not a valid IronConsole site";
+                }
             }
-            return false;
+            else
+            {
+                error = "No runtime associated to this site";
+            }
+            return error == null;
         }
     }
 }
