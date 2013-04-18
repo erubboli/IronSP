@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Web;
 using IronSharePoint.Administration;
@@ -154,6 +155,7 @@ namespace IronSharePoint
             var joinedPaths = GetGemPaths().Select(x => string.Format("'{0}'", x)).StringJoin(",");
             var script = new StringBuilder()
                 .AppendLine("require 'rubygems'")
+                .AppendLine("load_assembly 'Microsoft.SharePoint.Publishing, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'")
                 .AppendLine("Encoding.default_internal = Encoding.UTF8")
                 .AppendLine("Encoding.default_external = Encoding.UTF8")
                 .AppendLine("Gem.clear_paths")
