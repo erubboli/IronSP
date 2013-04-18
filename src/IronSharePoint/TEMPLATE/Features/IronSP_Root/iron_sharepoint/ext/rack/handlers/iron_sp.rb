@@ -79,13 +79,30 @@ module Rack
 
       def write_response res, status, headers, body
         res.status_code = status
+        if (ct_header = headers.delete "Content-Type")
+          res.content_type, charset = ct_header.split ';'
+          charset.match(/charset=\s*\"?([^\s;\"]+)\"?/) do |m|
+            begin
+              encoding = Sytem::Text::Encoding.get_encoding m[1]
+              res.content_encoding = encoding
+            rescue
+            end
+          end unless charset.nil?
+        end
         headers.each{|k,v| res.headers[k] = v}
-        if body.respond_to? :to_str
-          res.write body.to_str
-        elsif body.respond_to?(:each)
+        if body.is_a?(Rack::BodyProxy)
+          inner = body.instance_variable_get :@body
+          if inner.is_a?(System::Array[System::Byte])
+            res.binary_write inner
+            return
+          end
+        end
+        if body.respond_to?(:each)
           body.each do |part|
             res.write part.to_s
           end
+        else
+          res.write body.to_s
         end
       end
 
