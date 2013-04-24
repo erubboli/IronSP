@@ -8,3 +8,4 @@ require 'iron_sharepoint/patches/system/date_time'
 require 'iron_sharepoint/patches/system/string'
 
 require 'iron_sharepoint/patches/log4r/logger'
+require 'iron_sharepoint/patches/log4r/outputter'
