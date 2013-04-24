@@ -6,6 +6,7 @@
     <customAssembly location="Microsoft.Scripting.Metadata.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\Microsoft.Scripting.Metadata.dll" />
     <projectOutputAssembly location="IronSharePoint.Framework.dll" deploymentTarget="GlobalAssemblyCache" projectPath="..\IronSharePoint.Framework\IronSharePoint.Framework.csproj" />
     <customAssembly location="Newtonsoft.Json.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll" />
+    <customAssembly location="System.Web.Helpers.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\..\lib\System.Web.Helpers.dll" />
   </assemblies>
   <features>
     <featureReference itemId="02961df1-c0a7-44bf-8545-5a24466136f9" />
