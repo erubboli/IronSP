@@ -19,7 +19,7 @@ module Log4r
 
       logs.select do |entry|
         (entry =~ filter) != nil
-      end.first(opts[:count]).each do |entry|
+      end.last(opts[:count]).each do |entry|
         puts entry
       end
       nil
