@@ -14,6 +14,7 @@ namespace IronSharePoint.IronPart
     {
         protected Exception Exception;
         protected Control InnerControl;
+        private string _controlName;
 
         [Personalizable(PersonalizationScope.Shared)]
         public string Data { get; set; }
@@ -29,10 +30,25 @@ namespace IronSharePoint.IronPart
             return Data;
         }
 
+        [WebBrowsable(false)]
+        [Category("IronPart")]
+        [Personalizable(PersonalizationScope.Shared)]
+        public string ScriptClass { get; set; }
+
         [WebBrowsable(true)]
         [Category("IronPart")]
         [Personalizable(PersonalizationScope.Shared)]
-        public string ControlName { get; set; }
+        public string ControlName
+        {
+            get 
+            {
+                return _controlName ?? (ScriptClass ?? string.Empty).Replace(".", "::");
+            }
+            set
+            {
+                _controlName = value;
+            }
+        }
 
         public Exception InstantiationException { get; set; }
 
@@ -40,7 +56,7 @@ namespace IronSharePoint.IronPart
         {
             Contract.Requires<InvalidOperationException>(!String.IsNullOrWhiteSpace(ControlName), "ControlName not set");
 
-            if (!this.TryCreateDynamicControl(out InnerControl))
+            if (this.TryCreateDynamicControl(out InnerControl))
             {
                 if (InnerControl is IIronControl)
                 {
@@ -48,8 +64,9 @@ namespace IronSharePoint.IronPart
                     ironControl.WebPart = this;
                     ironControl.DataStore = this;
                 }
+
+                Controls.Add(InnerControl);
             }
-            Controls.Add(InnerControl);
             base.OnInit(e);
         }
 
