@@ -42,9 +42,9 @@ namespace IronSharePoint.AssetPipeline
             yield return IronConstant.GemsDirectory;
         }
 
-        protected override void InitializeScriptEngine(ScriptEngine scriptEngine)
+        protected override void InitializeRubyEngine(ScriptEngine scriptEngine)
         {
-            base.InitializeScriptEngine(scriptEngine);
+            base.InitializeRubyEngine(scriptEngine);
             StringBuilder script = new StringBuilder()
                 .AppendLine("require 'sprockets'")
                 .AppendLine("require 'iron_sharepoint/patches/sprockets'")

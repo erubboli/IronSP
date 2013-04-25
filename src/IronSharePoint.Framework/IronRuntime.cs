@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Web;
 using IronSharePoint.Administration;
 using IronSharePoint.Diagnostics;
@@ -44,20 +45,27 @@ namespace IronSharePoint
                 IronRuntime runtime;
                 if (!TryGetLivingRuntime(targetSite, out runtime))
                 {
-                    using (new SPMonitoredScope("Creating IronRuntime"))
+                    lock (Lock)
                     {
-                        try
+                        if (!TryGetLivingRuntime(targetSite, out runtime))
                         {
-                            var runtimeSetup = IronRegistry.Local.ResolveRuntime(targetSite);
-                            runtime = new IronRuntime(runtimeSetup);
-                            LivingRuntimes.Add(runtime);
-                            runtime.Initialize();
-                        }
-                        catch (Exception ex)
-                        {
-                            var message = string.Format("Could not create IronRuntime for SPSite '{0}'", targetId);
-                            IronULSLogger.Local.Error(message, ex,IronCategoryDiagnosticsId.Core);
-                            throw new IronRuntimeAccesssException(message, ex) {SiteId = targetId};
+                            using (new SPMonitoredScope("Creating IronRuntime"))
+                            {
+                                try
+                                {
+                                    var runtimeSetup = IronRegistry.Local.ResolveRuntime(targetSite);
+                                    runtime = new IronRuntime(runtimeSetup);
+                                    LivingRuntimes.Add(runtime);
+                                    runtime.Initialize();
+                                }
+                                catch (Exception ex)
+                                {
+                                    var message = string.Format("Could not create IronRuntime for SPSite '{0}'",
+                                                                targetId);
+                                    IronULSLogger.Local.Error(message, ex, IronCategoryDiagnosticsId.Core);
+                                    throw new IronRuntimeAccesssException(message, ex) {SiteId = targetId};
+                                }
+                            }
                         }
                     }
                 }
@@ -76,15 +84,9 @@ namespace IronSharePoint
             var runtimeId = runtimeSetup.Id;
             if ((runtime = LivingRuntimes.SingleOrDefault(x => x.Id == runtimeId)) == null)
             {
-                lock (Lock)
+                if (HttpContext.Current != null)
                 {
-                    if ((runtime = LivingRuntimes.SingleOrDefault(x => x.Id == runtimeId)) == null)
-                    {
-                        if (HttpContext.Current != null)
-                        {
-                            runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
-                        }
-                    }
+                    runtime = HttpContext.Current.Items[IronConstant.IronRuntimeKey] as IronRuntime;
                 }
             }
 
@@ -117,9 +119,9 @@ namespace IronSharePoint
             return _gemPaths;
         }
 
-        protected override void InitializeScriptEngine(ScriptEngine scriptEngine)
+        protected override void InitializeRubyEngine(ScriptEngine scriptEngine)
         {
-            base.InitializeScriptEngine(scriptEngine);
+            base.InitializeRubyEngine(scriptEngine);
             var script = new StringBuilder()
                 .AppendLine("require 'iron_sharepoint'")
                 .AppendLine("require 'application' if File.exists? 'application.rb'");

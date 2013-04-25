@@ -11,15 +11,26 @@ namespace IronSharePoint.Diagnostics
     public class IronULSLogger
     {
         private readonly IronDiagnosticsService _service;
+        private readonly IronRuntimeBase _runtime;
 
         const string ErrorFormat = "Exception '{0}' - {1}\n{2}";
 
-        public IronULSLogger(IronDiagnosticsService service)
+        public IronRuntimeBase Runtime
         {
-            _service = service;
+            get
+            {
+                return _runtime ??
+                       IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
+            }
         }
 
-        public IronULSLogger() : this(IronDiagnosticsService.Local)
+        public IronULSLogger(IronDiagnosticsService service, IronRuntimeBase runtime)
+        {
+            _service = service;
+            _runtime = runtime;
+        }
+
+        public IronULSLogger() : this(IronDiagnosticsService.Local, null)
         {
         }
 
@@ -71,8 +82,7 @@ namespace IronSharePoint.Diagnostics
             {
                 try
                 {
-                    var runtime = IronRuntime.GetDefaultIronRuntime(SPContext.Current.Site);
-                    var expcetionOperations = runtime.RubyEngine.GetService<ExceptionOperations>();
+                    var expcetionOperations = Runtime.RubyEngine.GetService<ExceptionOperations>();
 
                     output = expcetionOperations.FormatException(ex);
                     return true;

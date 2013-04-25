@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Web;
 using IronSharePoint.Administration;
 using IronSharePoint.Diagnostics;
@@ -16,8 +17,10 @@ namespace IronSharePoint
 {
     public abstract class IronRuntimeBase : IDisposable
     {
-        private Lazy<ScriptRuntime> _scriptRuntime;
+        private ScriptRuntime _scriptRuntime;
         private Lazy<IronConsole> _console;
+        private ScriptEngine _rubyEngine;
+        public bool IsInitialized { get; private set; }
         public const string RubyEngineName = "IronRuby";
 
         protected IronRuntimeBase()
@@ -26,16 +29,30 @@ namespace IronSharePoint
         protected IronRuntimeBase(Guid id)
         {
             Id = id;
-            ULSLogger = new IronULSLogger();
+            ULSLogger = new IronULSLogger(IronDiagnosticsService.Local, this);
 
             _console = new Lazy<IronConsole>(() => new IronConsole(ScriptRuntime));
-            _scriptRuntime = new Lazy<ScriptRuntime>(CreateScriptRuntime);
         }
 
         protected void Initialize()
         {
-            CreateScriptRuntime();
-           
+            _scriptRuntime = CreateScriptRuntime();
+            _rubyEngine = CreateRubyEngine(_scriptRuntime);
+            try
+            {
+                InitializeRubyEngine(RubyEngine);
+            }
+            catch (Exception ex)
+            {
+                InitializationException = ex;
+                ULSLogger.Error(
+                    string.Format("Could not initialize ruby framework for runtime '{0}'", Id),
+                    ex, IronCategoryDiagnosticsId.Core);
+            }
+            finally
+            {
+                IsInitialized = true;
+            }
         }
 
         public IronULSLogger ULSLogger { get; private set; }
@@ -47,7 +64,7 @@ namespace IronSharePoint
 
         public ScriptRuntime ScriptRuntime
         {
-            get { return _scriptRuntime.Value; }
+            get { return _scriptRuntime; }
         }
 
         public IronScriptHost ScriptHost
@@ -62,7 +79,7 @@ namespace IronSharePoint
 
         public ScriptEngine RubyEngine
         {
-            get { return ScriptRuntime.GetEngine(RubyEngineName); }
+            get { return _rubyEngine; }
         }
 
         public IHive Hive
@@ -108,26 +125,13 @@ namespace IronSharePoint
             scriptRuntime.LoadAssembly(typeof (SPSite).Assembly); // Microsoft.SharePoint
             scriptRuntime.LoadAssembly(typeof (IHttpHandler).Assembly); // System.Web
 
-            var scriptEngine = CreateScriptEngine(scriptRuntime);
-
-            try
-            {
-                InitializeScriptEngine(scriptEngine);
-            }
-            catch (Exception ex)
-            {
-                InitializationException = ex;
-                IronULSLogger.Local.Error(
-                    string.Format("Could not initialize ruby framework for runtime '{0}'", Id),
-                    ex, IronCategoryDiagnosticsId.Core);
-            }
             return scriptRuntime;
         }
 
         protected abstract IEnumerable<HiveSetup> GetHiveSetups();
         protected abstract IEnumerable<string> GetGemPaths();
 
-        private ScriptEngine CreateScriptEngine(ScriptRuntime scriptRuntime)
+        private ScriptEngine CreateRubyEngine(ScriptRuntime scriptRuntime)
         {
             using (new SPMonitoredScope("Initializing IronEngine(s)"))
             {
@@ -150,12 +154,14 @@ namespace IronSharePoint
             }
         }
 
-        protected virtual void InitializeScriptEngine(ScriptEngine scriptEngine)
+        protected virtual void InitializeRubyEngine(ScriptEngine scriptEngine)
         {
             var joinedPaths = GetGemPaths().Select(x => string.Format("'{0}'", x)).StringJoin(",");
             var script = new StringBuilder()
                 .AppendLine("require 'rubygems'")
-                .AppendLine("load_assembly 'Microsoft.SharePoint.Publishing, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'")
+                .AppendLine("begin")
+                .AppendLine("  load_assembly 'Microsoft.SharePoint.Publishing, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'")
+                .AppendLine("rescue; end")
                 .AppendLine("Encoding.default_internal = Encoding.UTF8")
                 .AppendLine("Encoding.default_external = Encoding.UTF8")
                 .AppendLine("Gem.clear_paths")
