@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using IronSharePoint.Administration;
 using IronSharePoint.Diagnostics;
@@ -20,11 +21,17 @@ namespace IronSharePoint
         private ScriptRuntime _scriptRuntime;
         private Lazy<IronConsole> _console;
         private ScriptEngine _rubyEngine;
+        private Task _initializationTask;
         public bool IsInitialized { get; private set; }
         public const string RubyEngineName = "IronRuby";
 
         protected IronRuntimeBase()
             : this(Guid.NewGuid()) {}
+
+        public Task InitializationTask
+        {
+            get { return _initializationTask; }
+        }
 
         protected IronRuntimeBase(Guid id)
         {
@@ -36,22 +43,29 @@ namespace IronSharePoint
 
         protected void Initialize()
         {
-            _scriptRuntime = CreateScriptRuntime();
-            _rubyEngine = CreateRubyEngine(_scriptRuntime);
-            try
+            if (_initializationTask == null)
             {
-                InitializeRubyEngine(RubyEngine);
-            }
-            catch (Exception ex)
-            {
-                InitializationException = ex;
-                ULSLogger.Error(
-                    string.Format("Could not initialize ruby framework for runtime '{0}'", Id),
-                    ex, IronCategoryDiagnosticsId.Core);
-            }
-            finally
-            {
-                IsInitialized = true;
+                _initializationTask = Task.Run(() =>
+                {
+                    _scriptRuntime = CreateScriptRuntime();
+                    _rubyEngine = CreateRubyEngine(_scriptRuntime);
+                    try
+                    {
+                        InitializeRubyEngine(RubyEngine);
+                    }
+                    catch (Exception ex)
+                    {
+                        InitializationException = ex;
+                        ULSLogger.Error(
+                            string.Format("Could not initialize ruby framework for runtime '{0}'", Id),
+                            ex, IronCategoryDiagnosticsId.Core);
+                    }
+                    finally
+                    {
+                        IsInitialized = true;
+                        _initializationTask = null;
+                    }
+                });
             }
         }
 

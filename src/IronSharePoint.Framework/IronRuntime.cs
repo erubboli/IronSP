@@ -69,7 +69,18 @@ namespace IronSharePoint
                         }
                     }
                 }
-                if (HttpContext.Current != null) HttpContext.Current.Items[IronConstant.IronRuntimeKey] = runtime;
+                if (HttpContext.Current != null)
+                {
+                    if (!runtime.IsInitialized)
+                    {
+                        HttpContext.Current.Response.StatusCode = 503;
+                        HttpContext.Current.Response.End();
+                    }
+                    else
+                    {
+                        HttpContext.Current.Items[IronConstant.IronRuntimeKey] = runtime;
+                    }
+                }
 
                 return runtime;
             }
