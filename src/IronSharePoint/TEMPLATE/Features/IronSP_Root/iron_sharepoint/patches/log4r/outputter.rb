@@ -1,3 +1,5 @@
+require "log4r"
+
 module Log4r
   class Outputter
     def format(logevent)
