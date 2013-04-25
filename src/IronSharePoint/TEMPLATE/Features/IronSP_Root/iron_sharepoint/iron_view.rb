@@ -17,13 +17,32 @@ module IronSP
       template.gsub("::","/").underscore.to_sym
     end
 
+    def default_template_engine
+      :haml
+    end
+
+    def template= value
+      @template = value
+      @template_engine = nil
+
+      if value.is_a? Symbol
+        file, ext = template.to_s.split '.'
+        @template_engine = (ext || 'haml').to_sym
+        @template = file.to_sym
+      end
+    end
+
     def template
       @template || default_template
     end
 
+    def template_engine
+      @template_engine || default_template_engine
+    end
+
     def render_template
       locals = view_context if respond_to? :view_context
-      haml template, {}, locals
+      render template_engine, template, {}, locals
     end
 
     class << self
