@@ -301,6 +301,7 @@
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\core\string.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\digest\md5.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\hike\index.rb" />
+    <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\i18n\config.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\log4r\logger.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\log4r\outputter.rb" />
     <None Include="TEMPLATE\Features\IronSP_Root\iron_sharepoint\patches\sprockets.rb" />
