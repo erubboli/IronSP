@@ -22,7 +22,7 @@ namespace IronSharePoint.Administration
         [Persisted]
         private Dictionary<Guid,Guid> _targetToRuntimeAssociations = new Dictionary<Guid, Guid>();
 
-        [Persisted] private IronEnvironment? _farmEnvironment;
+        [Persisted] private IronEnvironment _farmEnvironment;
 
         private static Lazy<IronRegistry> _local;
 
@@ -64,7 +64,7 @@ namespace IronSharePoint.Administration
         /// </summary>
         public IronEnvironment FarmEnvironment
         {
-            get { return _farmEnvironment.HasValue ? _farmEnvironment.Value : IronEnvironment.Production; }
+            get { return _farmEnvironment != IronEnvironment.None ? _farmEnvironment : IronEnvironment.Production; }
             set { _farmEnvironment = value; }
         }
 
@@ -176,17 +176,6 @@ namespace IronSharePoint.Administration
                 targetId = (target as SPFarm).Id;
 
             return targetId;
-        }
-
-        protected override void OnDeserialization()
-        {
-            base.OnDeserialization();
-            System.Console.WriteLine(this);
-        }
-
-        public override void Update()
-        {
-            base.Update();
         }
 
         public override void Update(bool ensure)

@@ -15,7 +15,7 @@ namespace IronSharePoint.Administration
     {
         [Persisted] private readonly List<Guid> _hiveIds;
         [Persisted] private readonly List<string> _gemPaths;
-        [Persisted] private IronEnvironment? _environment;
+        [Persisted] private IronEnvironment _environment;
 
         public RuntimeSetup()
         {
@@ -29,7 +29,7 @@ namespace IronSharePoint.Administration
         /// </summary>
         public IronEnvironment Environment
         {
-            get { return _environment.HasValue ? _environment.Value : IronRegistry.Local.FarmEnvironment; }
+            get { return _environment != IronEnvironment.None ? _environment : IronRegistry.Local.FarmEnvironment; }
             set { _environment = value; }
         }
 
