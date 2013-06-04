@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Web;
 using IronSharePoint.Util;
 using Microsoft.SharePoint;
 
@@ -15,13 +16,35 @@ namespace IronSharePoint.Hives
     /// </summary>
     public class SPDocumentHive : IHive
     {
-        private readonly ThreadLocal<SPDocumentLibrary> _documentLibrary;
-        private readonly string _hiveLibraryPath;
-        private readonly string _hiveLibraryUrl;
+        class Context : IDisposable
+        {
+            public SPSite Site { get; set; }
+            public SPWeb Web { get; set; }
+            public SPDocumentLibrary DocumentLibrary { get; set; }
 
-        private readonly ThreadLocal<SPSite> _site;
+            public Context(Guid siteId, string hiveLibraryPath)
+            {
+                Site = new SPSite(siteId, SPUserToken.SystemAccount);
+                Web = Site.RootWeb;
+                DocumentLibrary = Web.GetFolder(hiveLibraryPath).DocumentLibrary;
+            }
+
+            public void Dispose()
+            {
+                Site.Dispose();
+                Web.Dispose();
+
+                Site = null;
+                Web = null;
+                DocumentLibrary = null;
+            }
+        }
+
+        private static readonly Object Lock = new Object();
         private readonly Guid _siteId;
-        private readonly ThreadLocal<SPWeb> _web;
+        private readonly string _hiveLibraryPath;
+        private string _hiveLibraryUrl;
+
         private string[] _allDirs;
         private Dictionary<string, int> _allFiles;
 
@@ -33,26 +56,56 @@ namespace IronSharePoint.Hives
             _siteId = siteId;
             _hiveLibraryPath = hiveLibraryPath;
 
-            _site = new ThreadLocal<SPSite>(() => new SPSite(_siteId, SPUserToken.SystemAccount), true);
-            _web = new ThreadLocal<SPWeb>(() => Site.RootWeb);
-            _documentLibrary = new ThreadLocal<SPDocumentLibrary>(() => Web.GetFolder(_hiveLibraryPath).DocumentLibrary);
-            _hiveLibraryUrl = CombinePath(Site.RootWeb.Url, _hiveLibraryPath);
             Reset();
         }
 
-        public SPSite Site
+        private ThreadLocal<Context> _contexts;
+
+        Context CurrentContext
         {
-            get { return _site.Value; }
+            get
+            {
+                if (HttpContext.Current == null)
+                {
+                    if (_contexts == null)
+                    {
+                        lock (Lock)
+                        {
+                            if (_contexts == null)
+                            {
+                                _contexts = new ThreadLocal<Context>(() => new Context(_siteId, _hiveLibraryPath));
+                            }
+                        }
+                    }
+                    return _contexts.Value;
+                }
+
+                var key = "IronSP_HiveCtx_" + _siteId;
+                var context = HttpContext.Current.Items[key] as Context;
+                if (context == null)
+                {
+                    lock (Lock)
+                    {
+                        context = HttpContext.Current.Items[key] as Context;
+                        if (context == null)
+                        {
+                            context = new Context(_siteId, _hiveLibraryPath);
+                            HttpContext.Current.Items[key] = context;
+                        }
+                    }
+                }
+                return context;
+            }
         }
 
-        public SPWeb Web
+        private void RecycleContexts()
         {
-            get { return _web.Value; }
-        }
-
-        public SPDocumentLibrary DocumentLibrary
-        {
-            get { return _documentLibrary.Value; }
+            foreach (var context in _contexts.Values)
+            {
+                context.Dispose();
+            }
+            _contexts.Dispose();
+            _contexts = null;
         }
 
         public IEnumerable<string> Files
@@ -151,13 +204,7 @@ namespace IronSharePoint.Hives
 
         public void Dispose()
         {
-            foreach (SPSite spSite in _site.Values)
-            {
-                spSite.Dispose();
-                _site.Dispose();
-                _web.Dispose();
-            }
-            _documentLibrary.Dispose();
+            RecycleContexts();
         }
 
         public SPListItem GetSPListItem(string path)
@@ -168,7 +215,7 @@ namespace IronSharePoint.Hives
             {
                 try
                 {
-                    return DocumentLibrary.GetItemById(id);
+                    return CurrentContext.DocumentLibrary.GetItemById(id);
                 }
                 catch
                 {
@@ -185,23 +232,24 @@ namespace IronSharePoint.Hives
 
         public void Reset()
         {
+            _hiveLibraryUrl = CombinePath(CurrentContext.Site.RootWeb.Url, _hiveLibraryPath);
             var allFilesQuery = new SPQuery
                 {
                     Query = "<Where></Where>",
                     ViewFields = "<FieldRef Name='FileRef'/>" +
                                  "<FieldRef Name='ID'/>" +
-                                 "<FieldRef Name='File_x0020_Size'/>" +
                                  "<FieldRef Name='FileLeafRef'/>",
                     ViewAttributes = "Scope='Recursive'",
                     IncludeMandatoryColumns = false
                 };
 
             _allFiles = new Dictionary<string, int>();
-            SPListItemCollection allItems = DocumentLibrary.GetItems(allFilesQuery);
+            SPListItemCollection allItems = CurrentContext.DocumentLibrary.GetItems(allFilesQuery);
             foreach (SPListItem item in allItems)
             {
                 string fileRef = item["FileRef"].ToString();
-                string siteRelative = fileRef.ReplaceFirst(Site.RootWeb.ServerRelativeUrl, string.Empty).TrimStart('/');
+                string siteRelative =
+                    fileRef.ReplaceFirst(CurrentContext.Site.RootWeb.ServerRelativeUrl, string.Empty).TrimStart('/');
                 string hiveRelative = siteRelative.ReplaceFirst(_hiveLibraryPath, string.Empty).TrimStart('/');
                 int id = Convert.ToInt32(item["ID"]);
 
