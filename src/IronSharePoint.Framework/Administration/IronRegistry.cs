@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using IronSharePoint.Hives;
 using IronSharePoint.Util;
 using Microsoft.SharePoint;
@@ -58,6 +60,14 @@ namespace IronSharePoint.Administration
             private set { _hives = value; }
         }
 
+        public IReadOnlyDictionary<Guid, Guid> Associations
+        {
+            get
+            {
+                return new ReadOnlyDictionary<Guid, Guid>(_targetToRuntimeAssociations);
+            }
+        }
+
         /// <summary>
         /// Get or set the default <see cref="IronEnvironment"/> for the SPFarm. 
         /// Defaults to <see cref="IronEnvironment.Production"/>
@@ -101,7 +111,7 @@ namespace IronSharePoint.Administration
         public void Dissociate(object target, RuntimeSetup runtime)
         {
             Contract.Requires<ArgumentNullException>(runtime != null); 
-            Associate(target, runtime.Id);
+            Dissociate(target, runtime.Id);
         }
 
         public void Dissociate(object target, Guid runtimeId)
@@ -109,7 +119,7 @@ namespace IronSharePoint.Administration
             Contract.Requires<ArgumentNullException>(target != null);
             Contract.Requires<ArgumentException>(runtimeId != Guid.Empty);
 
-            var targetId = GetTargetId(target);
+            var targetId = target is Guid ? (Guid)target : GetTargetId(target);
 
             if (!_targetToRuntimeAssociations.ContainsKey(targetId))
             {
