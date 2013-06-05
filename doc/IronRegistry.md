@@ -4,11 +4,12 @@ IronRegistry
 Powershell Basics
 -----------------
 
-Load IronSharePoint Assembly
-`[System.Reflection.Assembly]::LoadWithPartialName("IronSharePoint.Framework")`
+Load IronSharePoint Assembly `[System.Reflection.Assembly]::LoadWithPartialName("IronSharePoint.Framework")`
 
 Get local IronRegistry
-`$ir = [IronSharePoint.Administration.IronRegistry]::Local`
+```
+$ir = [IronSharePoint.Administration.IronRegistry]::Local
+```
 
 Runtimes
 --------
@@ -21,7 +22,9 @@ Properties
   * GemPaths: List of all gem paths for this runtime
 
 List all runtimes 
-`$runtimes = $ir.Runtimes`
+```
+$runtimes = $ir.Runtimes
+```
 
 Get runtime 
   * by display name
@@ -32,22 +35,34 @@ Get runtime
     `$rt = $ir.Runtimes[0]`
 
 Add a new runtime
-`$rt = $ir.Runtimes.Add()`
+```
+$rt = $ir.Runtimes.Add()
+```
 
 Add a hive to the runtime
-`$rt.AddHive($ir.Hives["My Hive"])`
-`$rt.AddHive((New-Object System.Guid ED082290-2072-406A-9888-AEE46C3B8692))`
+```
+$rt.AddHive($ir.Hives["My Hive"])
+$rt.AddHive((New-Object System.Guid ED082290-2072-406A-9888-AEE46C3B8692))
+```
+
 Remove a hive from the runtime
-`$rt.RemoveHive($ir.Hives["My Hive"])`
-`$rt.RemoveHive((New-Object System.Guid ED082290-2072-406A-9888-AEE46C3B8692))`
+```
+$rt.RemoveHive($ir.Hives["My Hive"])
+$rt.RemoveHive((New-Object System.Guid ED082290-2072-406A-9888-AEE46C3B8692))
+```
  
 Add a gem path to the runtime
-`$rt.AddGemPath("c:\foo\bar")`
+```
+$rt.AddGemPath("c:\foo\bar")
+```
+
 Remove a gem path from the runtime
-`$rt.RemoveGemPath("c:\foo\bar")`
+```
+$rt.RemoveGemPath("c:\foo\bar")
+```
 
 Example:
-```powershell
+```
 $rt = $ir.Runtimes.Add();
 $rt.Environment = [IronSharePoint.IronEnvironment]::Development
 $rt.DisplayName = "My Runtime";
@@ -67,7 +82,9 @@ Properties:
   * HiveArguments: Constructor arguments for the HiveType
 
 List all hives
-`$hives = $ir.Hives`
+```
+$hives = $ir.Hives
+```
 
 Get hive 
   * by display name
@@ -78,23 +95,35 @@ Get hive
     `$hive = $ir.Hives[0]`
 
 Add a new hive
-`$rt = $ir.Hive.Add()`
+```
+$rt = $ir.Hive.Add()
+```
 
 Associations
 ------------
 
 List all associations
-`$associations = $ir.Associations`
-*Key*: Target Id (Site, SiteSubscription, ...)
-*Value*: Runtime Id
+```
+$associations = $ir.Associations
+```
+
+ * *Key*: Target Id (Site, SiteSubscription, ...)
+ * *Value*: Runtime Id
 
 Associate a runtime with a target
-`$ir.Associate((Get-SPSite http://my-sharepoint), $rt)`
-Overwrite Association
-`$ir.Associate((Get-SPSite http://my-sharepoint), $rt, $true)`
+```
+$ir.Associate((Get-SPSite http://my-sharepoint), $rt)
+```
 
-Dissociate a runtime fro a target
-`$ir.Dissociate((Get-SPSite http://my-sharepoint), $rt)`
-`$ir.Dissociate((New-Object System.Guid ED082290-2072-406A-9888-AEE46C3B8692), $rt)`
+Overwrite Association
+```
+$ir.Associate((Get-SPSite http://my-sharepoint), $rt, $true)
+```
+
+Dissociate a runtime from a target
+```
+$ir.Dissociate((Get-SPSite http://my-sharepoint), $rt)
+$ir.Dissociate((New-Object System.Guid ED082290-2072-406A-9888-AEE46C3B8692), $rt)
+```
 
  
