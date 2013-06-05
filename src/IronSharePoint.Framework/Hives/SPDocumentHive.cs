@@ -73,7 +73,7 @@ namespace IronSharePoint.Hives
                         {
                             if (_contexts == null)
                             {
-                                _contexts = new ThreadLocal<Context>(() => new Context(_siteId, _hiveLibraryPath));
+                                _contexts = new ThreadLocal<Context>(() => new Context(_siteId, _hiveLibraryPath), true);
                             }
                         }
                     }
