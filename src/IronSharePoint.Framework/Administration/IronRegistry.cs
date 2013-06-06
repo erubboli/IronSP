@@ -163,6 +163,8 @@ namespace IronSharePoint.Administration
                 if (_targetToRuntimeAssociations.TryGetValue(targetId, out associatedId))
                 {
                     runtimeSetup = _runtimes.SingleOrDefault(x => x.Id == associatedId);
+                    if(runtimeSetup != null)
+                        break;
                 }
             }
             return runtimeSetup != null;
